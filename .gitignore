@@ -1,0 +1,108 @@
+#
+CLAUDE.md
+docs/
+
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+
+# Editor & IDE
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Claude Code
+.claude/
+!.claude/CLAUDE.md
+docs/log/claude/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.cache
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+credentials.json
+secrets.json
+config.local.*
+
+# Dependencies
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.Python
+venv/
+env/
+ENV/
+
+# Build & Distribution
+dist/
+build/
+*.egg
+*.whl
+
+# Documentation builds
+_site/
+.jekyll-cache/
+.jekyll-metadata
+docs/_build/
+site/
+
+# Version control
+*.orig
+*.rej
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
