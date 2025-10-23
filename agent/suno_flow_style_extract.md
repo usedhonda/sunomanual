@@ -29,8 +29,12 @@ output_format: "style_block"
 3. **Styleブロック構成**
 　- Sunoマニュアル定義に従い以下を含む：
 　　ジャンル／BPM／ムード／楽器構成／地域・年代／Key。
-　- 英数字・半角・簡潔な英語で表現。
-　- 全体を1000字以内に制限。
+　- 英数字・半角・英語で表現。
+　- **最大1000文字まで記述可能**なので、十分な情報を含める：
+　　・詳細な楽器構成（主要楽器、リズムセクション、メロディー楽器）
+　　・具体的な音響特徴（リバーブ、EQ特性、ミックスバランス等）
+　　・演奏スタイル（ストローク、アーティキュレーション等）
+　　・プロダクション要素（サウンドテクスチャ、空間感、ダイナミクス等）
 
 4. **Exclude Styleブロック構成**
 　- 楽曲の分析結果から、**明らかに存在しない要素**を抽出：
@@ -38,26 +42,49 @@ output_format: "style_block"
 　- ジャンル対極の要素を含める：
 　　例: ジャズ → EDM synths, trap beats除外
 　　例: ロック → smooth jazz, lo-fi beats除外
-　- カンマ区切りで簡潔に列挙（200字以内推奨）
+　- **必ずカンマ区切りで列挙**（例: "trap hats, EDM synths, distorted guitars, autotune"）
+　- 200字以内推奨
 
 ---
 
 ## 🧾 出力フォーマット
+
+### Style欄（最大1000文字）
+詳細な情報を含めた英語の記述：
 ```
-Style: "<Genre>/<Subgenre>; <BPM>; <Mood>; <Instrumental structure>; <Era/Region>; Key:<調性>"
-Exclude: "<除外要素>"
-Instruments: "<主要楽器>"
-Tags: "<音響的特徴/雰囲気>"
+<Genre>/<Subgenre>; <BPM>; <Mood>; <Instrumental structure>; <Era/Region>; Key:<調性>
+
+Detailed instrumentation: <主要楽器の詳細説明>
+Production: <音響特徴、ミックス、エフェクト>
+Performance style: <演奏スタイル、アーティキュレーション>
+Sound texture: <サウンドテクスチャ、空間感>
+```
+
+### Exclude Style欄（Advanced Options内、カンマ区切り）
+```
+<除外要素1>, <除外要素2>, <除外要素3>, ...
 ```
 
 ---
 
 ## ✅ 出力例
+
+### Style欄（詳細版 - 約800文字）
 ```
-Style: "2010s Pop Ballad / J‑Pop; 86 BPM; emotional and cinematic; piano, strings, soft drums; Tokyo 2018; Key:C# minor"
-Exclude: "EDM synths, trap hats"
-Instruments: "piano, strings, light percussion"
-Tags: "melancholic, heartfelt, cinematic softness"
+2010s Pop Ballad / J-Pop; 86 BPM; emotional and cinematic; Tokyo 2018; Key: C# minor
+
+Detailed instrumentation: Grand piano with warm reverb, playing arpeggiated chords and melodic fills; string quartet (2 violins, viola, cello) providing lush harmonic layers and counter-melodies; soft acoustic drums with brushed snare and light kick; subtle electric bass with fingerstyle playing; occasional ambient synth pads for atmospheric depth.
+
+Production: Clean, polished mix with vocal-forward balance; moderate hall reverb on strings (2.5s decay); short room reverb on piano (0.8s); gentle compression on vocals for intimacy; wide stereo field for strings; centered mono for piano and vocals; minimal EQ boosting warmth in low-mids (200-400Hz); airy high-end without harshness (8kHz+).
+
+Performance style: Piano: expressive dynamics with rubato phrasing, sustain pedal usage for smooth transitions. Strings: legato bowing with gentle vibrato, occasional pizzicato accents. Drums: restrained playing, light touch on cymbals, minimal fills. Vocals: breathy delivery with controlled vibrato, emotional peaks in chorus.
+
+Sound texture: Warm analog character with subtle tape saturation; intimate close-mic feel on vocals; natural room ambience; polished yet organic; cinematic swells in chorus; delicate and refined overall aesthetic.
+```
+
+### Exclude Style欄（カンマ区切り）
+```
+EDM synths, trap hats, distorted guitars, aggressive bass, autotune, dubstep wobbles, heavy metal drums, screaming vocals
 ```
 
 ---
@@ -80,8 +107,9 @@ Tags: "melancholic, heartfelt, cinematic softness"
 
 3. **🚨 Suno自動入力フェーズ（必ず実行）**
    - **即座に** Suno.com の Createページを開く
-   - **自動的に** Style欄に生成したStyleブロックを入力
-   - **自動的に** Exclude Style欄にも除外要素を入力
+   - **自動的に** Style欄に生成したStyleブロックを入力（最大1000文字まで記述可能）
+   - **Advanced Options を展開**し、その中の Exclude Style 欄を探す
+   - **自動的に** Exclude Style欄に除外要素を**カンマ区切り**で入力
    - ⚠️ **重要**: 「Create」ボタンは押さない（入力のみで停止）
    - 入力完了を確認してユーザーに報告
 
@@ -90,8 +118,11 @@ Tags: "melancholic, heartfelt, cinematic softness"
 - ❌ 「これをコピーしてSunoに貼り付けてください」と指示して終わる
 - ❌ Suno入力を「次のステップ」として先延ばしにする
 - ❌ Exclude Style欄を空のまま放置（必ず適切な除外要素を入力）
+- ❌ **Exclude Styleを箇条書きや改行で記述**（必ずカンマ区切りの1行）
+- ❌ **Advanced Optionsを展開せずにExclude欄を探す**（必ず展開すること）
 - ❌ **「Create」ボタンを押してしまう**（入力のみで停止すること）
 - ❌ 情報源を報告しない（透明性の欠如）
+- ❌ Style欄を簡潔にしすぎる（1000文字まで使って十分な情報を含める）
 
 ### 正しい動作
 - ✅ 情報収集→Styleブロック生成→**即座にSuno入力（Style + Exclude両方）**を一連の流れで実行
