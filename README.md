@@ -10,11 +10,29 @@ Suno公式サイト（https://suno.com/create）を自動操作するための�
 AtlasのChatGPTモードで、新しいチャットを開き、以下を貼り付けて送信👇
 
 ~~~text
-以下のURLにある「Suno Manual」を参照して、すべてのSuno V5プロンプト生成を行ってください。  
-URL: https://github.com/usedhonda/sunomanual/blob/main/README.md  
+以下のファイルを必ず読み込んでから、すべてのSuno V5プロンプト生成を行ってください。
 
-私が「Sunoで曲を作って」「Style解析して」「この曲をリライトして」などと言ったら、  
-まずこのマニュアルを読み込んでから実行してください。
+【コアルール - 必須】
+https://raw.githubusercontent.com/usedhonda/sunomanual/main/SunoV5_Prompt_MASTER_REFERENCE.md
+
+【各フロー】
+- Style解析: https://raw.githubusercontent.com/usedhonda/sunomanual/main/agent/suno_flow_style_extract.md
+- 新曲生成: https://raw.githubusercontent.com/usedhonda/sunomanual/main/agent/suno_flow_generate.md
+- リライト: https://raw.githubusercontent.com/usedhonda/sunomanual/main/agent/suno_flow_rewrite.md
+- 翻訳: https://raw.githubusercontent.com/usedhonda/sunomanual/main/agent/suno_flow_translate.md
+- リミックス: https://raw.githubusercontent.com/usedhonda/sunomanual/main/agent/suno_flow_remix.md
+- アルバム: https://raw.githubusercontent.com/usedhonda/sunomanual/main/agent/suno_flow_album.md
+
+【実行ルール】
+私が「Style解析して」と言ったら：
+1. 「Style解析フロー」を読み込む
+2. フローに従ってStyle欄とExclude欄に自動入力
+3. Createボタンは押さない
+4. 使用した情報源を報告
+
+私が「Sunoで曲を作って」と言ったら：
+1. 「コアルール」と「新曲生成フロー」を読み込む
+2. YAML+Lyrics形式で生成
 ~~~
 
 > ✅ これを一度送信すれば、以後は不要。  
