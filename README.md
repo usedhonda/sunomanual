@@ -1,3 +1,92 @@
+---
+# 🪄 Auto Agent Chain Configuration (Unified Execution for Atlas)
+
+auto_agent_chain: true
+description: >
+  この設定により、「Lemonのスタイル解析して」「この曲をリライトして」などの
+  コマンドを発すると、ChatGPT Atlas が自動的に2段階フローを統合して実行します。
+  （例: 外部Style解析 → Suno Createページ入力 → “Create”直前で停止）
+
+# ⚙️ Default Chain Logic
+steps:
+  - detect_intent: >
+      トリガーキーワードを日本語・英語で検知：
+      「Style解析」「曲を作って」「リライト」「翻訳」「リミックス」「アルバム」、
+      または "style extract", "generate", "rewrite", "translate", "remix", "album"。
+  - execute_flow: >
+      対応するフローファイル（例: agent/suno_flow_style_extract.md）をロードして実行。
+  - parse_yaml: >
+      Flow出力（Lyrics, Style, Song Descriptionなど）をYAML形式として抽出。
+  - launch_agent: >
+      Atlasのブラウザーエージェントを起動し、
+      https://suno.com/create にアクセス。
+      フォーム（Lyrics / Styles / Song Description）を自動入力。
+  - confirm_before_create: true
+
+# 🧠 Flow Mapping
+| Keyword | Flow | Output | Target Fields |
+|----------|------|---------|----------------|
+| Style解析 / style extract | agent/suno_flow_style_extract.md | Style YAML | Styles, Song Description |
+| 曲を作って / generate | agent/suno_flow_generate.md | Prompt YAML | Lyrics, Styles |
+| リライトして / rewrite | agent/suno_flow_rewrite.md | YAML | Lyrics |
+| 翻訳して / translate | agent/suno_flow_translate.md | YAML | Lyrics |
+| リミックスして / remix | agent/suno_flow_remix.md | YAML | Styles |
+| アルバムまとめて / album | agent/suno_flow_album.md | Multi-YAML | All |
+
+# 💬 Example Trigger (日本語)
+Example:
+  Input: "Lemonのスタイル解析して"
+  Flow: style_extract
+  Auto-Agent: true
+  Behavior:
+    - 外部解析を実施（Style, Tempo, Key, Instrumentationなどを抽出）
+    - YAMLをSuno Createフォームに自動転送
+    - “Create”ボタン直前で停止
+
+# 💬 Example Trigger (English)
+Example:
+  Input: "Analyze the style of Lemon and create a song"
+  Flow: style_extract + generate
+  Auto-Agent: true
+  Behavior:
+    - Perform external style analysis of “Lemon”
+    - Populate the Suno Create page with extracted YAML
+    - Wait for user confirmation before clicking Create
+
+# 🧩 Implementation Notes
+- このブロックをREADMEまたはMASTER_REFERENCEの先頭に置くと、
+  すべてのSunoフローが統一的にワンステップで実行可能になります。
+- “Confirm before create” を `false` にすると、
+  Createボタンまで自動クリック（完全自動生成）も可能です。
+  （安全のためデフォルトは true）
+- 外部Style解析には `agent/suno_flow_style_extract.md` のロジックを使用します。
+- Flow出力はMarkdown中のYAMLとして保持され、Atlas内部メモリ経由でAgentに渡されます。
+
+# 🔁 Optional Extensions
+extensions:
+  - allow_chained_flows: true
+  - chained_example: >
+      “この曲をリライトして英語に翻訳して” →
+      rewrite + translate を連続実行し、最終結果を入力。
+
+# 🧱 Example YAML Output (Style Extract)
+```yaml
+style:
+  bpm: 102
+  key: F minor
+  structure:
+    - Verse: intimate, minimal drums
+    - Pre-Chorus: Db–Eb tension, snare build
+    - Chorus: drop with vocal chops, short-note bass
+    - Bridge: half-time, piano spotlight
+  sound_design:
+    - tight kick
+    - clean sub
+    - airy pad
+    - bell/pluck arpeggio
+  mixing: "vocal-forward, warm low-mids, no fade"
+
+
 # 🚀 Suno Manual for Atlas Agent Mode (Auto-Agent Edition)
 
 Atlasブラウザ上で、ChatGPTとエージェントモードを連携させて
