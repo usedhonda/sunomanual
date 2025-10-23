@@ -49,7 +49,11 @@ output_format: "style_block"
 
 ## 🧾 出力フォーマット
 
-### Style欄（最大1000文字）
+⚠️ **重要**: StyleブロックとExclude Styleブロックは**完全に独立した別の入力欄**です。
+- **Style欄**: Sunoのメイン入力欄（常に表示されている）
+- **Exclude Style欄**: Advanced Optionsを展開した後に現れる独立した入力欄
+
+### Style欄（最大1000文字）- メイン入力欄
 詳細な情報を含めた英語の記述：
 ```
 <Genre>/<Subgenre>; <BPM>; <Mood>; <Instrumental structure>; <Era/Region>; Key:<調性>
@@ -59,11 +63,16 @@ Production: <音響特徴、ミックス、エフェクト>
 Performance style: <演奏スタイル、アーティキュレーション>
 Sound texture: <サウンドテクスチャ、空間感>
 ```
+⚠️ **絶対禁止**: この欄にExclude要素を含めない
 
-### Exclude Style欄（Advanced Options内、カンマ区切り）
+### Exclude Style欄（Advanced Options内の独立した入力欄、カンマ区切り）
 ```
 <除外要素1>, <除外要素2>, <除外要素3>, ...
 ```
+⚠️ **重要**:
+- Advanced Optionsボタンをクリックして展開する
+- 展開後に現れる**独立した「Exclude Style」入力欄**に記入
+- Style欄には絶対に含めない
 
 ---
 
@@ -106,26 +115,43 @@ EDM synths, trap hats, distorted guitars, aggressive bass, autotune, dubstep wob
    - 英語・半角で記述
 
 3. **🚨 Suno自動入力フェーズ（必ず実行）**
+
+   **Step 1: Style欄への入力**
    - **即座に** Suno.com の Createページを開く
-   - **自動的に** Style欄に生成したStyleブロックを入力（最大1000文字まで記述可能）
-   - **Advanced Options を展開**し、その中の Exclude Style 欄を探す
-   - **自動的に** Exclude Style欄に除外要素を**カンマ区切り**で入力
+   - **Style欄のみ**に生成したStyleブロックを入力（最大1000文字まで記述可能）
+   - ⚠️ **絶対禁止**: Exclude要素をStyle欄に含めない（独立した入力欄です）
+
+   **Step 2: Advanced Optionsの展開**
+   - **必ずAdvanced Optionsボタンをクリック**して展開する
+   - 展開後、その中から**Exclude Style欄**を探す
+   - ⚠️ **重要**: Advanced Optionsを開かないとExclude Style欄は見えません
+
+   **Step 3: Exclude Style欄への入力**
+   - 展開したAdvanced Options内の**Exclude Style欄のみ**に除外要素を入力
+   - **必ずカンマ区切り**で記述（改行・箇条書き禁止）
+   - ⚠️ **絶対禁止**: Exclude要素をStyle欄に混ぜて書かない
+
+   **Step 4: 入力完了確認**
    - ⚠️ **重要**: 「Create」ボタンは押さない（入力のみで停止）
+   - Style欄とExclude Style欄の両方が正しく入力されたことを確認
    - 入力完了を確認してユーザーに報告
 
 ### 禁止事項
 - ❌ Styleブロックを生成しただけで終了（ユーザーに手動コピペさせる）
 - ❌ 「これをコピーしてSunoに貼り付けてください」と指示して終わる
 - ❌ Suno入力を「次のステップ」として先延ばしにする
-- ❌ Exclude Style欄を空のまま放置（必ず適切な除外要素を入力）
-- ❌ **Exclude Styleを箇条書きや改行で記述**（必ずカンマ区切りの1行）
+- ❌ **【最重要】Exclude要素をStyle欄に混ぜて記述する**（Style欄とExclude欄は完全に独立した別の入力欄）
 - ❌ **Advanced Optionsを展開せずにExclude欄を探す**（必ず展開すること）
+- ❌ **Exclude Styleを箇条書きや改行で記述**（必ずカンマ区切りの1行）
+- ❌ Exclude Style欄を空のまま放置（必ず適切な除外要素を入力）
 - ❌ **「Create」ボタンを押してしまう**（入力のみで停止すること）
 - ❌ 情報源を報告しない（透明性の欠如）
 - ❌ Style欄を簡潔にしすぎる（1000文字まで使って十分な情報を含める）
 
 ### 正しい動作
-- ✅ 情報収集→Styleブロック生成→**即座にSuno入力（Style + Exclude両方）**を一連の流れで実行
+- ✅ 情報収集→Styleブロック生成→**即座にSuno入力（Style + Exclude両方を別々の欄に）**を一連の流れで実行
+- ✅ **Style欄にはStyle情報のみ**、**Exclude欄にはExclude情報のみ**を入力（絶対に混ぜない）
+- ✅ **必ずAdvanced Optionsを展開**してからExclude Style欄に入力
 - ✅ 「Sunoに入力しました（Createボタンは押していません）」と完了報告
 - ✅ **使用した情報源を明記**（例: Wikipedia, Spotify, YouTube, Discogs等）
 - ✅ ユーザーが確認できるようスクリーンショットまたは入力内容を提示
@@ -140,8 +166,14 @@ Suno入力完了後、必ず以下の形式で報告すること：
 ✅ Suno V5 への入力が完了しました
 
 【入力内容】
-Style欄: [生成したStyleブロック]
-Exclude Style欄: [生成したExcludeブロック]
+✓ Style欄（メイン入力欄）: [生成したStyleブロック]
+✓ Exclude Style欄（Advanced Options内の独立した入力欄）: [生成したExcludeブロック]
+
+【入力手順】
+1. Suno.com Createページを開きました
+2. Style欄に上記Styleブロックを入力しました
+3. Advanced Optionsボタンをクリックして展開しました
+4. 展開後に現れたExclude Style欄に上記Excludeブロックを入力しました
 
 【使用した情報源】
 - [サイト名1]: [URL] - [取得した情報]
