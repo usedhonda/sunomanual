@@ -10,10 +10,19 @@ Suno公式サイト（https://suno.com/create）を自動操作するための�
 AtlasのChatGPTモードで、新しいチャットを開き、以下を貼り付けて送信👇
 
 ~~~text
-以下のREADMEを読み込んで、記載されているファイルを参照しながらSuno V5プロンプト生成を行ってください。
+以下のREADMEを読み込んで、記載されている全てのファイルリンクも一緒に読み込んでください。
 https://github.com/usedhonda/sunomanual/blob/main/README.md
 
-私が「Style解析して」「Sunoで曲を作って」などと言ったら、READMEに記載されたルールに従って実行してください。
+READMEには以下のファイルへのリンクがあります。これらを全て今すぐ読み込んでください：
+1. SunoV5_Prompt_MASTER_REFERENCE.md（コアルール）
+2. agent/suno_flow_style_extract.md（Style解析）
+3. agent/suno_flow_generate.md（新曲生成）
+4. agent/suno_flow_rewrite.md（リライト）
+5. agent/suno_flow_translate.md（翻訳）
+6. agent/suno_flow_remix.md（リミックス）
+7. agent/suno_flow_album.md（アルバム）
+
+これらを全て読み込んだ後、私が「Style解析して」「Sunoで曲を作って」などと言ったら、該当するフローに従って実行してください。
 ~~~
 
 > ✅ これを一度送信すれば、以後は不要。  
