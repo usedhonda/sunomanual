@@ -1,6 +1,5 @@
 ---
-# 🪄 Auto Agent Chain Configuration (Unified Execution for Atlas)
-
+title: "Auto Agent Chain Configuration (Unified Execution for Atlas)"
 auto_agent_chain: true
 description: >
   この設定により、「Lemonのスタイル解析して」「この曲をリライトして」などの
