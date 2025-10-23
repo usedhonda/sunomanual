@@ -33,7 +33,7 @@ Suno公式サイト（https://suno.com/create）を自動操作するための�
 AtlasのChatGPTモードで、新しいチャットを開き、以下を貼り付けて送信👇
 
 ~~~text
-以下のREADMEを読み込んで、Suno V5プロンプト生成を行ってください。
+今すぐ以下のREADMEを開いて読んでください。
 https://github.com/usedhonda/sunomanual/blob/main/README.md
 ~~~
 
