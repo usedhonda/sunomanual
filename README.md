@@ -13,15 +13,15 @@ AtlasのChatGPTモードで、新しいチャットを開き、以下を貼り�
 以下のファイルを必ず読み込んでから、すべてのSuno V5プロンプト生成を行ってください。
 
 【コアルール - 必須】
-https://raw.githubusercontent.com/usedhonda/sunomanual/main/SunoV5_Prompt_MASTER_REFERENCE.md
+https://github.com/usedhonda/sunomanual/blob/main/SunoV5_Prompt_MASTER_REFERENCE.md
 
 【各フロー】
-- Style解析: https://raw.githubusercontent.com/usedhonda/sunomanual/main/agent/suno_flow_style_extract.md
-- 新曲生成: https://raw.githubusercontent.com/usedhonda/sunomanual/main/agent/suno_flow_generate.md
-- リライト: https://raw.githubusercontent.com/usedhonda/sunomanual/main/agent/suno_flow_rewrite.md
-- 翻訳: https://raw.githubusercontent.com/usedhonda/sunomanual/main/agent/suno_flow_translate.md
-- リミックス: https://raw.githubusercontent.com/usedhonda/sunomanual/main/agent/suno_flow_remix.md
-- アルバム: https://raw.githubusercontent.com/usedhonda/sunomanual/main/agent/suno_flow_album.md
+- Style解析: https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_style_extract.md
+- 新曲生成: https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_generate.md
+- リライト: https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_rewrite.md
+- 翻訳: https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_translate.md
+- リミックス: https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_remix.md
+- アルバム: https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_album.md
 
 【実行ルール】
 私が「Style解析して」と言ったら：
