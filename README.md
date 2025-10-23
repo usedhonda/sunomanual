@@ -10,29 +10,10 @@ Suno公式サイト（https://suno.com/create）を自動操作するための�
 AtlasのChatGPTモードで、新しいチャットを開き、以下を貼り付けて送信👇
 
 ~~~text
-以下のファイルを必ず読み込んでから、すべてのSuno V5プロンプト生成を行ってください。
+以下のREADMEを読み込んで、記載されているファイルを参照しながらSuno V5プロンプト生成を行ってください。
+https://github.com/usedhonda/sunomanual/blob/main/README.md
 
-【コアルール - 必須】
-https://github.com/usedhonda/sunomanual/blob/main/SunoV5_Prompt_MASTER_REFERENCE.md
-
-【各フロー】
-- Style解析: https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_style_extract.md
-- 新曲生成: https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_generate.md
-- リライト: https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_rewrite.md
-- 翻訳: https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_translate.md
-- リミックス: https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_remix.md
-- アルバム: https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_album.md
-
-【実行ルール】
-私が「Style解析して」と言ったら：
-1. 「Style解析フロー」を読み込む
-2. フローに従ってStyle欄とExclude欄に自動入力
-3. Createボタンは押さない
-4. 使用した情報源を報告
-
-私が「Sunoで曲を作って」と言ったら：
-1. 「コアルール」と「新曲生成フロー」を読み込む
-2. YAML+Lyrics形式で生成
+私が「Style解析して」「Sunoで曲を作って」などと言ったら、READMEに記載されたルールに従って実行してください。
 ~~~
 
 > ✅ これを一度送信すれば、以後は不要。  
@@ -81,20 +62,50 @@ Suno関連の指示（例：「Style解析して」「Sunoで曲を作って」�
 
 ---
 
-## 📁 構成
+## 📁 ファイル構成とAI参照ルール
 
-```
-/sunomanual/
- ├── README_Atlas_AutoAgent.md（本ファイル）
- ├── SunoV5_Prompt_MASTER_REFERENCE.md
- └── /agent/
-     ├── suno_flow_generate.md
-     ├── suno_flow_rewrite.md
-     ├── suno_flow_translate.md
-     ├── suno_flow_remix.md
-     ├── suno_flow_album.md
-     └── suno_flow_style_extract_search.md
-```
+### コアルール（必須）
+- **SunoV5_Prompt_MASTER_REFERENCE.md**
+  https://github.com/usedhonda/sunomanual/blob/main/SunoV5_Prompt_MASTER_REFERENCE.md
+
+  すべてのSuno V5プロンプト生成の基本ルール、禁止語、フォーマット定義
+
+### 各フロー（タスク別）
+
+| タスク | ファイル | URL |
+|--------|---------|-----|
+| Style解析 | suno_flow_style_extract.md | [リンク](https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_style_extract.md) |
+| 新曲生成 | suno_flow_generate.md | [リンク](https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_generate.md) |
+| リライト | suno_flow_rewrite.md | [リンク](https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_rewrite.md) |
+| 翻訳 | suno_flow_translate.md | [リンク](https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_translate.md) |
+| リミックス | suno_flow_remix.md | [リンク](https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_remix.md) |
+| アルバム | suno_flow_album.md | [リンク](https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_album.md) |
+
+### AI実行ルール
+
+ユーザーが以下のように指示したら、該当するフローファイルを読み込んで実行：
+
+**「Style解析して」**
+1. `suno_flow_style_extract.md` を読み込む
+2. Style欄とExclude欄に自動入力
+3. Createボタンは押さない
+4. 使用した情報源を報告
+
+**「Sunoで曲を作って」**
+1. `SunoV5_Prompt_MASTER_REFERENCE.md` と `suno_flow_generate.md` を読み込む
+2. YAML+Lyrics形式で生成
+
+**「リライトして」**
+1. `suno_flow_rewrite.md` を読み込んで実行
+
+**「英語で歌いやすくして」**
+1. `suno_flow_translate.md` を読み込んで実行
+
+**「リミックスして」**
+1. `suno_flow_remix.md` を読み込んで実行
+
+**「アルバムで5曲作って」**
+1. `suno_flow_album.md` を読み込んで実行
 
 ---
 
