@@ -1,134 +1,113 @@
-# 🎶 Suno Manual – AI プロンプト & エージェント自動化のための統合リファレンス
+# 🎶 Suno Manual – Unified Reference for AI Prompt & Agent Automation
 
-**Suno Manual** へようこそ。**Suno V5** を使用した音楽プロンプトの生成、リライト、翻訳、リミックスのための統合リファレンスシステムです。
-
-このリポジトリは、**人間のクリエイター**と **AIアシスタント（ChatGPT エージェントモード等）**の両方が、一貫性のあるマニュアル準拠の Suno プロンプトを自動生成できるよう設計されています。
-
----
-
-## 🧭 概要
-
-このプロジェクトは、**Suno の音楽プロンプト生成時に AI がどう考えるべきか**を定義します。
-このドキュメントを最初に読むことで、AIアシスタント（または人間の協力者）は以下を理解できます：
-
-- すべての Suno プロンプトが従うべきルール
-- 各サブフロー（generate / rewrite / translate / remix / album）の動作
-- 常に最新のマニュアルを参照する方法
+Welcome to **Suno Manual**, the unified reference system for generating, rewriting, translating, and remixing music prompts using **Suno V5**.  
+このリポジトリは、Sunoのプロンプトを正確に構成するための**統一ガイドライン**です。
 
 ---
 
-## 📘 ファイル構造
+## 🧩 導入方法（これをコピペするだけ）
+
+このマニュアルを使う準備はとても簡単です。  
+ChatGPTなどのAIに、次の内容をそのままコピペしてください👇
+
+---
+
+### 🎯 ChatGPTなどに貼り付ける文
+
+~~~text
+以下のURLにある「Suno Manual」を参照して、すべてのSuno V5プロンプト生成を行ってください。  
+このマニュアルは常に最新のルール・禁止語・フォーマットを定義しています。  
+URL: https://github.com/usedhonda/sunomanual/blob/main/README.md  
+
+私が「Sunoで曲を作って」「Style解析して」「この曲をリライトして」などと言ったら、  
+まずこのマニュアルを読み込んでから実行してください。
+~~~
+
+---
+
+### 💡 使い方の例
+
+> Sunoで夜のシティポップを作って  
+→ マニュアルを参照してYAML構造の正しいプロンプトを生成。  
+
+> Style解析して  
+→ YouTubeやSpotifyの情報を自動で解析し、SunoのStyle欄に貼れる形式で出力。  
+
+> この曲を英語で歌いやすくして  
+→ 翻訳と音節最適化をマニュアルに沿って実施。
+
+---
+
+これで準備完了です。  
+以後あなたが何を依頼しても、AIは自動的に最新のSunoマニュアルを読み込みます。  
+複数のAI（ChatGPT、Claude、Cursorなど）でも同じコピペで利用可能です。
+
+---
+
+## 📘 File Structure
 
 ```
 /sunomanual/
- ├── SunoV5_Prompt_MASTER_REFERENCE.md   # コアルール（常に最初に取得）
+ ├── README.md
+ ├── SunoV5_Prompt_MASTER_REFERENCE.md
  └── /agent/
-     ├── suno_flow_generate.md           # 新曲生成
-     ├── suno_flow_rewrite.md            # 再解釈・リライト
-     ├── suno_flow_translate.md          # 歌詞翻訳・音節マッチング
-     ├── suno_flow_remix.md              # リミックス・リアレンジ
-     ├── suno_flow_album.md              # 複数曲（アルバム）生成
-     └── suno_flow_style_extract.md      # 参照トラックからスタイル抽出
+     ├── suno_flow_generate.md
+     ├── suno_flow_rewrite.md
+     ├── suno_flow_translate.md
+     ├── suno_flow_remix.md
+     ├── suno_flow_album.md
+     └── suno_flow_style_extract_search.md
 ```
 
 ---
 
-## ⚙️ 動作の仕組み（AI の視点）
+## ⚙️ How It Works (AI Perspective)
 
-ユーザーが以下のように言った場合：
-
-> "Sunoで90年代アニメ風の曲を作って"
-> "Sunoでこの曲をリライトして"
-> "Suno用に英語版を作って"
-
-AIエージェントは自動的に以下を実行します：
-
-1. **最新版を取得**
-   `SunoV5_Prompt_MASTER_REFERENCE.md`
-   （すべての構文、タグ、禁止ワードを定義）
-
-2. **タスクタイプを識別**
-   - 「新曲」または "create" → `suno_flow_generate.md` を使用
-   - 「リライト」→ `suno_flow_rewrite.md` を使用
-   - 「英訳」または "translate" → `suno_flow_translate.md` を使用
-   - 「リミックス」→ `suno_flow_remix.md` を使用
-   - 「アルバム」→ `suno_flow_album.md` を使用
-   - 「スタイル抽出」または "style extract" → `suno_flow_style_extract.md` を使用
-
-3. **ルールをマージ**
-   マスターリファレンス + 該当するフローファイル
-
-4. **構造化された YAML プロンプトを生成**
-   （エージェントモードの場合）自動的に [Suno.com](https://suno.com) を開いてフローを実行
+1. `SunoV5_Prompt_MASTER_REFERENCE.md` を読み込み、ルールと禁止語を取得。  
+2. 指示内容に応じて `/agent/suno_flow_*.md` の仕様書を参照。  
+3. 両者を統合して構文的に正しいYAMLプロンプトを生成。  
+4. AgentモードではSuno公式サイトに自動入力。
 
 ---
 
-## 🧠 設計思想
+## 🧠 Design Philosophy
 
-- **単一の真実の源（Single Source of Truth）:**
-  すべての更新は GitHub で行われる — ローカルコピーやキャッシュされたプロンプトは不要
-- **AI フレンドリーな構造:**
-  Markdown ファイルは機械可読・人間可読の両方に対応
-- **オープンコラボレーション:**
-  誰でもフォーク・編集し、新しいプロンプトスタイルやフロー仕様を PR 可能
-- **自動バージョン同期:**
-  ChatGPT エージェントは実行時に常に最新の Markdown ファイルを取得
+- **Single Source of Truth** — 常にGitHub上の最新版のみを使用。  
+- **AI-Friendly Markdown** — 機械にも人にも読みやすい構成。  
+- **Open Collaboration** — 誰でもフォークや拡張が可能。  
+- **Automatic Sync** — ChatGPTやAgentは常に最新版を取得。
 
 ---
 
-## 🚀 使い方
+## 🚀 Example
 
-### 🧍 人間のユーザー向け
-
-1. `/agent/suno_flow_generate.md` または必要なフローを開く
-2. 記載された YAML + Lyrics 構造に従う
-3. 生成したプロンプトを [Suno V5](https://suno.com) に貼り付ける
-
-### 🤖 AI / ChatGPT ユーザー向け
-
-1. 常にこの README を最初に読む
-2. `SunoV5_Prompt_MASTER_REFERENCE.md` を取得
-3. 該当する `/agent/suno_flow_*.md` を特定
-4. マージ・生成し、（エージェントモードの場合）Suno.com で操作を実行
+| 入力 | 使用ファイル | 出力 |
+|------|---------------|------|
+| 「Sunoで夜のR&B曲を作って」 | MASTER + generate.md | YAMLプロンプト＋歌詞 |
+| 「この曲をリライトして」 | MASTER + rewrite.md | 新しい歌詞構造 |
+| 「英語で歌いやすくして」 | MASTER + translate.md | 音節最適化された英語歌詞 |
+| 「この曲をリミックス」 | MASTER + remix.md | リミックス構成 |
+| 「このテーマで5曲まとめて」 | MASTER + album.md | アルバム構成5曲分 |
 
 ---
 
-## 🧩 AI プロンプト動作の例
+## 🪄 Versioning
 
-| ユーザー入力 | 読み込むファイル | 出力 |
-|-------------|----------------|---------|
-| "Sunoで夜のR&B曲を作って" | MASTER + generate.md | YAML プロンプト + 歌詞 |
-| "この曲をSunoでリライト" | MASTER + rewrite.md | 変更された歌詞・構造 |
-| "英語で歌いやすくして" | MASTER + translate.md | 音節調整された英語版 |
-| "この曲をリミックスにして" | MASTER + remix.md | 新しいアレンジのリミックスプロンプト |
-| "このテーマで5曲まとめて" | MASTER + album.md | 一貫性のあるテーマで5つのYAMLブロック |
-| "この曲のスタイルを抽出して" | MASTER + style_extract.md | 参照トラックから抽出されたスタイルプロンプト |
-
----
-
-## 🪄 バージョン管理
-
-各ファイルにはヘッダーが含まれます：
+各ファイルには以下のヘッダーを含みます。
 
 ```yaml
 version: 1.0.0
 last_updated: YYYY-MM-DD
 ```
 
-AIシステムは GitHub API または直接取得により、常に **最新のコミットタイムスタンプ** を確認する必要があります。
+---
+
+## 📜 License & Credit
+
+Created by **Yuzuru Honda (Anison-labs / FreakOut Holdings)**  
+Licensed under **CC BY-NC 4.0**（表示—非営利）
 
 ---
 
-## 📜 ライセンス & クレジット
-
-Created by **usedhonda**
-AI × 音楽制作におけるオープンコラボレーションのために
-
-Licensed under **Creative Commons BY-NC 4.0**
-（表示 - 非営利のみ）
-
----
-
-> 🧠 **要約:**
-> AI でも人間でも、まずこの README を読んでください。
-> どう振る舞うべきか、次に何を読むべきか、そして完璧な Suno V5 プロンプトの作り方が分かります。
+> 🧠 **要約**：  
+> このREADMEを最初に読むだけで、Suno V5のすべての自動生成ルールと使用方法がわかります。
