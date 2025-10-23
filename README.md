@@ -1,7 +1,30 @@
 # 🚀 Suno Manual for Atlas Agent Mode (Auto-Agent Edition)
 
-Atlasブラウザ上で、ChatGPTとエージェントモードを連携させて  
+Atlasブラウザ上で、ChatGPTとエージェントモードを連携させて
 Suno公式サイト（https://suno.com/create）を自動操作するためのマニュアルです。
+
+---
+
+## 🤖 AI向け重要指示
+
+**このREADMEを読み込んだAIは、以下を必ず実行してください：**
+
+1. **即座に以下の全ファイルを読み込む**（ユーザーの指示を待たずに今すぐ実行）：
+   - SunoV5_Prompt_MASTER_REFERENCE.md
+   - agent/suno_flow_style_extract.md
+   - agent/suno_flow_generate.md
+   - agent/suno_flow_rewrite.md
+   - agent/suno_flow_translate.md
+   - agent/suno_flow_remix.md
+   - agent/suno_flow_album.md
+
+2. **全ファイルを読み込んだことを確認**：
+   「Suno Manualの全7ファイルを読み込みました。Style解析、新曲生成などの指示をお待ちしています」と報告
+
+3. **ユーザーが指示したら該当フローを実行**：
+   - 「Style解析して」→ suno_flow_style_extract.md に従う
+   - 「Sunoで曲を作って」→ suno_flow_generate.md に従う
+   - その他も同様
 
 ---
 
@@ -10,19 +33,8 @@ Suno公式サイト（https://suno.com/create）を自動操作するための�
 AtlasのChatGPTモードで、新しいチャットを開き、以下を貼り付けて送信👇
 
 ~~~text
-以下のREADMEを読み込んで、記載されている全てのファイルリンクも一緒に読み込んでください。
+以下のREADMEを読み込んで、Suno V5プロンプト生成を行ってください。
 https://github.com/usedhonda/sunomanual/blob/main/README.md
-
-READMEには以下のファイルへのリンクがあります。これらを全て今すぐ読み込んでください：
-1. SunoV5_Prompt_MASTER_REFERENCE.md（コアルール）
-2. agent/suno_flow_style_extract.md（Style解析）
-3. agent/suno_flow_generate.md（新曲生成）
-4. agent/suno_flow_rewrite.md（リライト）
-5. agent/suno_flow_translate.md（翻訳）
-6. agent/suno_flow_remix.md（リミックス）
-7. agent/suno_flow_album.md（アルバム）
-
-これらを全て読み込んだ後、私が「Style解析して」「Sunoで曲を作って」などと言ったら、該当するフローに従って実行してください。
 ~~~
 
 > ✅ これを一度送信すれば、以後は不要。  
