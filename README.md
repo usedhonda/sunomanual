@@ -242,7 +242,7 @@ last_updated: YYYY-MM-DD
 
 ## 📜 License & Credit
 
-Created by **Yuzuru Honda (Anison-labs / FreakOut Holdings)**  
+Created by ** usedhonda **  
 Licensed under **CC BY-NC 4.0（表示—非営利）**
 
 > 🧭 **要約：**  
