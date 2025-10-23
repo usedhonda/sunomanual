@@ -27,7 +27,8 @@ By reading this document first, any assistant (or human collaborator) will under
      ├── suno_flow_rewrite.md            # Reinterpretation / rewrite
      ├── suno_flow_translate.md          # Lyrics translation & syllable matching
      ├── suno_flow_remix.md              # Remix / rearrange mode
-     └── suno_flow_album.md              # Multi-track (album) generation
+     ├── suno_flow_album.md              # Multi-track (album) generation
+     └── suno_flow_style_extract.md      # Style extraction from reference track
 ```
 
 ---
@@ -46,12 +47,13 @@ An AI agent should automatically:
    `SunoV5_Prompt_MASTER_REFERENCE.md`  
    (this defines all syntax, tags, and forbidden words)
 
-2. **Identify task type**  
-   - If “新曲” or “create” → use `suno_flow_generate.md`  
-   - If “リライト” → use `suno_flow_rewrite.md`  
-   - If “英訳” or “translate” → use `suno_flow_translate.md`  
-   - If “リミックス” → use `suno_flow_remix.md`  
-   - If “アルバム” → use `suno_flow_album.md`
+2. **Identify task type**
+   - If "新曲" or "create" → use `suno_flow_generate.md`
+   - If "リライト" → use `suno_flow_rewrite.md`
+   - If "英訳" or "translate" → use `suno_flow_translate.md`
+   - If "リミックス" → use `suno_flow_remix.md`
+   - If "アルバム" → use `suno_flow_album.md`
+   - If "スタイル抽出" or "style extract" → use `suno_flow_style_extract.md`
 
 3. **Merge rules** from the master reference + the relevant flow file.
 
@@ -94,11 +96,12 @@ An AI agent should automatically:
 
 | User Input | File(s) Loaded | Output |
 |-------------|----------------|---------|
-| “Sunoで夜のR&B曲を作って” | MASTER + generate.md | YAML prompt + lyrics |
-| “この曲をSunoでリライト” | MASTER + rewrite.md | Altered lyrics/structure |
-| “英語で歌いやすくして” | MASTER + translate.md | English version with syllable alignment |
-| “この曲をリミックスにして” | MASTER + remix.md | Remix prompt with new arrangement |
-| “このテーマで5曲まとめて” | MASTER + album.md | 5 YAML blocks with consistent theme |
+| "Sunoで夜のR&B曲を作って" | MASTER + generate.md | YAML prompt + lyrics |
+| "この曲をSunoでリライト" | MASTER + rewrite.md | Altered lyrics/structure |
+| "英語で歌いやすくして" | MASTER + translate.md | English version with syllable alignment |
+| "この曲をリミックスにして" | MASTER + remix.md | Remix prompt with new arrangement |
+| "このテーマで5曲まとめて" | MASTER + album.md | 5 YAML blocks with consistent theme |
+| "この曲のスタイルを抽出して" | MASTER + style_extract.md | Style prompt extracted from reference track |
 
 ---
 
