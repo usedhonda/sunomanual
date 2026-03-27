@@ -88,8 +88,10 @@ If YAML block exceeds 4000 characters, reduce in this order:
 
 ## Style Template
 
-**Character limit: 700 characters (from "# Style" to final meta.vibe)**
+**Target: 900-1000 characters (from "# Style" to final meta.vibe)**
+**Absolute limit: 1000 characters.**
 **100% English. Zero Japanese.**
+**USE the full 1000 characters. Be rich and detailed based on URL investigation. Do NOT be brief.**
 
 ```text
 # Style
@@ -100,31 +102,32 @@ If YAML block exceeds 4000 characters, reduce in this order:
 - Key: <same as meta.key>
 - Signature: <same as meta.signature>
 
-- Genre & Era: <max 2-genre pair; e.g., "J-Pop meets Smooth Jazz; upbeat yet unhurried">
+- Genre & Era: <max 2-genre pair; detailed era context and stylistic lineage>
+  J-Pop meets Smooth Jazz; upbeat yet unhurried; rooted in late 80s city pop with modern production sensibility; sophisticated harmonic palette drawing from jazz standards.
 
-- Instruments: <4-7 descriptors, each 1-3 words>
-  Rhodes and piano set warm bed; string quartet adds lush layers; finger bass with soft attack; tight drums with controlled dynamics.
+- Instruments: <5-8 descriptors with rich detail drawn from the reference track>
+  Rhodes electric piano (7th/9th/11th jazz voicings) and grand piano set warm silky harmonic bed; lush string quartet adds sweeping layers, gentle counter-melodies and sustained swells; finger bass with soft rounded attack and walking lines; tight syncopated drums with brush work and controlled dynamics; subtle shaker and tambourine for rhythmic texture; occasional flute or sax fills between phrases.
 
-- Mix Vision:
-  Clean front-center vocal; spatial depth; stereo width; warm analog glue; crisp transients.
+- Mix Vision: <detailed production characteristics>
+  Clean front-center vocal with intimate proximity; generous spatial depth with layered reverbs; wide stereo field; warm analog glue compression binding elements together; crisp transients on percussion; rounded low-end without mud; airy high-end shimmer without harshness; strings placed wide left-right, supportive never overpowering.
 
-- Texture:
-  Vintage warmth; short reverb with natural room feel; polished sheen.
+- Texture: <vintage/modern character>
+  Vintage warmth with subtle tape saturation undertone; short-to-medium plate reverb with natural room feel; no cavernous tails; tasteful space between elements; polished sheen with organic imperfection.
 
-- Vocal Production:
-  Clear expressive lead; subtle breaths; light vibrato; harmony doubles on chorus.
+- Vocal Production: <delivery style and processing>
+  Clear expressive lead vocal with articulate diction and emotional dynamics; subtle breaths audible for intimacy; light natural vibrato; close-harmony doubles layered on chorus for lift; no heavy autotune; minimal compression preserving natural dynamic range; gentle de-essing.
 
-- Arrangement Notes:
-  Intro: warm entrance. Verse: vocal-forward. Chorus: bloom with harmonies. Bridge: dynamic shift.
+- Arrangement Notes: <section-by-section guidance>
+  Intro: concise warm entrance, Rhodes and strings only. Verse: 2-3 mid-range instruments max, vocal-forward with rhythmic bass. Chorus: full bloom with stacked harmonies, graceful crescendo never brash. Bridge: stripped to piano and vocal, dynamic shift creating contrast. Transitions: smooth crossfades, no hard stops.
 
 <meta.vibe verbatim>
 ```
 
 ### Style Character Limit Overflow — Reduction Priority
-If Style exceeds 700 characters, reduce in this order:
-1. **Cut Arrangement Notes** (highest priority)
-2. **Compress Texture** (1-2 phrases)
-3. **Remove adjectives** (keep only essential keywords)
+If Style exceeds 1000 characters, reduce in this order:
+1. **Cut Arrangement Notes details** (highest priority)
+2. **Compress Texture** (2-3 phrases)
+3. **Remove secondary adjectives** (keep primary descriptors)
 4. **Compress Mix Vision / Vocal Production**
 Natural prose can be sacrificed for character limit compliance.
 

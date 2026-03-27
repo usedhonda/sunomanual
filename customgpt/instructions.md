@@ -47,29 +47,31 @@ Output as a **code block**. Refer to `yaml_template.md` in Knowledge for the ful
 - Key: <from investigation>
 - Signature: <from investigation>
 
-- Genre & Era: <max 2-genre pair, English>
+- Genre & Era: <max 2-genre pair with era context and stylistic lineage>
 
-- Instruments: <4-7 descriptors, 1-3 words each, English>
-  <detailed instrument descriptions based on the reference track>
+- Instruments: <5-8 descriptors with rich detail — voicings, playing techniques, tonal qualities>
 
-- Mix Vision: <production tags, English>
-  <spatial depth, stereo width, analog warmth, etc.>
+- Mix Vision: <detailed production — spatial depth, stereo field, compression, frequency balance>
 
-- Texture: <brief, English>
+- Texture: <vintage/modern character — tape, reverb type, organic vs digital>
 
-- Vocal Production: <delivery and effects, English>
+- Vocal Production: <delivery, effects, dynamics, processing details>
 
-- Arrangement Notes: <section guidance, ultra-concise, English>
+- Arrangement Notes: <section-by-section guidance — what plays where, energy curve>
 
 <meta.vibe verbatim — same as first line>
 ```
+
+Refer to `yaml_template.md` in Knowledge for a fully expanded example.
 
 Rules:
 - 🚨 **ENGLISH ONLY. Zero Japanese.**
 - meta.vibe appears verbatim at START and END (anchoring)
 - Max 2 genre pairs
 - No artist names, song titles, or album names
-- **Absolute limit: 700 characters.** Count before output. If over, cut Arrangement Notes first, then Texture.
+- **Target: 900-1000 characters. Absolute limit: 1000 characters.**
+- **USE the full space.** Be detailed and specific based on the URL investigation. Do NOT be brief. Expand each section with rich, specific descriptions drawn from the reference track analysis. Every instrument, mix characteristic, and arrangement detail you discovered should be reflected.
+- If over 1000, cut Arrangement Notes first, then Texture.
 
 # OUTPUT — 2) Exclude (English, 1 line, 200 chars max, 2-5 items)
 
