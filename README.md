@@ -1,16 +1,18 @@
 ---
-title: "Suno AI V5 Prompt Manual - Universal AI Agent Edition"
-version: "2.0.0"
-last_updated: 2025-01-24
+title: "Suno AI V5/V5.5 Prompt Manual - Universal AI Agent Edition"
+version: "3.0.0"
+last_updated: 2026-03-27
 description: >
-  Universal prompt generation manual for Suno AI V5.
+  Universal prompt generation manual for Suno AI V5/V5.5.
+  V5.5 adds Voices (own voice), Custom Models (train on your songs),
+  My Taste (preference learning), tag-style Style format, and annotation tags.
   Compatible with any AI agent (ChatGPT, Claude, Gemini, etc.)
   Supports style extraction, generation, rewrite, translation, remix, and album flows.
 ---
 
-# 🎵 Suno AI V5 Prompt Manual
+# 🎵 Suno AI V5/V5.5 Prompt Manual
 
-**あらゆるAIエージェント対応版** — ChatGPT、Claude、Gemini、その他のAIで使えるSuno V5プロンプト生成マニュアル
+**あらゆるAIエージェント対応版** — ChatGPT、Claude、Gemini、その他のAIで使えるSuno V5/V5.5プロンプト生成マニュアル
 
 ---
 
@@ -48,7 +50,7 @@ description: >
 全ファイルを読み込んだら、以下のメッセージをユーザーに送信：
 
 ```
-✅ Suno AI V5 Manual の全7ファイルを読み込みました。
+✅ Suno AI V5/V5.5 Manual の全7ファイルを読み込みました。
 
 【利用可能な機能】
 - Style解析 (style_extract)
@@ -263,9 +265,10 @@ sunomanual/
 ## ⚙️ YAML出力フォーマット（全フロー共通）
 
 ```yaml
-# Suno V5 Prompt
+# Suno V5/V5.5 Prompt
 title: "曲のタイトル"
-style: "Genre/Subgenre; BPM; Key; Mood; Instruments"
+# V5.5 Style format: short comma-separated tags (not prose)
+style: "city pop, smooth jazz, 92 BPM, F# major, warm, nostalgic, Rhodes piano, fingerstyle bass"
 song_description: "曲の説明"
 exclude_style: "除外要素1, 除外要素2, 除外要素3"
 
@@ -273,14 +276,17 @@ lyrics: |
   [Intro: meta.vibe]
   Verse lyrics here
 
-  [Verse]
+  [VERSE - intimate, close vocal]
   More lyrics
 
-  [Chorus]
+  [CHORUS - soaring, full harmony]
   Chorus lyrics
 
   [Outro]
 ```
+
+> **V5.5 Note**: Style field uses short noun-phrase tags, comma-separated. Annotation tags `[SECTION - description]` give per-section production hints.
+
 
 ---
 
@@ -328,6 +334,13 @@ Licensed under **CC BY-NC 4.0（表示—非営利）**
 
 ## 🆕 Version History
 
+### 3.0.0 (2026-03-27)
+- **V5.5対応**: Voices、Custom Models、My Taste、タグ形式Style、アノテーションタグ対応
+- Style欄をショートタグ形式（カンマ区切り名詞句）に更新
+- アノテーションタグ `[SECTION - description]` サポート追加
+- Exclude推奨数を2-5項目に明確化
+- 全フローファイルをV5.5互換に更新
+
 ### 2.0.0 (2025-01-24)
 - **全面リニューアル**: Atlas専用からユニバーサルAIエージェント対応に変更
 - ChatGPT、Claude、Gemini等すべてのAIで使用可能
@@ -343,4 +356,4 @@ Licensed under **CC BY-NC 4.0（表示—非営利）**
 
 ---
 
-**🎵 さあ、あなたの使うAIエージェントでSuno V5プロンプトを生成しましょう！**
+**🎵 さあ、あなたの使うAIエージェントでSuno V5/V5.5プロンプトを生成しましょう！**

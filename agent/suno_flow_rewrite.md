@@ -8,7 +8,7 @@ output_format: "yaml+lyrics"
 # 🎧 Suno リライトフロー仕様書（suno_flow_rewrite.md）
 
 ## 🧭 概要
-この仕様書は、既存の楽曲をSuno V5で再解釈・リライトするためのエージェント実行フローを定義する。
+この仕様書は、既存の楽曲をSuno V5/V5.5で再解釈・リライトするためのエージェント実行フローを定義する。
 ChatGPTは本仕様書および `SunoV5_Prompt_MASTER_REFERENCE.md` を読み込み、
 元曲のコンセプトを維持しつつ新しい解釈でYAML形式プロンプトを生成する。
 
@@ -18,11 +18,12 @@ ChatGPTは本仕様書および `SunoV5_Prompt_MASTER_REFERENCE.md` を読み込
 リライトプロンプトは以下の情報を含む：
 
 ```yaml
-# === Suno V5 Rewrite Prompt ===
+# === Suno V5/V5.5 Rewrite Prompt ===
 meta:
   original_reference: [元曲のURL・タイトル・アーティスト]
   rewrite_direction: [どう変えるか: ジャンルシフト/テンポ変更/雰囲気転換]
-  style: [新しいジャンル, テンポ, 雰囲気]
+  # V5.5: style is short comma-separated tags, not prose
+  style: [短いタグをカンマ区切り: "smooth jazz, 90 BPM, warm, nostalgic"]
   language: [言語維持 or 変更]
   keywords: [再解釈のキーワード]
 
@@ -37,8 +38,13 @@ lyrics:
   approach: "keep_theme"  # テーマ維持 / 歌詞も変更
   structure: [元曲の構造を踏襲 or 変更]
   content: |
-    [リライトされた歌詞]
-    [元のメッセージを保ちつつ新しい表現]
+    # V5.5: Use annotation tags for section-level production hints
+    [VERSE - intimate, acoustic feel]
+    リライトされた歌詞
+    元のメッセージを保ちつつ新しい表現
+
+    [CHORUS - soaring, full arrangement]
+    サビの歌詞
 ```
 
 ---
@@ -152,11 +158,24 @@ lyrics:
 
 ---
 
+## 🆕 V5.5 Notes
+
+### Style Format
+- V5.5ではStyleを短いカンマ区切りタグで記述（散文禁止）
+- 例: `smooth jazz, 90 BPM, warm, nostalgic, Rhodes piano, upright bass`
+- 4-7タグが最適
+
+### Annotation Tags
+- セクションヘッダに制作ヒントを付加: `[VERSE - intimate, close vocal]`
+- コマンドテキストはタグ外に書くと歌われるので注意
+
+---
+
 ## 🔄 バージョン管理
 
 ```yaml
-version: 1.0.0
-last_updated: 2025-01-23
+version: 1.1.0
+last_updated: 2026-03-27
 author: usedhonda
 ```
 

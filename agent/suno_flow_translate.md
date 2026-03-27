@@ -8,7 +8,7 @@ output_format: "yaml+lyrics"
 # 🎧 Suno 翻訳フロー仕様書（suno_flow_translate.md）
 
 ## 🧭 概要
-この仕様書は、楽曲の歌詞を他言語に翻訳し、Suno V5で歌唱可能な形式に最適化するエージェント実行フローを定義する。
+この仕様書は、楽曲の歌詞を他言語に翻訳し、Suno V5/V5.5で歌唱可能な形式に最適化するエージェント実行フローを定義する。
 ChatGPTは本仕様書および `SunoV5_Prompt_MASTER_REFERENCE.md` を読み込み、
 **音節数・リズム・韻を維持した翻訳**を生成する。
 
@@ -244,8 +244,8 @@ lyrics:
 ## 🔄 バージョン管理
 
 ```yaml
-version: 1.0.0
-last_updated: 2025-01-23
+version: 1.0.1
+last_updated: 2026-03-27
 author: usedhonda
 ```
 

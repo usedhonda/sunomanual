@@ -8,7 +8,7 @@ output_format: "yaml+lyrics"
 # 🎧 Suno リミックスフロー仕様書（suno_flow_remix.md）
 
 ## 🧭 概要
-この仕様書は、既存楽曲をSuno V5でリミックス・リアレンジするためのエージェント実行フローを定義する。
+この仕様書は、既存楽曲をSuno V5/V5.5でリミックス・リアレンジするためのエージェント実行フローを定義する。
 ChatGPTは本仕様書および `SunoV5_Prompt_MASTER_REFERENCE.md` を読み込み、
 元曲の歌詞とメロディーを保ちつつ、**ビート・アレンジ・雰囲気を大胆に変更**したプロンプトを生成する。
 
@@ -26,12 +26,14 @@ meta:
   remix_tempo: [新しいBPM]
   original_key: [元のキー]
   remix_key: [新しいキー or 維持]
-  style: [リミックス後のジャンル・雰囲気]
+  # V5.5: style is short comma-separated tags, not prose
+  style: [短いタグをカンマ区切り: "EDM, house, 128 BPM, energetic, synth bass"]
   keywords: [リミックスの方向性]
 
 remix_parameters:
-  weirdness: "50-70%"        # 変化度合い
-  style_influence: "60-85%"  # 元曲からの乖離度
+  weirdness: "50-70%"        # V5.5: higher weirdness + high style_influence = better compliance
+  style_influence: "70-90%"  # V5.5 finding: push higher for remix fidelity
+  audio_influence: "40-60%"  # V5.5: relevant when using Voices (controls vocal character blend)
   arrangement: [追加楽器・削除楽器]
   fx_processing: [リバーブ・ディレイ・フィルター等]
 
@@ -116,6 +118,8 @@ changes:
 35-45%: 控えめなリミックス（ジャンル維持）
 50-60%: 標準的なリミックス（アレンジ大幅変更）
 65-75%: 攻めたリミックス（原曲の面影薄い）
+# V5.5 finding: Weirdness 55-70% + Style Influence 75-90% の組み合わせで
+# リミックス指示への準拠度が大幅に向上
 ```
 
 **Style Influence（スタイルの影響度）**
@@ -123,6 +127,15 @@ changes:
 45-60%: 元曲の雰囲気を保持
 65-75%: 新しいジャンルに大胆シフト
 80-90%: ほぼ別曲（歌詞とメロディーのみ共通）
+# V5.5推奨: リミックスでは70-90%に設定してStyleタグへの忠実度を上げる
+```
+
+**Audio Influence（V5.5: Voices/Custom Models使用時）**
+```yaml
+30-45%: 元音源の声質を薄く参照
+50-65%: バランスよく混合
+70-85%: 元音源の声質を強く維持
+# Voices機能でリミックスする場合、ボーカルキャラクターの保持度を制御
 ```
 
 ### 4️⃣ アレンジメント戦略
@@ -268,11 +281,24 @@ lyrics:
 
 ---
 
+## 🆕 V5.5 Notes
+
+### Style Format
+- V5.5ではStyleを短いカンマ区切りタグで記述（散文禁止）
+- 例: `EDM, house, 128 BPM, energetic, festival-ready, synth bass, sidechain`
+
+### Slider Tuning (V5.5 Findings)
+- **Weirdness + Style Influence を両方高くする**のがリミックス成功のコツ
+- Weirdness 55-70% + Style Influence 75-90% でStyleタグへの準拠度が大幅に改善
+- Audio Influence はVoices使用時のボーカルキャラクター制御に使用
+
+---
+
 ## 🔄 バージョン管理
 
 ```yaml
-version: 1.0.0
-last_updated: 2025-01-23
+version: 1.1.0
+last_updated: 2026-03-27
 author: usedhonda
 ```
 

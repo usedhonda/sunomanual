@@ -8,7 +8,7 @@ output_format: "yaml+lyrics (multiple)"
 # 🎧 Suno アルバム制作フロー仕様書（suno_flow_album.md）
 
 ## 🧭 概要
-この仕様書は、Suno V5で統一されたコンセプトのもと複数楽曲（アルバム・EP）を制作するエージェント実行フローを定義する。
+この仕様書は、Suno V5/V5.5で統一されたコンセプトのもと複数楽曲（アルバム・EP）を制作するエージェント実行フローを定義する。
 ChatGPTは本仕様書および `SunoV5_Prompt_MASTER_REFERENCE.md` を読み込み、
 **一貫性のあるテーマ・サウンド・ストーリー性**を持つ複数のプロンプトを生成する。
 
@@ -18,7 +18,7 @@ ChatGPTは本仕様書および `SunoV5_Prompt_MASTER_REFERENCE.md` を読み込
 アルバムプロンプトは以下の構造を持つ：
 
 ```yaml
-# === Suno V5 Album Project ===
+# === Suno V5/V5.5 Album Project ===
 album_meta:
   title: [アルバムタイトル]
   concept: [コンセプト・テーマ]
@@ -272,7 +272,8 @@ meta:
   signature: "4/4"
   form: "Intro → Verse → Chorus → Verse → Chorus → Bridge → Chorus → Outro"
   vibe: "Upbeat nostalgic city pop"
-  style: ["City Pop", "115 BPM", "Bright & Nostalgic", "Rhodes + DX7"]
+  # V5.5: style as short comma-separated tags
+  style: "city pop, 115 BPM, bright, nostalgic, Rhodes, DX7"
 
 structure:
   intro: "DX7 pad entrance, vintage drum machine, Rhodes piano riff"
@@ -284,10 +285,10 @@ structure:
 lyrics:
   language: "Japanese"
   content: |
-    [Intro]
-    (DX7 pads, drum machine)
+    [INTRO - DX7 pads, vintage drum machine]
+    (instrumental)
 
-    [Verse 1]
+    [VERSE - smooth bassline, vocal-forward]
     まよなかのまちに ネオンがひかる
     きみとあるいたみち おもいだすよ
     ...
@@ -305,7 +306,7 @@ meta:
   signature: "4/4"
   form: "Intro → Verse → Chorus → Verse → Chorus → Outro"
   vibe: "Introspective midnight groove"
-  style: ["City Pop", "105 BPM", "Moody & Reflective", "Rhodes + Bass"]
+  style: "city pop, 105 BPM, moody, reflective, Rhodes, bass"
 
 # ... (similar structure)
 
@@ -327,7 +328,7 @@ meta:
   signature: "4/4"
   form: "Intro → Verse → Chorus → Bridge → Chorus → Extended Outro"
   vibe: "Hopeful closure with nostalgia"
-  style: ["City Pop", "100 BPM", "Peaceful & Warm", "Rhodes + Strings"]
+  style: "city pop, 100 BPM, peaceful, warm, Rhodes, strings"
 
 structure:
   intro: "Rhodes piano motif from Track 1 (callback)"
@@ -339,25 +340,42 @@ structure:
 lyrics:
   language: "Japanese"
   content: |
-    [Intro]
-    (Rhodes piano motif from Track 1)
+    [INTRO - Rhodes piano motif callback from Track 1]
+    (instrumental)
 
-    [Verse 1]
+    [VERSE - gentle groove, morning atmosphere]
     よあけのひかりが ベイエリアをてらす
     ながいよるがおわり あたらしいあさ
     ...
 
-    [Outro]
-    (Extended instrumental fade, city morning ambience)
+    [OUTRO - extended fade, city morning ambience]
+    (instrumental fade)
 ```
+
+---
+
+## 🆕 V5.5 Notes
+
+### Style Format
+- 各トラックのstyleは短いカンマ区切りタグで記述
+- 例: `city pop, 115 BPM, bright, nostalgic, Rhodes, DX7`
+
+### Annotation Tags for Quality Control
+- アノテーションタグ `[SECTION - description]` を使ってセクションごとの制作ヒントを埋め込む
+- アルバム全体の一貫性維持に有効（共通のアノテーション語彙を統一する）
+- 例: 全トラックのVERSEに `vocal-forward` を入れてボーカルバランスを統一
+
+### Voices / Custom Models
+- アルバム全体を同じVoiceで統一すると、トラック間の一貫性が向上
+- Custom Modelsで自分の過去曲を学習させた場合、アルバム全体のサウンドシグネチャを維持できる
 
 ---
 
 ## 🔄 バージョン管理
 
 ```yaml
-version: 1.0.0
-last_updated: 2025-01-23
+version: 1.1.0
+last_updated: 2026-03-27
 author: usedhonda
 ```
 

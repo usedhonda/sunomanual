@@ -9,8 +9,11 @@ output_format: "style_block"
 
 ## 🧭 概要
 ユーザーがYouTube URL、アーティスト＋曲名、または曲名のみを指定した場合、
-自動で楽曲を特定・解析し、Suno V5 Createページに貼り付け可能な短いStyleブロックを生成する。
+自動で楽曲を特定・解析し、Suno V5/V5.5 Createページに貼り付け可能な短いStyleブロックを生成する。
 出力は1000字以内、`SunoV5_Prompt_MASTER_REFERENCE.md`に準拠。
+
+> **V5.5 Style Format**: Styleブロックは短いカンマ区切りの名詞句タグで構成する（散文禁止）。
+> 各タグは1-3語。4-7タグが最適。
 
 ---
 
@@ -54,10 +57,15 @@ output_format: "style_block"
 - **Exclude Style欄**: Advanced Optionsを展開した後に現れる独立した入力欄
 
 ### Style欄（最大1000文字）- メイン入力欄
-詳細な情報を含めた英語の記述：
-```
-<Genre>/<Subgenre>; <BPM>; <Mood>; <Instrumental structure>; <Era/Region>; Key:<調性>
 
+**V5.5形式**: 短いカンマ区切りタグ（名詞句）で構成する。散文や長文は避ける。
+```
+<Genre>, <Subgenre>, <BPM>, <Mood>, <Key>, <主要楽器1>, <主要楽器2>, <Era/Region>, <音響特徴>, <演奏スタイル>
+```
+例: `2010s J-Pop ballad, 86 BPM, emotional, cinematic, C# minor, grand piano, string quartet, warm reverb, vocal-forward, expressive dynamics`
+
+**補足情報（タグで収まらない場合）**: タグの後に簡潔な補足を追加可能:
+```
 Detailed instrumentation: <主要楽器の詳細説明>
 Production: <音響特徴、ミックス、エフェクト>
 Performance style: <演奏スタイル、アーティキュレーション>
@@ -66,8 +74,10 @@ Sound texture: <サウンドテクスチャ、空間感>
 ⚠️ **絶対禁止**: この欄にExclude要素を含めない
 
 ### Exclude Style欄（Advanced Options内の独立した入力欄、カンマ区切り）
+
+**V5.5ベストプラクティス**: 2-5項目に絞る。多すぎると効果が薄れる。Style欄に "no X" と書くのではなく、ここに記載する。
 ```
-<除外要素1>, <除外要素2>, <除外要素3>, ...
+<除外要素1>, <除外要素2>, <除外要素3>
 ```
 ⚠️ **重要**:
 - Advanced Optionsボタンをクリックして展開する
