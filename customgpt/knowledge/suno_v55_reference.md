@@ -5,9 +5,11 @@
 ### Voices
 - Upload your own voice (15s-4min audio, Pro/Premier only)
 - Verification required (read displayed text aloud)
-- When using Voices: increase Audio Influence slider (60-80%)
+- When using Voices: start Audio Influence at 25%, increase +5% per attempt (never exceed 75%)
 - Clean acapella recordings work best
 - Suno performs stem separation on uploaded audio
+- ⚠️ When using Voices for Cover: minimize Style Prompt (remove voice/instrument descriptions to avoid collision)
+- Start all sliders at 25/25/25 when Voices is active
 
 ### Custom Models
 - Train V5.5 on your own songs (min 6 songs, max 3 models)
@@ -103,9 +105,10 @@ Annotation text is NOT sung — it's a production instruction to Suno.
 
 ### Audio Influence (for Voices/audio upload)
 - 0%: No audio reference
-- 20-40%: Subtle texture/background
-- 60-75%: Featured, voice-forward
-- 80-100%: Maximum voice adherence
+- 15-25%: Starting point for Cover/Sample tuning
+- 25-50%: Moderate reference (increment +5% to find "latch on")
+- 60-75%: Featured, voice-forward (Cover sweet spot)
+- >75%: ⚠️ WARNING — artifacts, pronunciation breakdown, diminishing returns
 
 ### Section-Specific Recommendations
 
@@ -116,10 +119,41 @@ Annotation text is NOT sung — it's a production instruction to Suno.
 | Bridge | 55-70% | 45-60% | Exploration, contrast |
 | Intro/Outro | 30-40% | 60-75% | Clean entry/exit |
 
+### Slider Safety: Red Zone Warning
+- UI turns red near 0 and 100 — these extremes cause breakage
+- Safe operating range for all sliders: **15-85**
+- Red zone (0-14, 86-100) → unpredictable output, structure collapse
+- Default values are often the safest starting point
+
 ### V5.5 Combo Finding
 - Weirdness HIGH + Style Influence HIGH = better lyric tag compliance
 - Section tags, vocal assignments are more strictly followed
 - Useful when precise structure control is needed
+
+---
+
+## Cover / Sample / Inspo Mode Selection (V5.5)
+
+### Mode Decision
+
+| Situation | Recommended Mode | Settings |
+|-----------|-----------------|----------|
+| Faithful recreation of original | Cover | Audio 25% start, +5% increments |
+| Cover deviates/truncates | Sample (full-song range) | Weirdness low, Audio high |
+| Lock melody/bridge | Inspo (3+ takes) | Weirdness 0, Style 50, Influence 85 |
+| Using Voices | Cover + minimize Style | All sliders start at 25 |
+| Metallic voice/sibilance | Remaster (Subtle) | Apply incrementally |
+
+### Decision Flow
+1. Start with Cover → if deviation → switch to Sample (full range)
+2. If melody still off → Inspo with 3+ takes
+3. If Voices active → strip voice/instrument descriptions from Style
+4. If metallic voice → Remaster at Subtle strength
+
+### Remaster Workflow
+- Subtle strength first (not Standard)
+- If still harsh: try staged Remaster (v4.5 → v5 → v5.5)
+- Results are source-dependent — not guaranteed
 
 ---
 

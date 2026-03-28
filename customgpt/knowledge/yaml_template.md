@@ -37,6 +37,7 @@ sections:
     remix_hints:
       weirdness: "<35-70%>"
       style_influence: "<45-85%>"
+      audio_influence: "<0% or 25-70% if Cover/Sample/Voices>"
   # repeat for each section in the input lyrics
 production_notes:
   - "no lead guitar in chorus"
@@ -148,12 +149,13 @@ Trap, Dubstep, distorted guitars, EDM supersaws, female humming
 
 ## Remix Hints Recommended Values
 
-| Section | Weirdness | Style Influence |
-|---------|-----------|-----------------|
-| Chorus | 35-45% | 70-85% |
-| Verse | 40-55% | 55-70% |
-| Bridge | 55-70% | 45-60% |
-| Intro/Outro | 30-40% | 60-75% |
+| Section | Weirdness | Style Influence | Audio Influence (Cover/Sample) |
+|---------|-----------|-----------------|-------------------------------|
+| Chorus | 35-45% | 70-85% | 50-70% |
+| Verse | 40-55% | 55-70% | 40-60% |
+| Bridge | 55-70% | 45-60% | 35-55% |
+| Intro/Outro | 30-40% | 60-75% | 25-45% |
+| Inspo (all) | 0% | 50% | 85% |
 
 ---
 

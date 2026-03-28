@@ -168,6 +168,7 @@ Verse 1 → Chorus → Verse 2 → Chorus → Bridge → Chorus
 3. **Bridge = reset**: Bridge でエネルギーを落とし、最終Chorus で最大に
 4. **Last Chorus = peak**: 最後の Chorus が曲中で最もエネルギーが高い
 5. **Outro = resolution**: 余韻を残す。急に終わらない。
+6. **Syllable density contrast**: Verse(8-10音節/行) → Chorus(5-7音節/行)の音節密度差が、Sunoのセクション認識精度を上げる。短いChorusは歌いやすくキャッチー。長いVerseは物語を語る余裕を作る。
 
 ---
 
