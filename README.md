@@ -1,169 +1,102 @@
----
-title: "Suno AI V5/V5.5 Prompt Manual"
-version: "3.1.0"
-last_updated: 2026-03-28
-description: >
-  Public-facing manual for building Suno V5/V5.5 prompts.
-  Covers core prompt design, community-tested techniques, Cover/Sample/Inspo
-  workflows, and companion GPT setups for style analysis and lyric writing.
----
-
 # Suno AI V5/V5.5 Prompt Manual
 
-Suno V5/V5.5 向けのプロンプト設計マニュアルです。  
-公式ドキュメントの整理だけでなく、コミュニティで再現性が高いと報告されているワークフローも統合しています。
+> **Language**: Japanese (日本語) — technical terms in English
 
-このリポジトリは、次の3つを公開対象として扱います。
+Suno V5/V5.5 向けのプロンプト設計マニュアル。公式ドキュメントの整理に加え、コミュニティで再現性が報告されているテクニックやワークフローを統合しています。
 
-- `SunoV5_Prompt_MASTER_REFERENCE.md`
-  - 中核マニュアル。Style、Lyrics、Exclude、メタタグ、Double-Layer、V5.5 音声条件付けワークフローを統合。
-- `agent/`
-  - 用途別フロー。新曲生成、スタイル抽出、翻訳、リライト、リミックス、アルバム制作の実行手順。
-- `customgpt/` / `customgpt-lyrics/`
-  - ChatGPT の Custom GPT にそのまま移植できる Instructions / Knowledge セット。
+## 何ができるか
 
-## このリポジトリで扱うこと
+- **Style / Lyrics / Exclude の設計**: 効果的なプロンプトの書き方
+- **Cover / Sample / Inspo の使い分け**: 音声条件付けモードの意思決定フロー
+- **歌詞生成**: ラップ、英語、バイリンガル、J-Pop、EDM 等ジャンル別の作詞技法
+- **Custom GPT**: ChatGPT にそのまま移植できる Instructions + Knowledge セット（2種）
 
-- Suno V5 / V5.5 の Style Prompt 設計
-- Lyrics とメタタグによる構造制御
-- Double-Layer 構造による分離設計
-- Cover / Sample / Inspo / Remaster の使い分け
-- Voices / Custom Models / My Taste を前提にした運用
-- Japanese lyrics の歌唱可能性改善
+## ドキュメント構成
 
-## 読み始める順序
+### 中核マニュアル
 
-### 1. まず中核マニュアル
+**[SunoV5_Prompt_MASTER_REFERENCE.md](SunoV5_Prompt_MASTER_REFERENCE.md)**
 
-最初に [SunoV5_Prompt_MASTER_REFERENCE.md](SunoV5_Prompt_MASTER_REFERENCE.md) を読んでください。  
-V5/V5.5 の基本設計、応用テクニック、コミュニティ発見テクニック、音声条件付けワークフローまでを一冊にまとめています。
+1. 基礎編 — V5 プロンプト設計の四本柱、ソニック形容詞、アンカーリング
+2. 応用テクニック編 — Double-Layer 構造、Style フィールド運用
+3. コミュニティ発見テクニック集 — Bracket Theory、15秒ビルディングブロック、アスタリスク効果等
+4. V5.5 音声条件付けワークフロー — Cover/Sample/Inspo/Remaster の6テクニック
+5. Deep Research 統合ログ — 調査ごとの統合記録
 
-### 2. 次に用途別フロー
-
-必要な作業に応じて `agent/` 配下を参照します。
+### 用途別フロー（`agent/`）
 
 | 用途 | ファイル |
 |------|----------|
-| スタイル抽出 | [agent/suno_flow_style_extract.md](agent/suno_flow_style_extract.md) |
-| 新曲生成 | [agent/suno_flow_generate.md](agent/suno_flow_generate.md) |
-| リライト | [agent/suno_flow_rewrite.md](agent/suno_flow_rewrite.md) |
-| 翻訳 | [agent/suno_flow_translate.md](agent/suno_flow_translate.md) |
-| リミックス | [agent/suno_flow_remix.md](agent/suno_flow_remix.md) |
-| アルバム制作 | [agent/suno_flow_album.md](agent/suno_flow_album.md) |
+| 新曲生成 | [suno_flow_generate.md](agent/suno_flow_generate.md) |
+| スタイル抽出 | [suno_flow_style_extract.md](agent/suno_flow_style_extract.md) |
+| リライト | [suno_flow_rewrite.md](agent/suno_flow_rewrite.md) |
+| 翻訳 | [suno_flow_translate.md](agent/suno_flow_translate.md) |
+| リミックス | [suno_flow_remix.md](agent/suno_flow_remix.md) |
+| アルバム制作 | [suno_flow_album.md](agent/suno_flow_album.md) |
 
-### 3. Custom GPT を作る場合
+### Custom GPT（2種）
 
-ChatGPT の Custom GPT として使いたい場合は、以下の README を参照してください。
+| GPT | 用途 | セットアップ |
+|-----|------|-------------|
+| **Suno Style Analyzer V5.5** | YouTube URL からスタイル解析 → Style/Exclude/YAML 生成 | [customgpt/README.md](customgpt/README.md) |
+| **Suno Lyrics Writer V5.5** | テーマから歌詞生成（ラップ・英語・バイリンガル対応） | [customgpt-lyrics/README.md](customgpt-lyrics/README.md) |
 
-- [customgpt/README.md](customgpt/README.md)
-- [customgpt-lyrics/README.md](customgpt-lyrics/README.md)
+## V5.5 で押さえるべきポイント
 
-## V5.5 で特に重要な更新点
+- **Style は短いタグ列** — カンマ区切りの名詞句。散文より安定
+- **Cover が逸脱したら Sample 全尺** — メロディ固定なら Inspo 複数テイク
+- **Audio Influence は 25% 起点 +5% 刻み** — 75% 超は劣化リスク
+- **スライダー赤域を避ける** — 安全範囲は 15-85
+- **Voices 使用時は Style を削る** — 声質・楽器記述が衝突する
+- **歌詞は 6-12 音節/行** — Suno の歌唱安定性のスイートスポット
 
-今回の公開版で強く押さえているのは次の点です。
+## ファイルツリー
 
-- **Style は短いタグ列を優先**
-  - 長文散文よりも、短いカンマ区切りの名詞句タグの方が安定しやすい。
-- **Cover / Sample / Inspo は別物として扱う**
-  - Cover が逸脱するなら Sample 全尺、メロディ固定なら Inspo 複数テイク、という切り分けが重要。
-- **Audio Influence は 25% 起点で探る**
-  - いきなり高くせず、`25%` から `+5%` 刻みで上げる。
-  - `75%` 超は副作用が出やすいため非推奨。
-- **スライダーは赤域を避ける**
-  - Weirdness / Style Influence / Audio Influence は `15-85` を安全帯として扱う。
-- **Voices 使用時は Style を削る**
-  - 声質や楽器の説明を Style に盛りすぎると、Voice 条件付けと衝突しやすい。
-- **歌詞は 6-12 音節/行を基本にする**
-  - 長すぎる行や密度差のないセクションは、Suno の歌唱で崩れやすい。
-
-## このマニュアルの立場
-
-本リポジトリは、情報を次の2系統で整理しています。
-
-- **公式情報**
-  - Suno の公式ブログ、ヘルプ、FAQ。
-- **コミュニティ情報**
-  - Reddit などで複数報告があるものを優先。
-  - 公式保証ではないため、再現性や副作用は文脈依存。
-
-つまり、ここに書いてある内容は「全部が絶対解」ではありません。  
-ただし、少なくとも「どこを触ると変わるか」「何を避けると壊れにくいか」は、かなり実務向けに整理してあります。
-
-## 推奨ワークフロー
-
-### A. 新曲を作る
-
-1. `SunoV5_Prompt_MASTER_REFERENCE.md` で Style / Lyrics / Exclude の役割を確認
-2. `agent/suno_flow_generate.md` の出力構造に沿って組み立てる
-3. 必要なら Double-Layer で Style と Lyrics を分離する
-
-### B. 既存曲の雰囲気を抽出する
-
-1. `agent/suno_flow_style_extract.md` を使う
-2. 楽曲のジャンル、テンポ、ムード、楽器、ミックスを抽出
-3. アーティスト名ではなく、音の特徴に還元して Style に落とす
-
-### C. Cover / Sample / Inspo を使う
-
-1. まず Cover を試す
-2. 後半で逸脱するなら Sample 全尺に切り替える
-3. メロディ保持が必要なら Inspo 複数テイクを使う
-4. 金属声や歯擦音が出たら Remaster(Subtle) を検討する
-
-### D. 歌詞専用 GPT を使う
-
-1. `customgpt-lyrics/README.md` の手順で GPT を組む
-2. 6-12 音節、句読点リズム、フォネティック修正のルールを反映させる
-
-## ファイル構成
-
-```text
+```
 sunomanual/
 ├── README.md
+├── LICENSE
 ├── SunoV5_Prompt_MASTER_REFERENCE.md
 ├── agent/
-│   ├── suno_flow_album.md
 │   ├── suno_flow_generate.md
-│   ├── suno_flow_remix.md
-│   ├── suno_flow_rewrite.md
 │   ├── suno_flow_style_extract.md
-│   └── suno_flow_translate.md
-├── customgpt/
+│   ├── suno_flow_rewrite.md
+│   ├── suno_flow_translate.md
+│   ├── suno_flow_remix.md
+│   └── suno_flow_album.md
+├── customgpt/                          # Style Analyzer GPT
 │   ├── README.md
 │   ├── instructions.md
 │   └── knowledge/
-└── customgpt-lyrics/
+│       ├── suno_v55_reference.md
+│       ├── style_catalog.md
+│       └── yaml_template.md
+└── customgpt-lyrics/                   # Lyrics Writer GPT
     ├── README.md
     ├── instructions.md
     └── knowledge/
+        ├── lyric_craft.md
+        ├── song_structures.md
+        ├── style_catalog.md
+        ├── rap_and_flow.md
+        └── english_lyrics.md
 ```
+
+## 情報の立場
+
+| 種類 | 扱い |
+|------|------|
+| **公式情報** | Suno ブログ・ヘルプ・FAQ に基づく |
+| **コミュニティ情報** | Reddit 等で複数報告があるものを優先収録。再現性・副作用は文脈依存 |
+
+ここに書いてある内容は「絶対解」ではありません。ただし「どこを触ると変わるか」「何を避けると壊れにくいか」は実務向けに整理してあります。
 
 ## 注意事項
 
-- Suno の仕様は更新されるため、特に V5.5 周辺の UI やパラメータは今後も変わり得ます。
-- コミュニティ技法は「効く場面」と「壊す場面」が両方あります。必ず小さく試してください。
-- 著作権保護の観点から、アーティスト名や曲名の直接指定ではなく、音響的特徴の言語化を推奨します。
+- Suno の仕様は更新されるため、特に V5.5 周辺のパラメータは今後も変わり得ます
+- コミュニティ技法は「効く場面」と「壊す場面」があります。小さく試してください
+- 著作権保護のため、アーティスト名や曲名の直接指定ではなく音響特徴の言語化を推奨します
 
 ## License
 
-Created by **usedhonda**  
-Licensed under **CC BY-NC 4.0**
-
-## Version History
-
-### 3.1.0 (2026-03-28)
-- README を公開向けに全面整理
-- V5.5 音声条件付けワークフローを反映
-- Cover / Sample / Inspo の使い分けを導線に追加
-- Custom GPT 用 README への導線を整理
-
-### 3.0.0 (2026-03-27)
-- V5.5 対応
-- Voices / Custom Models / My Taste を反映
-- Style タグ形式とアノテーションタグを整理
-
-### 2.0.0
-- AI エージェント横断で使える構成に再編
-
-### 1.0.0
-- 初回公開
+[CC BY-NC 4.0](LICENSE) - Created by **usedhonda**
