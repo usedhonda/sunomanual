@@ -9,6 +9,7 @@ Intro → Verse 1 → Pre-Chorus → Chorus → Verse 2 → Pre-Chorus → Choru
 - **用途**: J-Pop, K-Pop, Western Pop, R&B, Synthpop
 - **特徴**: Pre-Chorusで期待感を煽り、Chorusで爆発。Bridgeで視点転換。
 - **エネルギーカーブ**: 3→5→7→9→5→7→9→4→10→3
+- **ジャンル別歌詞ガイダンス**: Pop は Verse を具体情景、Pre で感情加速、Chorus は 3-6語の核句で言い切る。K-Pop 寄りなら英語フックを混ぜやすい。
 
 ### B. Simple (シンプル、短め)
 ```
@@ -17,6 +18,7 @@ Intro → Verse 1 → Chorus → Verse 2 → Chorus → Outro
 - **用途**: Folk, Acoustic, Singer-Songwriter, 子守歌, ジングル
 - **特徴**: 最短構成。繰り返しで覚えやすい。2分以内の曲向き。
 - **エネルギーカーブ**: 2→5→8→5→8→2
+- **ジャンル別歌詞ガイダンス**: Folk / Acoustic は Verse の情報量で勝負し、Chorus は短い要約に留める。ジングル用途では名詞中心で即読性を優先。
 
 ### C. Ballad (バラード、感情重視)
 ```
@@ -25,6 +27,7 @@ Intro → Verse 1 → Verse 2 → Chorus → Verse 3 → Chorus → Bridge → C
 - **用途**: バラード, 演歌, Soul, R&B Slow Jam
 - **特徴**: Verse が3つ。じっくりストーリーを語る。Chorus は感情爆発。
 - **エネルギーカーブ**: 2→4→5→8→5→9→3→10→2
+- **ジャンル別歌詞ガイダンス**: バラードと演歌は具体物を反復して意味変容を作る。R&B Slow Jam は open vowel を多めにし、Bridge で最も生々しい告白を置く。
 
 ### D. Pop Anthem (ポップアンセム、盛り上がり特化)
 ```
@@ -33,6 +36,7 @@ Intro → Verse 1 → Pre-Chorus → Chorus → Verse 2 → Pre-Chorus → Choru
 - **用途**: スタジアムロック, アイドルソング, 応援歌, フェスティバル向け
 - **特徴**: ダブルコーラスで最高潮。Bridge なしでテンション維持。
 - **エネルギーカーブ**: 4→6→8→10→6→8→10→10→5
+- **ジャンル別歌詞ガイダンス**: Anthem 系は Chorus の最初の1行がすべて。単語は短く、母音は開き気味、群唱しやすい宣言文に寄せる。
 
 ### E. Electronic/Dance (EDM、クラブ)
 ```
@@ -42,6 +46,7 @@ Intro → Build → Drop → Breakdown → Build → Drop → Outro
 - **特徴**: Verse/Chorus の代わりに Build→Drop。歌詞は少なめ、フレーズ反復重視。
 - **エネルギーカーブ**: 3→7→10→4→7→10→3
 - **歌詞のコツ**: 各Build に2-3行、Drop に1-2行のフック。Breakdown は無歌詞可。
+- **ジャンル別歌詞ガイダンス**: EDM はミニマリスト歌詞が正解。Drop で使う語は 2-4語、母音が開いていて chop しやすいものに絞る。
 
 ### F. Rock/Progressive (ロック、ソロ付き)
 ```
@@ -50,6 +55,7 @@ Intro → Verse 1 → Chorus → Verse 2 → Chorus → Solo → Bridge → Chor
 - **用途**: ロック, メタル, プログレ, ブルース, ファンク
 - **特徴**: 楽器ソロセクションあり。Bridge後の最終Chorusが最高潮。
 - **エネルギーカーブ**: 5→6→9→6→9→8→4→10→5
+- **ジャンル別歌詞ガイダンス**: Rock は power word を line end に置き、Bridge で視点を反転させる。Blues / Funk 寄りなら反復句と call-response を増やす。
 
 ### G. Hip Hop/Rap
 ```
@@ -59,6 +65,7 @@ Intro → Verse 1 → Hook → Verse 2 → Hook → Verse 3 → Hook → Outro
 - **特徴**: Verse が長め（8-16行）、Hook（=Chorus）は短く反復的。
 - **エネルギーカーブ**: 4→7→9→7→9→8→9→4
 - **歌詞のコツ**: Verse は韻を踏む。Hook は覚えやすい1-2行のフレーズ。
+- **ジャンル別歌詞ガイダンス**: Verse は 4-bar 単位で cadence を変える。Trap / Drill は triplet や off-beat、boom bap は internal rhyme と punchline を強める。
 
 ### H. Verse-Chorus-Bridge (定番ロック)
 ```
@@ -67,6 +74,7 @@ Verse 1 → Chorus → Verse 2 → Chorus → Bridge → Chorus
 - **用途**: ロック, パンク, カントリー, フォークロック
 - **特徴**: Intro/Outro なし。すぐに歌い出す。ストレートでパンチある。
 - **エネルギーカーブ**: 6→9→6→9→4→10
+- **ジャンル別歌詞ガイダンス**: カントリーは Verse で状況、Chorus で感情命題、Bridge で時間跳躍か真実の開示。パンクは短語と反復で押す。
 
 ---
 

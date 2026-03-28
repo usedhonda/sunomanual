@@ -13,6 +13,14 @@ Electropop, [BPM] BPM, [Key], upbeat, processed vocal, synth lead, 808, wide ste
 Synthpop, [BPM] BPM, [Key], retro, male vocal, analog synth, drum machine, spacious mix
 ```
 
+| Genre | Hook Trait |
+|------|------------|
+| J-pop | 5-7音節、最初の1行で感情命題を置く |
+| K-pop | 英語キーフレーズを先頭に置き、群唱できる形にする |
+| Indie pop | 会話調で短く、少し曖昧さを残す |
+| Electropop | 反復可能な2-4語で modular にする |
+| Synthpop | slogan 的で、母音が開くレトロなフックが合う |
+
 ### Rock & Alternative
 ```
 Alternative rock, [BPM] BPM, [Key], raw, male vocal, distorted guitar, driving drums, garage feel
@@ -21,6 +29,14 @@ Post-punk, [BPM] BPM, [Key], dark, baritone vocal, bass-driven, chorus guitar, c
 Shoegaze, [BPM] BPM, [Key], ethereal, buried vocal, wall of guitars, heavy reverb, dreamy
 Punk rock, [BPM] BPM, [Key], aggressive, shouty vocal, power chords, fast drums, raw mix
 ```
+
+| Genre | Hook Trait |
+|------|------------|
+| Alternative rock | power word を行末へ落とし、抽象と具体を混ぜる |
+| Indie rock | 少し皮肉や観察を含む会話型フックが合う |
+| Post-punk | 短く冷たい反復句、名詞強めが効く |
+| Shoegaze | 意味より響き優先、母音の霞で覚えさせる |
+| Punk rock | 叫べる短語、単音節寄り、宣言文が強い |
 
 ### Electronic & Dance
 ```
@@ -31,6 +47,14 @@ Ambient, [BPM] BPM, [Key], atmospheric, no vocal, evolving pads, field recording
 Future bass, [BPM] BPM, [Key], euphoric, chopped vocal, supersaws, heavy sidechain, wide stereo
 ```
 
+| Genre | Hook Trait |
+|------|------------|
+| House | 反復前提の 2-4語 chant hook が強い |
+| Techno | フックは最小限、1-2語の mantra で十分 |
+| Lo-fi | ささやく短句、日記の切れ端のような一言が合う |
+| Ambient | フック不要、あっても余韻語を1行だけ |
+| Future bass | 開口母音中心で、chop しやすい語を選ぶ |
+
 ### Hip Hop & R&B
 ```
 Hip hop, [BPM] BPM, [Key], hard, male rap, 808 bass, trap hats, punchy mix
@@ -39,6 +63,14 @@ Trap, [BPM] BPM, [Key], dark, aggressive vocal, 808, hi-hat rolls, distorted bas
 Boom bap, [BPM] BPM, [Key], classic, male vocal, sampled drums, vinyl warmth, head-nod groove
 Lo-fi hip hop, [BPM] BPM, [Key], mellow, no vocal, dusty drums, jazz piano, tape hiss
 ```
+
+| Genre | Hook Trait |
+|------|------------|
+| Hip hop | chantable で短い、語尾反復が強い |
+| R&B | open vowel を含む、伸ばせる親密フックが合う |
+| Trap | 断片的で slogan 的、triplet に乗せやすい |
+| Boom bap | 韻と punchline の両立、言葉の輪郭がはっきりした hook |
+| Lo-fi hip hop | hook は薄く、空気を壊さない一節だけでよい |
 
 ### Jazz & Blues
 ```
@@ -49,6 +81,14 @@ Bossa nova, [BPM] BPM, [Key], gentle, breathy vocal, nylon guitar, light percuss
 Neo-soul, [BPM] BPM, [Key], warm, rich vocal, Rhodes, finger bass, analog warmth
 ```
 
+| Genre | Hook Trait |
+|------|------------|
+| Jazz | wit や内部韻を含む洒落た hook が似合う |
+| Smooth jazz | hook は柔らかく、メロディ優先で短く保つ |
+| Blues | call-response しやすい嘆きの1行が強い |
+| Bossa nova | 息の長い柔らかい句で、角を立てない |
+| Neo-soul | 親密で少し曖昧、余白のある hook が合う |
+
 ### Folk & Country
 ```
 Folk, [BPM] BPM, [Key], earnest, natural vocal, acoustic guitar, harmonica, intimate recording
@@ -57,6 +97,14 @@ Acoustic, [BPM] BPM, [Key], stripped, solo vocal, fingerpicked guitar, room ambi
 Singer-songwriter, [BPM] BPM, [Key], personal, close vocal, piano, subtle strings, warm
 Bluegrass, [BPM] BPM, [Key], lively, harmony vocals, banjo, mandolin, upright bass, clean
 ```
+
+| Genre | Hook Trait |
+|------|------------|
+| Folk | 物語を要約する簡潔な refrain が合う |
+| Country | 具体物を含む感情命題を hook にする |
+| Acoustic | 口語で、説明しすぎない短句が強い |
+| Singer-songwriter | 私語りの核心をそのまま hook に置く |
+| Bluegrass | 歌い回しが速くても覚えやすい反復句が必要 |
 
 ### World Music
 ```
@@ -67,6 +115,14 @@ Japanese city pop, [BPM] BPM, [Key], nostalgic, smooth vocal, Rhodes, slap bass,
 Enka, [BPM] BPM, [Key], emotional, vibrato vocal, koto, shamisen, orchestral, dramatic
 ```
 
+| Genre | Hook Trait |
+|------|------------|
+| Latin pop | 身体で反復できる情熱的な短句が合う |
+| Reggaeton | dembow に乗る chant hook、語数は少なめ |
+| Afrobeat | call-response と group shout が強い |
+| Japanese city pop | 英語混じりの洒落た hook がはまりやすい |
+| Enka | 大きな感情語と地名・季節語を含む hook が強い |
+
 ### Classical & Orchestral
 ```
 Orchestral, [BPM] BPM, [Key], cinematic, no vocal, full orchestra, sweeping strings, concert hall
@@ -74,6 +130,42 @@ Chamber music, [BPM] BPM, [Key], delicate, string quartet, intimate room, classi
 Film score, [BPM] BPM, [Key], epic, choir, brass, percussion, cinematic reverb, dramatic
 Piano solo, [BPM] BPM, [Key], contemplative, grand piano, concert hall reverb, dynamic
 ```
+
+| Genre | Hook Trait |
+|------|------------|
+| Orchestral | hook はなくても成立、あるなら title phrase だけ |
+| Chamber music | 詩的で短い refrain を控えめに置く |
+| Film score | 強いタイトル句や祈りのような一行が合う |
+| Piano solo | 基本は instrumental、歌うなら最小限の言葉にする |
+
+---
+
+## 現代トレンドスタイル
+
+### 会話調
+- 話し言葉に近い語順と省略を使う
+- 「説明」より観察に寄せる
+- hook も slogan より自然発話の切り取りが合う
+
+### ストリーム・オブ・コンシャスネス
+- 思考の流れを切らずに断片を連結する
+- Verse で効果的だが、hook は別に簡潔化する
+- 完全な無秩序ではなく、反復モチーフで芯を通す
+
+### ミニマリスト
+- 語数を削り、1行の圧を上げる
+- EDM, ambient, trap, modern alt-pop と相性が良い
+- 繰り返しと余白が主役
+
+### TikTok 最適化
+- 冒頭 1-2 行で強い語を置く
+- サビ頭で即フックに入る
+- 切り抜かれても意味が立つ 1 フレーズを持つ
+
+### 告白体
+- 一人称の近さと未整理の感情を残す
+- 上手くまとめすぎず、少し息の荒さを残す
+- J-Pop, singer-songwriter, R&B, modern ballad に強い
 
 ---
 
