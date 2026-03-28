@@ -1,85 +1,106 @@
-# Suno Style Analyzer V5.5 — CustomGPT セットアップ
+# Suno Style Analyzer V5.5
 
-## 概要
+YouTube URL を起点に、Suno V5.5 向けの Style / Exclude / YAML を生成する Custom GPT セットです。
 
-YouTube URLから楽曲スタイルを解析し、Suno AI V5.5向けプロンプトを自動生成するカスタムGPT。
+## できること
 
-**2つの使い方:**
-- **URLのみ** → Style Block + Exclude Block + 推奨スライダー
-- **URL + 歌詞** → 上記 + 歌詞フォーマット変換（漢字→ひらがな、アノテーションタグ付加）
+- **URLのみ**
+  - 参照曲のスタイル分析
+  - Style Block
+  - Exclude Block
+  - 推奨スライダー
+- **URL + 歌詞**
+  - 上記に加えて、META+Lyrics 形式の YAML 出力
+  - ひらがな変換
+  - セクションタグとアノテーション付与
 
-## セットアップ手順
+## 想定ユースケース
+
+- 既存曲の雰囲気を、Suno に入れられる形へ還元したい
+- 自作歌詞を、参照曲の空気感に寄せた形で組みたい
+- Cover / Sample / Inspo を前提に、Audio Influence を含むヒントも出したい
+
+## セットアップ
 
 ### 1. GPT を作成
 
-1. [ChatGPT](https://chatgpt.com) にアクセス
-2. 左サイドバー → **Explore GPTs** → **Create**
-3. **Configure** タブに切り替え
+ChatGPT → `Explore GPTs` → `Create` → `Configure`
 
 ### 2. 基本設定
 
 | 項目 | 値 |
-|------|-----|
-| **Name** | Suno Style Analyzer V5.5 |
-| **Description** | YouTube URLから楽曲スタイルを解析しSuno V5.5向けプロンプトを生成。歌詞を添えればフォーマット変換も。 |
+|------|----|
+| Name | `Suno Style Analyzer V5.5` |
+| Description | `Analyze a reference track and generate Suno V5.5 Style / Exclude / YAML output.` |
 
 ### 3. Instructions
 
-`instructions.md` の**全内容**をコピーして、Instructions 欄に貼り付け。
+`instructions.md` の内容を、そのまま Instructions 欄に貼り付けます。
 
 ### 4. Knowledge
 
-以下の2ファイルを **Knowledge** にアップロード:
+以下を Knowledge にアップロードします。
 
 1. `knowledge/suno_v55_reference.md`
 2. `knowledge/style_catalog.md`
+3. `knowledge/yaml_template.md`
 
 ### 5. Capabilities
 
 | 機能 | 設定 |
 |------|------|
-| **Web Search** | ON（必須） |
-| **DALL-E** | OFF |
-| **Code Interpreter** | OFF |
+| Web Search | ON |
+| DALL-E | OFF |
+| Code Interpreter | OFF |
 
-### 6. 保存
+## 入力例
 
-**Save** → **Only me**（個人利用）または **Anyone with a link**（共有）
+### Pattern A: URL only
 
-## 使い方
-
-### パターンA: URLのみ
-```
+```text
 https://www.youtube.com/watch?v=xxxxx
 ```
 
-### パターンB: URL + 歌詞
-```
+### Pattern B: URL + lyrics
+
+```text
 https://www.youtube.com/watch?v=xxxxx
 
 [Verse 1]
-街の灯りがゆれている
-風が頬をなでる
+まちの あかりが ゆれている
+かぜが ほおを なでる
 
 [Chorus]
-走り出せ今すぐに
-夢の先へ
-
-[Bridge]
-立ち止まっていた日々も
-今は力になる
-
-[Outro]
-走り出せ
+はしりだせ いますぐに
+ゆめの さきへ
 ```
+
+## 出力の考え方
+
+- **Style**
+  - 英語のみ
+  - 楽曲のジャンル、年代感、楽器、ミックス、ムードを要約
+- **Exclude**
+  - 相性の悪い要素を短く列挙
+- **YAML**
+  - META+Lyrics の設計図
+  - セクションごとのボーカル、キュー、remix_hints を含む
+
+## 収録している V5.5 反映点
+
+- Cover / Sample / Inspo のモード選択
+- Voices 使用時の Style 最小化
+- Audio Influence は `25%` 起点、`+5%` 刻み
+- `15-85` を安全帯として扱うスライダー設計
 
 ## ファイル構成
 
-```
+```text
 customgpt/
-├── README.md              ← このファイル
-├── instructions.md        ← GPT Instructions に貼る
+├── README.md
+├── instructions.md
 └── knowledge/
-    ├── suno_v55_reference.md  ← Knowledge にアップロード
-    └── style_catalog.md       ← Knowledge にアップロード
+    ├── style_catalog.md
+    ├── suno_v55_reference.md
+    └── yaml_template.md
 ```

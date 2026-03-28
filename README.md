@@ -1,359 +1,169 @@
 ---
-title: "Suno AI V5/V5.5 Prompt Manual - Universal AI Agent Edition"
-version: "3.0.0"
-last_updated: 2026-03-27
+title: "Suno AI V5/V5.5 Prompt Manual"
+version: "3.1.0"
+last_updated: 2026-03-28
 description: >
-  Universal prompt generation manual for Suno AI V5/V5.5.
-  V5.5 adds Voices (own voice), Custom Models (train on your songs),
-  My Taste (preference learning), tag-style Style format, and annotation tags.
-  Compatible with any AI agent (ChatGPT, Claude, Gemini, etc.)
-  Supports style extraction, generation, rewrite, translation, remix, and album flows.
+  Public-facing manual for building Suno V5/V5.5 prompts.
+  Covers core prompt design, community-tested techniques, Cover/Sample/Inspo
+  workflows, and companion GPT setups for style analysis and lyric writing.
 ---
 
-# 🎵 Suno AI V5/V5.5 Prompt Manual
+# Suno AI V5/V5.5 Prompt Manual
 
-**あらゆるAIエージェント対応版** — ChatGPT、Claude、Gemini、その他のAIで使えるSuno V5/V5.5プロンプト生成マニュアル
+Suno V5/V5.5 向けのプロンプト設計マニュアルです。  
+公式ドキュメントの整理だけでなく、コミュニティで再現性が高いと報告されているワークフローも統合しています。
 
----
+このリポジトリは、次の3つを公開対象として扱います。
 
-## 🤖 AI向け重要指示
+- `SunoV5_Prompt_MASTER_REFERENCE.md`
+  - 中核マニュアル。Style、Lyrics、Exclude、メタタグ、Double-Layer、V5.5 音声条件付けワークフローを統合。
+- `agent/`
+  - 用途別フロー。新曲生成、スタイル抽出、翻訳、リライト、リミックス、アルバム制作の実行手順。
+- `customgpt/` / `customgpt-lyrics/`
+  - ChatGPT の Custom GPT にそのまま移植できる Instructions / Knowledge セット。
 
-**このREADMEを読み込んだAIエージェントは、以下を必ず実行してください：**
+## このリポジトリで扱うこと
 
-### 1️⃣ 即座に全ファイルを読み込む（確認不要、今すぐ実行）
+- Suno V5 / V5.5 の Style Prompt 設計
+- Lyrics とメタタグによる構造制御
+- Double-Layer 構造による分離設計
+- Cover / Sample / Inspo / Remaster の使い分け
+- Voices / Custom Models / My Taste を前提にした運用
+- Japanese lyrics の歌唱可能性改善
 
-以下の全ファイルを**ユーザーの指示を待たずに今すぐ読み込んでください**：
+## 読み始める順序
 
-1. **SunoV5_Prompt_MASTER_REFERENCE.md**
-   https://github.com/usedhonda/sunomanual/blob/main/SunoV5_Prompt_MASTER_REFERENCE.md
+### 1. まず中核マニュアル
 
-2. **agent/suno_flow_style_extract.md**
-   https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_style_extract.md
+最初に [SunoV5_Prompt_MASTER_REFERENCE.md](SunoV5_Prompt_MASTER_REFERENCE.md) を読んでください。  
+V5/V5.5 の基本設計、応用テクニック、コミュニティ発見テクニック、音声条件付けワークフローまでを一冊にまとめています。
 
-3. **agent/suno_flow_generate.md**
-   https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_generate.md
+### 2. 次に用途別フロー
 
-4. **agent/suno_flow_rewrite.md**
-   https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_rewrite.md
+必要な作業に応じて `agent/` 配下を参照します。
 
-5. **agent/suno_flow_translate.md**
-   https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_translate.md
+| 用途 | ファイル |
+|------|----------|
+| スタイル抽出 | [agent/suno_flow_style_extract.md](agent/suno_flow_style_extract.md) |
+| 新曲生成 | [agent/suno_flow_generate.md](agent/suno_flow_generate.md) |
+| リライト | [agent/suno_flow_rewrite.md](agent/suno_flow_rewrite.md) |
+| 翻訳 | [agent/suno_flow_translate.md](agent/suno_flow_translate.md) |
+| リミックス | [agent/suno_flow_remix.md](agent/suno_flow_remix.md) |
+| アルバム制作 | [agent/suno_flow_album.md](agent/suno_flow_album.md) |
 
-6. **agent/suno_flow_remix.md**
-   https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_remix.md
+### 3. Custom GPT を作る場合
 
-7. **agent/suno_flow_album.md**
-   https://github.com/usedhonda/sunomanual/blob/main/agent/suno_flow_album.md
+ChatGPT の Custom GPT として使いたい場合は、以下の README を参照してください。
 
-### 2️⃣ 読み込み完了を報告
+- [customgpt/README.md](customgpt/README.md)
+- [customgpt-lyrics/README.md](customgpt-lyrics/README.md)
 
-全ファイルを読み込んだら、以下のメッセージをユーザーに送信：
+## V5.5 で特に重要な更新点
 
-```
-✅ Suno AI V5/V5.5 Manual の全7ファイルを読み込みました。
+今回の公開版で強く押さえているのは次の点です。
 
-【利用可能な機能】
-- Style解析 (style_extract)
-- 新曲生成 (generate)
-- 歌詞リライト (rewrite)
-- 多言語翻訳 (translate)
-- リミックス (remix)
-- アルバム制作 (album)
+- **Style は短いタグ列を優先**
+  - 長文散文よりも、短いカンマ区切りの名詞句タグの方が安定しやすい。
+- **Cover / Sample / Inspo は別物として扱う**
+  - Cover が逸脱するなら Sample 全尺、メロディ固定なら Inspo 複数テイク、という切り分けが重要。
+- **Audio Influence は 25% 起点で探る**
+  - いきなり高くせず、`25%` から `+5%` 刻みで上げる。
+  - `75%` 超は副作用が出やすいため非推奨。
+- **スライダーは赤域を避ける**
+  - Weirdness / Style Influence / Audio Influence は `15-85` を安全帯として扱う。
+- **Voices 使用時は Style を削る**
+  - 声質や楽器の説明を Style に盛りすぎると、Voice 条件付けと衝突しやすい。
+- **歌詞は 6-12 音節/行を基本にする**
+  - 長すぎる行や密度差のないセクションは、Suno の歌唱で崩れやすい。
 
-ご指示をお待ちしています。
-```
+## このマニュアルの立場
 
-### 3️⃣ ユーザー指示に応じてフロー実行
+本リポジトリは、情報を次の2系統で整理しています。
 
-ユーザーが以下のような指示を出したら、該当するフローファイルに従って実行：
+- **公式情報**
+  - Suno の公式ブログ、ヘルプ、FAQ。
+- **コミュニティ情報**
+  - Reddit などで複数報告があるものを優先。
+  - 公式保証ではないため、再現性や副作用は文脈依存。
 
-| ユーザー指示例 | 実行フロー | 参照ファイル |
-|--------------|----------|------------|
-| 「Lemonのスタイル解析して」 | Style Extract | suno_flow_style_extract.md |
-| 「夜のシティポップを作って」 | Generate | suno_flow_generate.md |
-| 「この歌詞をリライトして」 | Rewrite | suno_flow_rewrite.md |
-| 「英語で歌いやすくして」 | Translate | suno_flow_translate.md |
-| 「EDMリミックスして」 | Remix | suno_flow_remix.md |
-| 「5曲のアルバムを作って」 | Album | suno_flow_album.md |
+つまり、ここに書いてある内容は「全部が絶対解」ではありません。  
+ただし、少なくとも「どこを触ると変わるか」「何を避けると壊れにくいか」は、かなり実務向けに整理してあります。
 
----
+## 推奨ワークフロー
 
-## 👤 ユーザー向けセットアップ
+### A. 新曲を作る
 
-### 初回セットアップ（全AIエージェント共通）
+1. `SunoV5_Prompt_MASTER_REFERENCE.md` で Style / Lyrics / Exclude の役割を確認
+2. `agent/suno_flow_generate.md` の出力構造に沿って組み立てる
+3. 必要なら Double-Layer で Style と Lyrics を分離する
 
-使用するAIエージェント（ChatGPT、Claude、Gemini等）で、以下のテキストを送信するだけ：
+### B. 既存曲の雰囲気を抽出する
+
+1. `agent/suno_flow_style_extract.md` を使う
+2. 楽曲のジャンル、テンポ、ムード、楽器、ミックスを抽出
+3. アーティスト名ではなく、音の特徴に還元して Style に落とす
+
+### C. Cover / Sample / Inspo を使う
+
+1. まず Cover を試す
+2. 後半で逸脱するなら Sample 全尺に切り替える
+3. メロディ保持が必要なら Inspo 複数テイクを使う
+4. 金属声や歯擦音が出たら Remaster(Subtle) を検討する
+
+### D. 歌詞専用 GPT を使う
+
+1. `customgpt-lyrics/README.md` の手順で GPT を組む
+2. 6-12 音節、句読点リズム、フォネティック修正のルールを反映させる
+
+## ファイル構成
 
 ```text
-今すぐ以下のREADMEを開いて読んでください。
-https://github.com/usedhonda/sunomanual/blob/main/README.md
-```
-
-> ✅ **これだけでOK**
-> AIが自動的に全ファイルを読み込み、Suno V5プロンプト生成が可能になります。
-
----
-
-## 🎮 使用例
-
-### Style解析
-```
-ユーザー: 「米津玄師のLemonのスタイルを解析して」
-AI: Style解析を実行 → Style欄とExclude欄のテキストを生成 → 出力
-```
-
-### 新曲生成
-```
-ユーザー: 「夜のシティポップを作って」
-AI: YAML形式でプロンプト生成 → Lyrics、Style、Song Descriptionを出力
-```
-
-### 歌詞リライト
-```
-ユーザー: 「この歌詞をもっと感情的にして」
-AI: 元の歌詞を解析 → リライト → 新しい歌詞を出力
-```
-
-### 多言語翻訳
-```
-ユーザー: 「この日本語の歌詞を英語で歌いやすくして」
-AI: 音節数を考慮した翻訳 → 英語歌詞を出力
-```
-
-### リミックス
-```
-ユーザー: 「この曲をEDMリミックスして」
-AI: EDMスタイルのプロンプトを生成 → 出力
-```
-
-### アルバム制作
-```
-ユーザー: 「冬をテーマに5曲のアルバムを作って」
-AI: 5曲分のプロンプトを生成 → 各曲のYAMLを出力
-```
-
----
-
-## 🧠 各AIエージェントでの使用方法
-
-### ChatGPT（Atlas Browser Mode対応）
-
-**特徴**: Suno.comに直接自動入力可能
-
-1. 上記のREADME URLを送信
-2. 「Lemonのスタイル解析して」などと指示
-3. ChatGPTが自動的にSuno.comのCreate画面を開いて入力
-4. ユーザーは「Create」ボタンを押すだけ
-
-> ⚙️ **Atlas Agentモード**が自動起動し、ブラウザ操作を代行します
-
----
-
-### Claude（Code / Projects対応）
-
-**特徴**: 詳細なYAML出力とファイル管理
-
-1. 上記のREADME URLを送信（または直接ファイルを添付）
-2. 「夜のシティポップを作って」などと指示
-3. ClaudeがYAML形式でプロンプトを生成
-4. 出力をコピーしてSuno.comに手動で貼り付け
-
-> 📋 **構造化された出力**が得られ、ファイルとして保存も可能
-
----
-
-### Gemini（Google AI Studio対応）
-
-**特徴**: マルチモーダル対応
-
-1. 上記のREADME URLを送信
-2. 画像や動画を添付して「このMVの雰囲気で曲を作って」などと指示
-3. Geminiがマルチモーダル情報を解析してプロンプト生成
-4. 出力をSuno.comに手動で貼り付け
-
-> 🖼️ **画像・動画からのスタイル抽出**が可能
-
----
-
-### その他のAIエージェント
-
-**Perplexity、Poe、OpenRouter等**でも同様に使用可能：
-
-1. README URLを送信
-2. Suno関連の指示を出す
-3. 生成されたYAMLをSuno.comにコピー&ペースト
-
----
-
-## 📁 ファイル構成
-
-```
 sunomanual/
-├── README.md（このファイル）
-├── SunoV5_Prompt_MASTER_REFERENCE.md（コアルール）
-└── agent/
-    ├── suno_flow_style_extract.md（Style解析フロー）
-    ├── suno_flow_generate.md（新曲生成フロー）
-    ├── suno_flow_rewrite.md（リライトフロー）
-    ├── suno_flow_translate.md（翻訳フロー）
-    ├── suno_flow_remix.md（リミックスフロー）
-    └── suno_flow_album.md（アルバム制作フロー）
+├── README.md
+├── SunoV5_Prompt_MASTER_REFERENCE.md
+├── agent/
+│   ├── suno_flow_album.md
+│   ├── suno_flow_generate.md
+│   ├── suno_flow_remix.md
+│   ├── suno_flow_rewrite.md
+│   ├── suno_flow_style_extract.md
+│   └── suno_flow_translate.md
+├── customgpt/
+│   ├── README.md
+│   ├── instructions.md
+│   └── knowledge/
+└── customgpt-lyrics/
+    ├── README.md
+    ├── instructions.md
+    └── knowledge/
 ```
 
----
+## 注意事項
 
-## 🎯 Design Philosophy
+- Suno の仕様は更新されるため、特に V5.5 周辺の UI やパラメータは今後も変わり得ます。
+- コミュニティ技法は「効く場面」と「壊す場面」が両方あります。必ず小さく試してください。
+- 著作権保護の観点から、アーティスト名や曲名の直接指定ではなく、音響的特徴の言語化を推奨します。
 
-### Single Source of Truth
-- GitHub上の最新版のみを参照
-- ローカルコピーは不要
+## License
 
-### AI-Agnostic
-- 特定のAIエージェントに依存しない
-- ChatGPT、Claude、Gemini等すべてで動作
+Created by **usedhonda**  
+Licensed under **CC BY-NC 4.0**
 
-### Auto-Loading
-- README読み込みだけで全機能が使える
-- 複雑なセットアップ不要
+## Version History
 
-### Universal Output
-- YAML形式での標準化された出力
-- どのAIでも同じフォーマット
-
-### Collaborative
-- オープンソース
-- 誰でもフォーク・拡張可能
-
----
-
-## 🔄 フロー実行の基本ルール（全AI共通）
-
-### Style Extract（スタイル解析）
-1. 楽曲情報を収集（Wikipedia、Spotify、YouTube等）
-2. Style欄用のテキスト生成（最大1000文字）
-3. Exclude欄用のテキスト生成（カンマ区切り）
-4. **重要**: Style欄とExclude欄は**完全に独立した別の入力欄**
-5. 使用した情報源を報告
-
-### Generate（新曲生成）
-1. MASTER_REFERENCEに従ってプロンプト生成
-2. YAML形式で出力（Lyrics、Style、Song Description）
-3. メタタグ、楽器指定、禁止語回避を含む
-
-### Rewrite（リライト）
-1. 元の歌詞を解析
-2. 指定された方向性（感情的、シンプル等）でリライト
-3. 音節数とリズムを維持
-
-### Translate（翻訳）
-1. 元の歌詞の音節数を分析
-2. ターゲット言語で歌いやすい翻訳
-3. 韻律とリズムを最優先
-
-### Remix（リミックス）
-1. 元曲のStyleを分析
-2. 指定されたジャンルに変換
-3. 新しいStyleブロックを生成
-
-### Album（アルバム制作）
-1. テーマに沿った複数曲を生成
-2. 各曲のコンセプトを統一
-3. 曲順とトラック番号を含む
-
----
-
-## ⚙️ YAML出力フォーマット（全フロー共通）
-
-```yaml
-# Suno V5/V5.5 Prompt
-title: "曲のタイトル"
-# V5.5 Style format: short comma-separated tags (not prose)
-style: "city pop, smooth jazz, 92 BPM, F# major, warm, nostalgic, Rhodes piano, fingerstyle bass"
-song_description: "曲の説明"
-exclude_style: "除外要素1, 除外要素2, 除外要素3"
-
-lyrics: |
-  [Intro: meta.vibe]
-  Verse lyrics here
-
-  [VERSE - intimate, close vocal]
-  More lyrics
-
-  [CHORUS - soaring, full harmony]
-  Chorus lyrics
-
-  [Outro]
-```
-
-> **V5.5 Note**: Style field uses short noun-phrase tags, comma-separated. Annotation tags `[SECTION - description]` give per-section production hints.
-
-
----
-
-## 🚨 重要な注意事項（全AI共通）
-
-### Style欄とExclude欄の分離
-- **絶対禁止**: Exclude要素をStyle欄に含めない
-- Style欄とExclude欄は**完全に独立した別の入力欄**
-- Suno.comのAdvanced Optionsを展開してExclude欄を表示
-
-### 情報源の透明性
-- 使用した情報源（Wikipedia、Spotify等）を必ず報告
-- URLを含めて明示
-
-### 禁止語の回避
-- MASTER_REFERENCEの禁止語リストを厳守
-- 著作権侵害のリスクを回避
-
-### メタタグの正しい使用
-- `[meta.vibe]`、`[meta.mood]`等を適切に配置
-- 最初の20-30語が最も影響力が大きい
-
----
-
-## 🔗 関連リンク
-
-- **Suno公式サイト**: https://suno.com
-- **Suno Create**: https://suno.com/create
-- **GitHub Repository**: https://github.com/usedhonda/sunomanual
-- **Jack Righteous Guide**: https://www.reddit.com/r/SunoAI/comments/1d0mh5b/
-- **Suno Wiki**: https://sunoaiwiki.com
-
----
-
-## 📜 License & Credit
-
-Created by **usedhonda**
-Licensed under **CC BY-NC 4.0（表示—非営利）**
-
-> 🧭 **要約：**
-> このマニュアルは非営利目的で自由に使用・改変可能です。
-> 営利利用には著作者の許可が必要です。
-
----
-
-## 🆕 Version History
+### 3.1.0 (2026-03-28)
+- README を公開向けに全面整理
+- V5.5 音声条件付けワークフローを反映
+- Cover / Sample / Inspo の使い分けを導線に追加
+- Custom GPT 用 README への導線を整理
 
 ### 3.0.0 (2026-03-27)
-- **V5.5対応**: Voices、Custom Models、My Taste、タグ形式Style、アノテーションタグ対応
-- Style欄をショートタグ形式（カンマ区切り名詞句）に更新
-- アノテーションタグ `[SECTION - description]` サポート追加
-- Exclude推奨数を2-5項目に明確化
-- 全フローファイルをV5.5互換に更新
+- V5.5 対応
+- Voices / Custom Models / My Taste を反映
+- Style タグ形式とアノテーションタグを整理
 
-### 2.0.0 (2025-01-24)
-- **全面リニューアル**: Atlas専用からユニバーサルAIエージェント対応に変更
-- ChatGPT、Claude、Gemini等すべてのAIで使用可能
-- AI向け自動読み込み指示を追加
-- 各AIエージェントごとの使用方法を明記
-
-### 1.1.0
-- Atlas Auto-Agent機能追加
-- Style/Exclude欄の分離強化
+### 2.0.0
+- AI エージェント横断で使える構成に再編
 
 ### 1.0.0
-- 初回リリース
-
----
-
-**🎵 さあ、あなたの使うAIエージェントでSuno V5/V5.5プロンプトを生成しましょう！**
+- 初回公開
