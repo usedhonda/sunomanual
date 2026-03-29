@@ -8,7 +8,7 @@ This file contains the exact output templates. The GPT must follow these structu
 
 **🚨 Lyrics are sacred — NEVER cut, shorten, or modify user-provided lyrics.**
 **Total limit: 4500 chars (from "# META" to "=== LYRICS END ==="). Suno max is 5000.**
-**META must be compact: 200-400 chars MAX.** Lyrics get the rest.
+**META target: 400-600 chars.** No per-section arrays — annotation tags carry that info.
 **Budget: Count lyrics chars first → META fits in (4500 - lyrics chars).**
 **ALL metadata MUST be in English. Only lyrics text may be Japanese (hiragana only).**
 **All output characters must be within JIS X 0208 range.**
@@ -16,12 +16,23 @@ This file contains the exact output templates. The GPT must follow these structu
 ```yaml
 # META (hints; do not sing)
 version: v5.5
-meta: { tempo: <int>, key: "<e.g., F# major>", sig: "4/4", vibe: "<3-5 word vibe>" }
+meta:
+  tempo: <int>
+  key: "<e.g., F# major>"
+  signature: "4/4"
+  form: "<concise section flow, e.g., intro-v1-chorus-v2-chorus-bridge-chorus-outro>"
+  vibe: "<3-5 word ENGLISH vibe>"
 language: "Japanese"
 vocals:
-  - { id: F, tone: "<2-3 adjectives>" }
-  - { id: M, tone: "<2-3 adjectives>" }
-hints: "<1 line: phrasing, mix, constraints>"
+  parts:
+    - { id: F, tone: ["<2-3 adjectives>"] }
+    - { id: M, tone: ["<2-3 adjectives>"] }
+  rules:
+    - "<1 line: phrasing style, harmony approach>"
+production_notes:
+  - "<1 line: key mix constraints, instrument limits>"
+notes:
+  - "lock tempo/key across all sections"
 === LYRICS START (do not sing tags) ===
 
 [Verse 1 - intimate, acoustic, close vocal]
@@ -36,7 +47,7 @@ hints: "<1 line: phrasing, mix, constraints>"
 === LYRICS END ===
 ```
 
-**Why compact META?** Annotation tags like `[Verse 1 - description]` already carry production hints. The old `sections` array with per-section vocals/cues/remix_hints was redundant and ate ~2000 chars. All section-level detail goes into the annotation tags in the lyrics.
+**No per-section arrays.** The old `sections` array (vocals/cues/remix_hints per section) ate ~2000 chars. Annotation tags like `[Verse 1 - description]` already carry production hints in the lyrics. META stays global-only.
 
 ### Kanji → Hiragana Conversion Examples
 - 愛してる → あいしてる
@@ -59,8 +70,8 @@ The `sections` in YAML and the lyrics sections MUST exactly match the input lyri
 
 ### Character Limit Overflow — Reduction Priority
 If YAML block exceeds 4500 characters, reduce META only (NEVER touch lyrics):
-1. **Remove hints line**
-2. **Shorten vocal tone to 1 adjective each**
+1. **Shorten production_notes / notes to minimal**
+2. **Compress vocals.rules to shortest form**
 3. **Shorten annotation tags in lyrics to 1-2 words**
 🚨 **Lyrics text reduction is FORBIDDEN.** User-provided lyrics must appear in full, unmodified.
 

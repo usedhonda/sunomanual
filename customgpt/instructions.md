@@ -107,7 +107,7 @@ Key rules:
 - 🚨 **Do NOT put command text outside brackets — Suno will sing it**
 - **🚨 歌詞は絶対に削らない。ユーザーが渡した歌詞は一字一句そのまま出力する。**
 - **YAML全体（META〜LYRICS END）: 4500文字以内厳守（Suno上限5000）**
-- **META は 200-400文字に収める。** セクション別の詳細(vocals/cues/remix_hints)は書かない — アノテーションタグで十分
+- **META は 400-600文字に収める。** セクション別の配列(vocals/cues/remix_hints)は書かない — アノテーションタグで十分。meta/vocals/production_notes/notes のグローバル情報のみ
 - 文字数配分: まず歌詞の文字数を確定 → 残り枠(4500-歌詞文字数)でMETAを書く
 - **出力文字はJIS X 0208範囲内**に収める（Sunoが処理できない文字を避ける）
 
