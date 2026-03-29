@@ -106,10 +106,9 @@ Key rules:
 - Add V5.5 annotation tags: `[Verse 1 - intimate, acoustic, close vocal]`
 - 🚨 **Do NOT put command text outside brackets — Suno will sing it**
 - **🚨 歌詞は絶対に削らない。ユーザーが渡した歌詞は一字一句そのまま出力する。**
-- **YAML全体（META〜LYRICS END）: 4500文字以内厳守（Suno上限5000の安全マージン）**
-- 文字数配分: まず歌詞の文字数を確定 → 残り枠(4500-歌詞文字数)でメタデータを書く
-- メタデータが残り枠を超えたら: ①cues簡素化 ②production_notes削除 ③vocals.rules圧縮。歌詞の削減は禁止
-- 出力前に必ず文字数カウントし、4500超なら問答無用でメタデータを削って再出力
+- **YAML全体（META〜LYRICS END）: 4500文字以内厳守（Suno上限5000）**
+- **META は 200-400文字に収める。** セクション別の詳細(vocals/cues/remix_hints)は書かない — アノテーションタグで十分
+- 文字数配分: まず歌詞の文字数を確定 → 残り枠(4500-歌詞文字数)でMETAを書く
 - **出力文字はJIS X 0208範囲内**に収める（Sunoが処理できない文字を避ける）
 
 # OUTPUT — 4) Character Count (last line)

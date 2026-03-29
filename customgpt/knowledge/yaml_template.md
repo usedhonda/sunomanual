@@ -6,50 +6,23 @@ This file contains the exact output templates. The GPT must follow these structu
 
 ## YAML Template (Pattern B: URL + Lyrics)
 
-**Total limit: 4500 characters (from "# META" to "=== LYRICS END ==="). Suno max is 5000; keep 500 margin.**
 **🚨 Lyrics are sacred — NEVER cut, shorten, or modify user-provided lyrics.**
-**Budget: Count lyrics chars first → metadata must fit in (4500 - lyrics chars).**
-**Metadata target: 600-800 chars. If lyrics are long, compress metadata further.**
-**Before output: count total chars. If over 4500, cut metadata until it fits. Never cut lyrics.**
+**Total limit: 4500 chars (from "# META" to "=== LYRICS END ==="). Suno max is 5000.**
+**META must be compact: 200-400 chars MAX.** Lyrics get the rest.
+**Budget: Count lyrics chars first → META fits in (4500 - lyrics chars).**
 **ALL metadata MUST be in English. Only lyrics text may be Japanese (hiragana only).**
 **All output characters must be within JIS X 0208 range.**
 
 ```yaml
 # META (hints; do not sing)
 version: v5.5
-meta:
-  tempo: <int>
-  key: "<e.g., F# major>"
-  signature: "4/4"
-  form: "<concise ENGLISH form summary>"
-  vibe: "<3-5 word ENGLISH vibe>"  # CRITICAL: used for anchoring in Style (first+last line)
+meta: { tempo: <int>, key: "<e.g., F# major>", sig: "4/4", vibe: "<3-5 word vibe>" }
 language: "Japanese"
 vocals:
-  parts:
-    - { id: F, name: "Female Lead", gender: female, tone: ["airy", "smooth", "expressive"] }
-    - { id: M, name: "Male Harmony", gender: male, tone: ["warm", "supportive"] }
-  rules:
-    - "smooth phrasing with subtle vibrato; light breaths"
-    - "close-harmony doubles on chorus for lift"
-sections:
-  - name: <must mirror input lyrics section exactly>
-    vocals:
-      lead: <F or M>
-      harmony: { <opposite>: "<short English note or empty>" }
-    cues:
-      - "<English dynamic instruction, e.g., 'Rhodes pad entrance; string swell bar 4'>"
-    remix_hints:
-      weirdness: "<35-70%>"
-      style_influence: "<45-85%>"
-      audio_influence: "<0% or 25-70% if Cover/Sample/Voices>"
-  # repeat for each section in the input lyrics
-production_notes:
-  - "no lead guitar in chorus"
-  - "keep mid-range instruments to 2-3 max in verse"
-notes:
-  - "lock tempo/key across all sections"
+  - { id: F, tone: "<2-3 adjectives>" }
+  - { id: M, tone: "<2-3 adjectives>" }
+hints: "<1 line: phrasing, mix, constraints>"
 === LYRICS START (do not sing tags) ===
-# V5.5 WARNING: Any text outside section tags WILL be sung.
 
 [Verse 1 - intimate, acoustic, close vocal]
 <lyrics from input, all kanji→hiragana, katakana and English kept as-is>
@@ -62,6 +35,8 @@ notes:
 
 === LYRICS END ===
 ```
+
+**Why compact META?** Annotation tags like `[Verse 1 - description]` already carry production hints. The old `sections` array with per-section vocals/cues/remix_hints was redundant and ate ~2000 chars. All section-level detail goes into the annotation tags in the lyrics.
 
 ### Kanji → Hiragana Conversion Examples
 - 愛してる → あいしてる
@@ -83,11 +58,11 @@ The `sections` in YAML and the lyrics sections MUST exactly match the input lyri
 - If input has [Verse], [Chorus], [Verse], [Chorus], [Bridge], [Chorus] — output must have exactly those 6 sections in that order
 
 ### Character Limit Overflow — Reduction Priority
-If YAML block exceeds 4500 characters, reduce metadata only (NEVER touch lyrics):
-1. **Simplify cues** (highest priority — cut to 1 short line per section)
-2. **Reduce production_notes / notes** (keep 1-2 items only)
-3. **Compress vocals.rules** (1-2 lines)
-🚨 **Lyrics reduction is FORBIDDEN.** User-provided lyrics must appear in full.
+If YAML block exceeds 4500 characters, reduce META only (NEVER touch lyrics):
+1. **Remove hints line**
+2. **Shorten vocal tone to 1 adjective each**
+3. **Shorten annotation tags in lyrics to 1-2 words**
+🚨 **Lyrics text reduction is FORBIDDEN.** User-provided lyrics must appear in full, unmodified.
 
 ---
 
