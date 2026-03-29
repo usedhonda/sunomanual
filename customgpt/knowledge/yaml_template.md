@@ -6,9 +6,13 @@ This file contains the exact output templates. The GPT must follow these structu
 
 ## YAML Template (Pattern B: URL + Lyrics)
 
-**Total character limit: 4000 characters (from "# META" to "=== LYRICS END ===")**
-**Metadata target: 800-1000 chars. Lyrics use the rest.**
+**Total limit: 4500 characters (from "# META" to "=== LYRICS END ==="). Suno max is 5000; keep 500 margin.**
+**🚨 Lyrics are sacred — NEVER cut, shorten, or modify user-provided lyrics.**
+**Budget: Count lyrics chars first → metadata must fit in (4500 - lyrics chars).**
+**Metadata target: 600-800 chars. If lyrics are long, compress metadata further.**
+**Before output: count total chars. If over 4500, cut metadata until it fits. Never cut lyrics.**
 **ALL metadata MUST be in English. Only lyrics text may be Japanese (hiragana only).**
+**All output characters must be within JIS X 0208 range.**
 
 ```yaml
 # META (hints; do not sing)
@@ -79,11 +83,11 @@ The `sections` in YAML and the lyrics sections MUST exactly match the input lyri
 - If input has [Verse], [Chorus], [Verse], [Chorus], [Bridge], [Chorus] — output must have exactly those 6 sections in that order
 
 ### Character Limit Overflow — Reduction Priority
-If YAML block exceeds 4000 characters, reduce in this order:
+If YAML block exceeds 4500 characters, reduce metadata only (NEVER touch lyrics):
 1. **Simplify cues** (highest priority — cut to 1 short line per section)
 2. **Reduce production_notes / notes** (keep 1-2 items only)
 3. **Compress vocals.rules** (1-2 lines)
-4. **Last resort: shorten lyrics** (2-3 lines per section)
+🚨 **Lyrics reduction is FORBIDDEN.** User-provided lyrics must appear in full.
 
 ---
 
