@@ -154,6 +154,43 @@ Annotation text is NOT sung — it's a production instruction to Suno.
 - Subtle strength first (not Standard)
 - If still harsh: try staged Remaster (v4.5 → v5 → v5.5)
 - Results are source-dependent — not guaranteed
+- If Cover changes too much: treat Remaster as a lighter full-song replace/regenerate path
+- Franken-track workflow: stitch best sections externally, then Remaster to unify tone
+
+### Performance Direction in Style
+- V5.5 responds better to performance-direction prose than pure tag soup in some cases
+- Use role labels inside Style:
+  - `Verse: restrained, talk-sung, conversational`
+  - `Chorus: louder, rougher, borderline shouted`
+  - `Band: heavy, slightly behind the beat`
+- Best use case: when genre is correct but delivery/attitude is wrong
+- Caution: over-hyped directives can produce exaggerated ad-libs later in the song
+
+### [studio recording] Tag for Anti-Live Control
+- Problem: v5.5 Cover may inject fake crowd / clapping / "live" ambience
+- Fix:
+  - Write Style as full-sentence environment control, not only comma tags
+  - Put `[studio recording]` at the top of Lyrics
+- Example Style:
+  - `Remove fake crowd cheering and clapping.`
+  - `This should feel like a small studio room, not a stadium.`
+  - `Keep the lead vocal controlled, not shouted.`
+- Use when negative prompting alone fails
+
+### v5.5 → v5.0 Downgrade Cleanup
+- Workaround for hiss / white noise / top-end shimmer in v5.5 outputs
+- Two paths:
+  - v5.5 song → v5.0 Subtle Remaster
+  - v5.5 song → v5.0 Cover
+- This is a cleanup pass, not a permanent fix
+
+### Model Split Workflow
+- If vocals are better in v5.5 but accompaniment is steadier in v4.5+/v5:
+  1. Build instrumental in v4.5+ or v5
+  2. Generate vocals in v5.5 using same lyrics/structure
+  3. Export stems and replace/combine externally
+- Best use case: keep v5.5 vocal expression without inheriting unstable v5.5 backing
+- Caution: stem reverb / phase / ambience may not align cleanly
 
 ---
 
