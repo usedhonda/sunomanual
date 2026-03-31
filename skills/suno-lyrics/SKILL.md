@@ -34,7 +34,7 @@ version: 1.0.0
 | `knowledge/rap_and_flow.md` | フロー類型、韻スキーム、16小節構成、日本語ラップ | ラップ/Hip Hop時 |
 | `knowledge/english_lyrics.md` | 英語韻体系、プロソディ、バイリンガル戦略 | 英語/バイリンガル時 |
 
-パスのルートは `/Users/usedhonda/projects/docs/sunomanual/`。
+パスはリポジトリルートからの相対パス。
 
 ---
 

@@ -26,7 +26,7 @@ version: 1.0.0
 
 ## Knowledge Files
 
-必要に応じて `Read` ツールで参照する。パスのルートは `/Users/usedhonda/projects/docs/sunomanual/`。
+必要に応じて `Read` ツールで参照する。パスはリポジトリルートからの相対パス。
 
 | ファイル | 内容 | いつ読むか |
 |---------|------|-----------|
