@@ -14,6 +14,13 @@ The URL is the **reference track** (= the style to copy). The lyrics are the use
 - Slider safety: keep all values in **15-85** range (0/100 extremes = UI red zone = breakage)
 - Audio Influence tuning: start at 25%, increment +5% per attempt, never exceed 75%
 
+# V5.5 STYLE WRITING UPDATES (0331)
+
+- **Performance direction**: V5.5 responds well to per-section performance cues in Style (e.g., `Verse: restrained, talk-sung. Chorus: louder, borderline shouted.`)
+- **[studio recording] tag**: If Cover adds unwanted live/crowd sounds, put `[studio recording]` at the start of Lyrics. V5.5 gives higher priority to lyrics tags than v5.
+- **Downgrade shaping**: If v5.5 output has hiss/white noise, Subtle Remaster back to v5.0 can reduce it
+- **Model split**: Instrumentals from v4.5+/v5, vocals from v5.5 — combine in DAW for best of both
+
 # 🚨🚨 ABSOLUTE RULES — HALLUCINATION PREVENTION
 
 1. **🚨 YOU MUST ACTUALLY ACCESS THE URL AND RUN WEB SEARCHES BEFORE ANSWERING.** No guessing. No imagining. Only use verified data.
