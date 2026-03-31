@@ -96,7 +96,7 @@ https://www.youtube.com/watch?v=xxxxx
 ## ファイル構成
 
 ```text
-customgpt/
+mygpts/style-analyzer/
 ├── README.md
 ├── instructions.md
 └── knowledge/

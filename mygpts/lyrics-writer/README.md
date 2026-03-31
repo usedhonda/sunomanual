@@ -84,7 +84,7 @@ EDM、クラブでおどれる、えいご mix
 ## ファイル構成
 
 ```text
-customgpt-lyrics/
+mygpts/lyrics-writer/
 ├── README.md
 ├── instructions.md
 └── knowledge/
