@@ -11,10 +11,16 @@ docs/
 .DS_Store
 Thumbs.db
 
+# Codex
+.codex/
+
 # Editor
 .vscode/
 .idea/
 *.swp
+
+# Claude Code status
+.cc-status-bar*
 
 # Temp & secrets
 *.tmp
