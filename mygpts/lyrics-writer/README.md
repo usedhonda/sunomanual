@@ -38,11 +38,13 @@ ChatGPT → `Explore GPTs` → `Create` → `Configure`
 
 ### 4. Knowledge
 
-以下を Knowledge にアップロードします。
+`knowledge/` フォルダ（リポジトリルート直下）から以下5ファイルをアップロードします。
 
 1. `knowledge/lyric_craft.md`
 2. `knowledge/song_structures.md`
 3. `knowledge/style_catalog.md`
+4. `knowledge/rap_and_flow.md`
+5. `knowledge/english_lyrics.md`
 
 ### 5. Capabilities
 
@@ -86,9 +88,12 @@ EDM、クラブでおどれる、えいご mix
 ```text
 mygpts/lyrics-writer/
 ├── README.md
-├── instructions.md
-└── knowledge/
-    ├── lyric_craft.md
-    ├── song_structures.md
-    └── style_catalog.md
+└── instructions.md
+
+knowledge/                  ← リポジトリルート（共通）
+├── lyric_craft.md          ← アップロード対象
+├── song_structures.md      ← アップロード対象
+├── style_catalog.md        ← アップロード対象
+├── rap_and_flow.md         ← アップロード対象
+└── english_lyrics.md       ← アップロード対象
 ```

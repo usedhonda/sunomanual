@@ -28,11 +28,11 @@ version: 1.0.0
 
 | ファイル | 内容 | いつ読むか |
 |---------|------|-----------|
-| `mygpts/lyrics-writer/knowledge/lyric_craft.md` | 伏線、韻、フック、禁止事項、感情アーク、コーチング仕様 | **初回は必ず読む** |
-| `mygpts/lyrics-writer/knowledge/song_structures.md` | 曲構成パターン、セクション機能、エネルギーカーブ | **初回は必ず読む** |
-| `mygpts/lyrics-writer/knowledge/style_catalog.md` | ジャンル別テンプレ、アノテーション語彙、フック特性 | ジャンル確認時 |
-| `mygpts/lyrics-writer/knowledge/rap_and_flow.md` | フロー類型、韻スキーム、16小節構成、日本語ラップ | ラップ/Hip Hop時 |
-| `mygpts/lyrics-writer/knowledge/english_lyrics.md` | 英語韻体系、プロソディ、バイリンガル戦略 | 英語/バイリンガル時 |
+| `knowledge/lyric_craft.md` | 伏線、韻、フック、禁止事項、感情アーク、コーチング仕様 | **初回は必ず読む** |
+| `knowledge/song_structures.md` | 曲構成パターン、セクション機能、エネルギーカーブ | **初回は必ず読む** |
+| `knowledge/style_catalog.md` | ジャンル別テンプレ、アノテーション語彙、フック特性 | ジャンル確認時 |
+| `knowledge/rap_and_flow.md` | フロー類型、韻スキーム、16小節構成、日本語ラップ | ラップ/Hip Hop時 |
+| `knowledge/english_lyrics.md` | 英語韻体系、プロソディ、バイリンガル戦略 | 英語/バイリンガル時 |
 
 パスのルートは `/Users/usedhonda/projects/docs/sunomanual/`。
 

@@ -72,27 +72,25 @@ sunomanual/
 │   ├── suno_flow_translate.md
 │   ├── suno_flow_remix.md
 │   └── suno_flow_album.md
-├── mygpts/
-│   ├── style-analyzer/                 # Style Analyzer GPT
+├── knowledge/                          # 共通ナレッジ（原本）
+│   ├── lyric_craft.md
+│   ├── song_structures.md
+│   ├── style_catalog.md
+│   ├── rap_and_flow.md
+│   ├── english_lyrics.md
+│   ├── suno_v55_reference.md
+│   └── yaml_template.md
+├── mygpts/                             # ChatGPT CustomGPT
+│   ├── style-analyzer/
 │   │   ├── README.md
-│   │   ├── instructions.md
-│   │   └── knowledge/
-│   │       ├── suno_v55_reference.md
-│   │       ├── style_catalog.md
-│   │       └── yaml_template.md
-│   └── lyrics-writer/                  # Lyrics Writer GPT
+│   │   └── instructions.md
+│   └── lyrics-writer/
 │       ├── README.md
-│       ├── instructions.md
-│       └── knowledge/
-│           ├── lyric_craft.md
-│           ├── song_structures.md
-│           ├── style_catalog.md
-│           ├── rap_and_flow.md
-│           └── english_lyrics.md
-├── skills/
-│   ├── suno-lyrics/                    # Claude Code: 歌詞生成+イテレーション
+│       └── instructions.md
+├── skills/                             # Claude Code Skills
+│   ├── suno-lyrics/
 │   │   └── SKILL.md
-│   └── suno-style/                     # Claude Code: Style/Exclude/YAML生成
+│   └── suno-style/
 │       └── SKILL.md
 ```
 

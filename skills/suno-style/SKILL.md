@@ -30,9 +30,9 @@ version: 1.0.0
 
 | ファイル | 内容 | いつ読むか |
 |---------|------|-----------|
-| `mygpts/style-analyzer/knowledge/suno_v55_reference.md` | V5.5機能、メタタグ、スライダー、Cover/Sample/Inspo | **初回は必ず読む** |
-| `mygpts/style-analyzer/knowledge/yaml_template.md` | YAML+Style出力テンプレート | **初回は必ず読む** |
-| `mygpts/style-analyzer/knowledge/style_catalog.md` | ジャンルテンプレ、楽器タグ、プロダクション語彙 | ジャンル詳細確認時 |
+| `knowledge/suno_v55_reference.md` | V5.5機能、メタタグ、スライダー、Cover/Sample/Inspo | **初回は必ず読む** |
+| `knowledge/yaml_template.md` | YAML+Style出力テンプレート | **初回は必ず読む** |
+| `knowledge/style_catalog.md` | ジャンルテンプレ、楽器タグ、プロダクション語彙 | ジャンル詳細確認時 |
 
 ---
 

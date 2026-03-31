@@ -39,7 +39,7 @@ ChatGPT → `Explore GPTs` → `Create` → `Configure`
 
 ### 4. Knowledge
 
-以下を Knowledge にアップロードします。
+`knowledge/` フォルダ（リポジトリルート直下）から以下3ファイルをアップロードします。
 
 1. `knowledge/suno_v55_reference.md`
 2. `knowledge/style_catalog.md`
@@ -98,9 +98,10 @@ https://www.youtube.com/watch?v=xxxxx
 ```text
 mygpts/style-analyzer/
 ├── README.md
-├── instructions.md
-└── knowledge/
-    ├── style_catalog.md
-    ├── suno_v55_reference.md
-    └── yaml_template.md
+└── instructions.md
+
+knowledge/                  ← リポジトリルート（共通）
+├── suno_v55_reference.md   ← アップロード対象
+├── style_catalog.md        ← アップロード対象
+└── yaml_template.md        ← アップロード対象
 ```
