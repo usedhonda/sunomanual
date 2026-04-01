@@ -205,3 +205,53 @@ notes:
 - [ ] 歌詞あり: YAML全体 ≤4500文字
 - [ ] meta.tempo == Style BPM, meta.key == Style Key
 - [ ] ジャンル最大2ペア
+
+---
+
+## Suno 自動入力（Tampermonkey連携）
+
+出力完了後、**「Sunoに送る？」とユーザーに確認**し、承認されたら Tampermonkey 対応URLでブラウザを開く。
+
+### 前提
+- ユーザーのブラウザに Tampermonkey + monkey_prompt スクリプトがインストール済み
+- macOS の `open` コマンドでブラウザを起動
+
+### 送信データのマッピング
+
+| 生成結果 | JSON フィールド | 備考 |
+|---------|---------------|------|
+| Style Block のテキスト | `styleAndFeel` | meta.vibe 行は除く。英語のみ |
+| Exclude テキスト | `excludeStyles` | カンマ区切り |
+| 歌詞（Pattern B時） | `lyrics` | セクションタグ+アノテーション+歌詞全文 |
+| 曲タイトル（推定） | `songName` | 歌詞から推定、またはユーザー指定 |
+| スライダー推奨値 | `weirdness`, `styleInfluence`, `audioInfluence` | デフォルト: 50, 70, 25 |
+
+### URL構築手順
+
+Bash ツールで以下の python3 スクリプトを実行する。変数部分を実際の生成結果で置換。
+
+```bash
+python3 -c "
+import json, urllib.parse, subprocess
+
+data = json.dumps({
+    'styleAndFeel': '''STYLE_TEXT_HERE''',
+    'songName': '''SONG_NAME_HERE''',
+    'lyrics': '''LYRICS_TEXT_HERE''',
+    'excludeStyles': '''EXCLUDE_TEXT_HERE''',
+    'weirdness': 50,
+    'styleInfluence': 70,
+    'audioInfluence': 25
+}, ensure_ascii=False)
+
+url = 'https://suno.com/create#suno=' + urllib.parse.quote(data, safe='')
+subprocess.run(['open', url])
+"
+```
+
+**注意:**
+- `'''` (トリプルクォート) で改行を含む歌詞テキストを安全に埋め込む
+- `ensure_ascii=False` で日本語（ひらがな）をそのまま保持
+- `urllib.parse.quote(safe='')` で全特殊文字をエンコード
+- Pattern A（URLのみ）の場合: `lyrics` と `songName` は空文字にする
+- スライダー値はユーザーが指定しない限りデフォルト値を使う
