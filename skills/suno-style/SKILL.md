@@ -1,10 +1,11 @@
 ---
 name: suno-style
 description: |
-  Suno V5.5 向け Style/Exclude/YAML 生成。YouTube URL を投げると参照曲を調査し、Style Block + Exclude + YAML を出力。
-  歌詞も一緒に渡すと、歌詞付きYAMLパッケージを生成。
-  トリガー: /suno-style, スタイル作って, style prompt
-argument-hint: "<YouTube URL> [歌詞テキスト（任意）]"
+  Suno V5.5 向け Style/Exclude/YAML 生成。自由テキストで指示でき、足りない情報は対話で収集する。
+  参照曲URL、ジャンル指示、歌詞ファイルなど何でも受け付ける。
+  生成後は Tampermonkey 連携で Suno に自動入力可能。
+  トリガー: /suno-style, スタイル作って, style prompt, Sunoのスタイル
+argument-hint: "[任意 — 自然言語で指示可能]"
 allowed-tools:
   - Read
   - Bash
@@ -14,15 +15,15 @@ allowed-tools:
   - WebFetch
 compression-anchors:
   - "Suno V5.5 Style/Exclude/YAML生成スキル"
-  - "Pattern A=URL only, Pattern B=URL+Lyrics"
-  - "必ずWeb検索してBPM/Key/Genre/Instrumentsを調査"
-  - "Style英語のみ、YAML META英語、歌詞ひらがな"
-version: 1.0.0
+  - "自由テキスト入力 → 対話で情報収集"
+  - "URL調査 or ジャンル指示からStyle生成"
+  - "Tampermonkey連携でSunoに自動入力"
+version: 2.0.0
 ---
 
 # Suno Style Analyzer — Claude Code Skill
 
-参照トラック（YouTube URL）を調査し、Suno V5.5 用の Style/Exclude/YAML を生成する。
+Suno V5.5 用の Style/Exclude/YAML を生成する。自由テキストで指示でき、足りない情報は対話で収集する。
 
 ## Knowledge Files
 
@@ -36,45 +37,96 @@ version: 1.0.0
 
 ---
 
-## 入力パターン判定
+## 入力
 
-**Pattern A（URL only）**: YouTube URL のみ → 調査レポート + Style + Exclude
-**Pattern B（URL + Lyrics）**: YouTube URL + 歌詞テキスト → 調査レポート + YAML + Style + Exclude
+引数は不要。`/suno-style` だけで発動し、必要な情報は対話で収集する。
 
-URL が参照トラック（= コピーしたいスタイル）。歌詞はユーザーのオリジナル（= そのスタイルで歌う歌詞）。
+引数やコマンドに自然言語が付いていれば、そこから読み取れるものは読み取る:
+
+| 入力例 | 読み取れるもの | 残りの対話 |
+|-------|-------------|-----------|
+| `/suno-style` | なし | 全て聞く |
+| `/suno-style 90年代シティポップ風` | ジャンル・雰囲気 | 歌詞の有無を聞く |
+| `/suno-style https://youtube.com/...` | 参照曲URL | 歌詞の有無を聞く |
+| `/suno-style https://youtube.com/... 歌詞は ~/lyrics.txt` | URL + 歌詞パス | 即実行 |
+| `/suno-style ピアノとサックスのジャズ、歌詞つき` | ジャンル・楽器 + 歌詞フラグ | 歌詞の入力方法を聞く |
+| `Sunoのスタイル作って。この曲みたいに（URL）で、暗めにして` | URL + 雰囲気調整 | 歌詞の有無を聞く |
+
+### 対話フロー
+
+```
+Step A: スタイルの方向性
+  「どんなスタイルにしますか？」
+  受け付ける入力:
+  - YouTube URL（参照曲として調査する）
+  - ジャンル・雰囲気の自由テキスト（「90年代R&B」「暗いエレクトロ」）
+  - 「前回と同じ」（会話コンテキストから再利用）
+  - 楽器指定（「ピアノ中心」「ギターとドラムだけ」）
+  - 複合指示（「この曲みたいだけどもっとテンポ速く」）
+
+Step B: 歌詞の有無
+  「歌詞はありますか？（なければ Style + Exclude のみ出力します）」
+  受け付ける入力:
+  - ファイルパス（~/lyrics.txt, ./歌詞.md）
+  - その場でペーストされたテキスト
+  - 「なし」「今回はスタイルだけ」→ Style + Exclude のみ
+  - 「さっきのファイル」「さっき作った歌詞」（会話コンテキストから特定）
+  - 「/suno-lyrics で作ったやつ」（直近の歌詞生成結果を参照）
+
+Step C: 追加指示（任意）
+  読み取った情報に矛盾や不足がなければスキップ。
+  必要な場合のみ:
+  - BPM/Key の指定確認
+  - Cover/Sample/Inspo モードの確認
+  - スライダー値のカスタマイズ
+```
 
 ---
 
-## 🚨 絶対ルール — ハルシネーション防止
+## モード判定
 
-1. **URL に実際にアクセスし、Web検索してから回答する。** 推測・想像禁止。検証済みデータのみ使用
-2. **URL の曲（入力 a）のみ調査する。** アーティスト、ジャンル、BPM、キー、楽器編成を検索
-3. **🚨 歌詞（入力 b）は絶対に調査しない。** 既知の曲の歌詞であっても、その曲を調べない。歌詞は生テキストとして扱う
-4. **Style と Exclude は全て英語。** 日本語混入 = エラー
-5. **YAML メタデータは全て英語。** 歌詞テキストのみ日本語（ひらがな）可
+対話で収集した情報から、以下のモードを判定する:
+
+### Mode A: URL参照（参照曲あり）
+YouTube URL → Web検索でBPM/Key/Genre/Instruments調査 → Style生成
+
+### Mode B: テキスト指示（参照曲なし）
+ジャンル・雰囲気・楽器の自由テキスト → knowledgeファイル参照 → Style生成
+
+### 歌詞の有無（どちらのモードでも）
+- **歌詞あり** → Style + Exclude + YAML（歌詞付き）
+- **歌詞なし** → Style + Exclude のみ
+
+---
+
+## 🚨 絶対ルール
+
+1. **Mode A: URL調査時は必ずWeb検索してから回答する。** 推測・想像禁止
+2. **🚨 歌詞の元曲は絶対に調査しない。** 歌詞は生テキストとして扱う
+3. **Style と Exclude は全て英語。** 日本語混入 = エラー
+4. **YAML メタデータは全て英語。** 歌詞テキストのみ日本語（ひらがな）可
+5. **アーティスト名、曲名、アルバム名は Style に入れない**
 
 ---
 
 ## 出力順序
 
-### 0) 調査レポート（必ず最初）
-
-コードブロック外で:
+### 0) 調査レポート（Mode A のみ）
 
 ```
 ## 📋 調査報告
-### 参照曲（a）← 🚨 この曲の情報のみ使用
+### 参照曲
 - URL: <URL> | 曲名: <title> | アーティスト: <artist>
 
-### Web検索（aについて最低2件）
+### Web検索（最低2件）
 1. "<title> BPM" → <source URL> → 結果: <BPM>
 2. "<title> genre instruments" → <source URL> → 結果: <genre, instruments>
 
-### 推定根拠（全てaから）
+### 推定根拠
 Tempo: <X> BPM | Key: <Y> | Genre: <Z>（根拠: <source>）
-
-🚨 注意: 歌詞の元曲は調べていません。URLの曲情報のみ使用。
 ```
+
+Mode B の場合はスキップし、ユーザー指示を元に直接 Style を生成する。
 
 ### 1) Style（英語のみ、1000文字以内）
 
@@ -83,9 +135,9 @@ Tempo: <X> BPM | Key: <Y> | Genre: <Z>（根拠: <source>）
 
 <meta.vibe — 3-5 English words>
 
-- BPM: <from investigation>
-- Key: <from investigation>
-- Signature: <from investigation>
+- BPM: <from investigation or user input>
+- Key: <from investigation or user input>
+- Signature: <from investigation, default 4/4>
 
 - Genre & Era: <max 2-genre pair with era context>
 
@@ -108,7 +160,7 @@ Tempo: <X> BPM | Key: <Y> | Genre: <Z>（根拠: <source>）
 - 最大2ジャンルペア
 - アーティスト名、曲名、アルバム名は禁止
 - 目標 900-1000文字、絶対上限 1000文字
-- 全スペースを使い切る。調査結果を反映した詳細な記述
+- 全スペースを使い切る。詳細な記述
 
 **超過時の削減順序:** Arrangement Notes → Texture → 副形容詞 → Mix Vision/Vocal Production
 
@@ -122,7 +174,7 @@ Tempo: <X> BPM | Key: <Y> | Genre: <Z>（根拠: <source>）
 
 「no X」表現は使わない。アイテム名のみ。
 
-### 3) YAML + Lyrics（Pattern B のみ、4500文字以内）
+### 3) YAML + Lyrics（歌詞ありの場合のみ、4500文字以内）
 
 ```yaml
 # META (hints; do not sing)
@@ -194,7 +246,8 @@ notes:
 
 ## セルフバリデーション（出力前に確認）
 
-- [ ] 調査報告に実際のWeb検索結果がある
+- [ ] Mode A: 調査報告に実際のWeb検索結果がある
+- [ ] Mode B: ユーザー指示に基づいてknowledgeを参照した
 - [ ] 歌詞の元曲は調査していない
 - [ ] Style は100%英語、≤1000文字
 - [ ] meta.vibe が Style 冒頭と末尾にある
@@ -203,7 +256,6 @@ notes:
 - [ ] 歌詞あり: 漢字→ひらがな変換済み
 - [ ] 歌詞あり: セクションが入力と一致
 - [ ] 歌詞あり: YAML全体 ≤4500文字
-- [ ] meta.tempo == Style BPM, meta.key == Style Key
 - [ ] ジャンル最大2ペア
 
 ---
@@ -222,7 +274,7 @@ notes:
 |---------|---------------|------|
 | Style Block のテキスト | `styleAndFeel` | meta.vibe 行は除く。英語のみ |
 | Exclude テキスト | `excludeStyles` | カンマ区切り |
-| 歌詞（Pattern B時） | `lyrics` | セクションタグ+アノテーション+歌詞全文 |
+| 歌詞（あれば） | `lyrics` | セクションタグ+アノテーション+歌詞全文 |
 | 曲タイトル（推定） | `songName` | 歌詞から推定、またはユーザー指定 |
 | スライダー推奨値 | `weirdness`, `styleInfluence`, `audioInfluence` | デフォルト: 50, 70, 25 |
 
@@ -253,5 +305,5 @@ subprocess.run(['open', url])
 - `'''` (トリプルクォート) で改行を含む歌詞テキストを安全に埋め込む
 - `ensure_ascii=False` で日本語（ひらがな）をそのまま保持
 - `urllib.parse.quote(safe='')` で全特殊文字をエンコード
-- Pattern A（URLのみ）の場合: `lyrics` と `songName` は空文字にする
+- 歌詞なしの場合: `lyrics` と `songName` は空文字にする
 - スライダー値はユーザーが指定しない限りデフォルト値を使う
