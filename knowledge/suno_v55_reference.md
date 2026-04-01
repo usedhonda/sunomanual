@@ -139,10 +139,12 @@ Annotation text is NOT sung — it's a production instruction to Suno.
 | Situation | Recommended Mode | Settings |
 |-----------|-----------------|----------|
 | Faithful recreation of original | Cover | Audio 25% start, +5% increments |
-| Cover deviates/truncates | Sample (full-song range) | Weirdness low, Audio high |
+| Cover deviates/truncates | **Sample (full-song range)** | **Weird=0, Style=100, Audio=100** |
 | Lock melody/bridge | Inspo (3+ takes) | Weirdness 0, Style 50, Influence 85 |
 | Using Voices | Cover + minimize Style | All sliders start at 25 |
-| Metallic voice/sibilance | Remaster (Subtle) | Apply incrementally |
+| Metallic voice/sibilance | Remaster (Subtle) | Apply incrementally, multiple takes |
+| Vocals only upgrade | v5 instrumental → v5.5 Add Vocals | Audio 85-90% |
+| FX generation (riser/swoosh) | Studio: switch to v5 | Use Studio model dropdown |
 
 ### Decision Flow
 1. Start with Cover → if deviation → switch to Sample (full range)
@@ -156,6 +158,8 @@ Annotation text is NOT sung — it's a production instruction to Suno.
 - Results are source-dependent — not guaranteed
 - If Cover changes too much: treat Remaster as a lighter full-song replace/regenerate path
 - Franken-track workflow: stitch best sections externally, then Remaster to unify tone
+- **Strength guide**: Subtle = safest micro-fix, Normal = small change, High = near-complete regen
+- **Micro-fix pattern**: run Subtle multiple times, pick best take. Style: "Only fix: [specific issue]"
 
 ### Performance Direction in Style
 - V5.5 responds better to performance-direction prose than pure tag soup in some cases
@@ -187,10 +191,26 @@ Annotation text is NOT sung — it's a production instruction to Suno.
 ### Model Split Workflow
 - If vocals are better in v5.5 but accompaniment is steadier in v4.5+/v5:
   1. Build instrumental in v4.5+ or v5
-  2. Generate vocals in v5.5 using same lyrics/structure
+  2. Generate vocals in v5.5 using Add Vocals / Cover (Audio: 85-90% recommended)
   3. Export stems and replace/combine externally
 - Best use case: keep v5.5 vocal expression without inheriting unstable v5.5 backing
+- Audio=100% maximizes preservation but increases glitch risk
+- ⚠️ Add Vocals path may not support Voices/Persona — use Cover if Persona is needed
 - Caution: stem reverb / phase / ambience may not align cleanly
+
+### Whole-song Sampling (Cover Alternative)
+- When Cover breaks mid-song or deviates too far, use **Sample mode** with full-song selection
+- **Recipe**: Weirdness=0% / Style=100% / Audio=100% (maximum preservation)
+- Alternative: Weirdness low / Style mid-high / Audio max
+- Style example: `Keep exact melody and chords. Only improve: tighter drums, cleaner bass, reduce hiss.`
+- More stable than Cover for maintaining song structure while improving quality
+- Note: endings and break positions may shift slightly
+
+### Studio Model Switch
+- Studio has a small dropdown in the Style field to switch between v5.5 / v5 / v4.5
+- Use case: v5.5 struggles with certain FX (riser, swoosh) — switch to v5 for those
+- Style/Lyrics character limits may fluctuate (1000/5000 vs 200/1250) depending on UI state
+- Not all users may see the same UI (gradual rollout possible)
 
 ---
 
