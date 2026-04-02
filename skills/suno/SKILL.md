@@ -598,11 +598,18 @@ ffmpeg -i "<mastered.wav>" -map_metadata -1 \
   -metadata genre="<ジャンル>" -metadata date="<YYYY>" \
   -c copy "<clean.wav>"
 
-# MP3 も同様
-ffmpeg -i "<mastered.mp3>" -map_metadata -1 \
+# カバー画像を縮小（300px, 低画質）
+ffmpeg -i "<cover.png>" -vf "scale=300:300:force_original_aspect_ratio=decrease" -q:v 8 "/tmp/cover_thumb.jpg"
+
+# MP3: メタ情報 + カバー画像（アルバムアート）埋め込み
+ffmpeg -i "<mastered.mp3>" -i "/tmp/cover_thumb.jpg" -map 0:a -map 1:0 \
+  -map_metadata -1 \
   -metadata title="<曲タイトル>" -metadata artist="<アーティスト名>" \
   -metadata genre="<ジャンル>" -metadata date="<YYYY>" \
-  -c copy "<clean.mp3>"
+  -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (front)" \
+  -disposition:v attached_pic \
+  -c:a copy -c:v mjpeg \
+  "<clean.mp3>"
 ```
 
 | 出力ファイル | 用途 |
