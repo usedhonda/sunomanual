@@ -585,8 +585,8 @@ from pedalboard.io import AudioFile
 with AudioFile('songs/<曲名>/<曲名>_mastered.wav', 'w', samplerate, processed.shape[0], bit_depth=24) as f:
     f.write(processed)
 
-# MP3 320kbps（配布・ストリーミング用）
-with AudioFile('songs/<曲名>/<曲名>_mastered.mp3', 'w', samplerate, processed.shape[0], quality='320k') as f:
+# MP3 160kbps（配布・ストリーミング用）
+with AudioFile('songs/<曲名>/<曲名>_mastered.mp3', 'w', samplerate, processed.shape[0], quality='160k') as f:
     f.write(processed)
 ```
 
@@ -615,7 +615,7 @@ ffmpeg -i "<mastered.mp3>" -i "/tmp/cover_thumb.jpg" -map 0:a -map 1:0 \
 | 出力ファイル | 用途 |
 |------------|------|
 | `<曲名>_mastered.wav` | 高品質アーカイブ、DAW取り込み |
-| `<曲名>_mastered.mp3` | 配布、ストリーミング、SNS |
+| `<曲名>_mastered.mp3` | 配布用（160kbps + カバー画像埋め込み） |
 | `<曲名>_x.mp4` | X (Twitter) 投稿用動画 |
 
 ### 4-B. X (Twitter) アップロード用動画生成
