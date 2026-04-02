@@ -26,16 +26,7 @@ version: 2.0.0
 
 ## Knowledge Files
 
-必要に応じて以下を `Read` ツールで参照する。**毎回全部読む必要はない** — ジャンルに応じて必要なファイルだけ読む。
-
-**パスの探し方（初回に1回だけ実行）:**
-```bash
-# この SKILL.md の場所から sunomanual リポルートを特定
-SKILL_DIR="$(cd "$(dirname "SKILL.md のパス")/../.." && pwd)"
-# → $SKILL_DIR/knowledge/ にファイルがある
-```
-具体的には: この SKILL.md があるディレクトリの2階層上が sunomanual リポルート。
-`knowledge/` フォルダが見つからない場合は `find ~ -type d -name sunomanual -path '*/knowledge' 2>/dev/null | head -1` で探す。
+このスキルフォルダ内の `knowledge/` を `Read` ツールで参照する。パスはこの SKILL.md と同じディレクトリ基準。**毎回全部読む必要はない** — ジャンルに応じて必要なファイルだけ読む。
 
 | ファイル | 内容 | いつ読むか |
 |---------|------|-----------|
