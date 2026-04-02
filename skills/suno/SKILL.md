@@ -592,9 +592,23 @@ ffmpeg -loop 1 -i "<cover.png>" -i "<audio.wav>" \
   -r 1 -b:v 5k -crf 51 \
   -c:a aac -b:a <逆算したビットレート>k \
   -t <使用する秒数> \
+  -metadata title="<曲タイトル>" \
+  -metadata artist="<アーティスト名>" \
+  -metadata album="<アルバム名（あれば）>" \
+  -metadata genre="<ジャンル>" \
+  -metadata date="<YYYY>" \
+  -metadata comment="Made with Suno V5.5" \
   -shortest -movflags +faststart \
   "<output.mp4>"
 ```
+
+**メタ情報の取得元:**
+- `title` → 歌詞ファイルの frontmatter `title`、またはユーザー指定
+- `artist` → アーティストプロファイルの `name`
+- `genre` → アーティストプロファイルの `genres[0]`、または Step 3 で使ったジャンル
+- `date` → 作成年
+- `album` → ユーザー指定があれば。なければ省略
+- `comment` → 固定文 or ユーザー指定
 
 #### 手順
 1. カバー画像を特定（`artists/<name>-cover.png` またはユーザー指定）
