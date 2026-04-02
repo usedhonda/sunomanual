@@ -149,8 +149,11 @@ genres: ["<得意ジャンル>"]
 language: "<メイン言語>"
 tempo_range: "<BPM範囲>"
 source_channels: ["<ネタ元1>", "<ネタ元2>"]
+cover: "[[artists/<name>-cover.png]]"
 tags: [artist, suno]
 ---
+
+![[<name>-cover.png]]
 
 # <アーティスト名>
 
@@ -340,7 +343,7 @@ tags: [lyrics, suno]
 
 **1) 調査レポート（URL参照時のみ）**
 
-**2) Style（英語のみ、1000文字以内）**
+**2) Style（英語のみ、絶対上限 1000文字）**
 ```
 <meta.vibe>
 - BPM / Key / Signature
@@ -349,6 +352,16 @@ tags: [lyrics, suno]
 - Mix Vision / Texture / Vocal Production / Arrangement Notes
 <meta.vibe>（アンカリング）
 ```
+
+**🚨 Style 文字数チェック（必須）:**
+1. Style を生成したら**まず文字数を数える**
+2. 1000文字を超えていたら以下の順でトリムする:
+   - Arrangement Notes を短縮
+   - Texture を短縮
+   - 副形容詞を削除
+   - Mix Vision / Vocal Production を圧縮
+3. トリム後に**再カウント**し、1000文字以内を確認してから出力
+4. 1000文字以内になるまでこのループを繰り返す
 
 **3) Exclude（英語、1行、200文字以内、2-5項目）**
 
@@ -389,11 +402,13 @@ production_notes: ...
 | 曲タイトル | `songName` |
 | スライダー | `weirdness`, `styleInfluence`, `audioInfluence` |
 
-### URL構築
+### 送信方法: クリップボードモード（標準）
+
+日本語ひらがな歌詞は URL エンコードで膨張する（1文字→9文字）ため、クリップボードモードを標準にする。
 
 ```bash
 python3 -c "
-import json, urllib.parse, subprocess
+import json, subprocess
 data = json.dumps({
     'styleAndFeel': '''STYLE''',
     'songName': '''NAME''',
@@ -403,9 +418,16 @@ data = json.dumps({
     'styleInfluence': 70,
     'audioInfluence': 25
 }, ensure_ascii=False)
-url = 'https://suno.com/create#suno=' + urllib.parse.quote(data, safe='')
-subprocess.run(['open', url])
+subprocess.run(['pbcopy'], input=data.encode('utf-8'))
+subprocess.run(['open', 'https://suno.com/create#suno=clip'])
 "
+```
+
+**動作:** JSON をクリップボードにコピー → `#suno=clip` トリガーURL を開く → Tampermonkey がクリップボードから読み取る
+
+**フォールバック（短いデータ用）:** Style + Exclude のみ（歌詞なし）の場合は従来の直接ハッシュも使える:
+```bash
+url = 'https://suno.com/create#suno=' + urllib.parse.quote(data, safe='')
 ```
 
 ---

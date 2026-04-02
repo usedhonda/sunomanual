@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Suno AutoFill (sunomanual)
 // @namespace    https://github.com/usedhonda/sunomanual
-// @version      1.0.0
-// @description  URL hash 経由で Suno の Style / Lyrics / Exclude / Sliders を自動入力する
+// @version      2.0.0
+// @description  URL hash + clipboard 経由で Suno の Style / Lyrics / Exclude / Sliders を自動入力する
 // @match        https://suno.com/*
 // @match        https://suno.ai/*
 // @grant        none
@@ -11,10 +11,15 @@
 
 // -----------------------------------------------------------------
 // 使い方:
-//   1. Tampermonkey にこのスクリプトをインストール
-//   2. 以下の形式の URL をブラウザで開く:
-//      https://suno.com/create#suno={encodeURIComponent(JSON データ)}
-//   3. Suno のフォームに自動入力される
+//
+// 【クリップボードモード（推奨）】
+//   1. JSON データをクリップボードにコピー（pbcopy 等）
+//   2. https://suno.com/create#suno=clip をブラウザで開く
+//   3. クリップボードから読み取って自動入力
+//   ※ 日本語歌詞はURLエンコードで膨張するため、こちらが標準
+//
+// 【直接ハッシュモード（短いデータ用）】
+//   https://suno.com/create#suno={encodeURIComponent(JSON データ)}
 //
 // JSON 構造:
 //   {
@@ -28,7 +33,7 @@
 //     "audioInfluence":25    // 0-100
 //   }
 //
-// Claude Code の /suno-style スキルが自動で URL を構築して
+// Claude Code の /suno スキルが自動で URL を構築して
 // `open` コマンドでブラウザを開きます。
 // -----------------------------------------------------------------
 
@@ -58,112 +63,138 @@
         });
     }
 
-    function findTextareaInSection(sectionText) {
-        let ta = document.querySelector('textarea[aria-label*="' + sectionText + '" i]');
-        if (ta) return ta;
-        const labels = [...document.querySelectorAll('label, span, div')].filter(el =>
-            el.textContent?.toLowerCase().includes(sectionText.toLowerCase()) &&
-            !el.querySelector('textarea') && el.textContent.length < 50
-        );
-        for (const label of labels) {
-            const parent = label.parentElement;
-            if (parent) {
-                ta = parent.querySelector('textarea');
-                if (ta) return ta;
-                const grandparent = parent.parentElement;
-                if (grandparent) {
-                    ta = grandparent.querySelector('textarea');
-                    if (ta) return ta;
-                }
-            }
+    // textarea / input を柔軟に探す
+    function findField(selectors) {
+        for (const sel of selectors) {
+            const el = document.querySelector(sel);
+            if (el) return el;
         }
         return null;
     }
 
-    function fillFields() {
-        if (executed) return false;
+    function findTextareaByLabel(labelText) {
+        // aria-label で探す
+        let el = document.querySelector('textarea[aria-label*="' + labelText + '" i]');
+        if (el) return el;
+        // ラベルテキストから親をたどる
+        const labels = [...document.querySelectorAll('label, span, div')].filter(l =>
+            l.textContent?.toLowerCase().includes(labelText.toLowerCase()) &&
+            !l.querySelector('textarea') && l.textContent.length < 50
+        );
+        for (const label of labels) {
+            el = label.closest('div')?.querySelector('textarea');
+            if (el) return el;
+        }
+        return null;
+    }
+
+    async function getData() {
         const hash = window.location.hash;
-        if (!hash.startsWith('#suno=')) return false;
+        if (!hash.startsWith('#suno=')) return null;
+
+        const payload = hash.substring(6);
+
+        // クリップボードモード
+        if (payload === 'clip') {
+            try {
+                const text = await navigator.clipboard.readText();
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('[Suno AutoFill] Clipboard read failed:', e);
+                return null;
+            }
+        }
+
+        // 直接ハッシュモード
+        try {
+            return JSON.parse(decodeURIComponent(payload));
+        } catch (e) {
+            console.error('[Suno AutoFill] Hash parse failed:', e);
+            return null;
+        }
+    }
+
+    async function fillFields() {
+        if (executed) return false;
+
+        const data = await getData();
+        if (!data) return false;
 
         try {
-            const data = JSON.parse(decodeURIComponent(hash.substring(6)));
+            // Lyrics
+            if (data.lyrics) {
+                const lyricsTA = findField([
+                    'textarea[aria-label*="lyrics" i]',
+                    'textarea[placeholder*="lyrics" i]',
+                    'textarea[placeholder*="write your" i]',
+                ]) || (() => {
+                    // フォールバック: 最も大きい textarea
+                    const all = [...document.querySelectorAll('textarea')];
+                    return all.sort((a, b) => b.offsetHeight - a.offsetHeight)[0];
+                })();
+                if (lyricsTA) setNativeValue(lyricsTA, data.lyrics);
+            }
 
-            // "Custom" モードに切り替え
-            const customBtn = findButtonByText('custom');
-            if (customBtn) customBtn.click();
+            // Style
+            if (data.styleAndFeel) {
+                const styleTA = findTextareaByLabel('style') || findField([
+                    'textarea[aria-label*="style" i]',
+                    'textarea[placeholder*="style" i]',
+                ]);
+                if (styleTA) setNativeValue(styleTA, data.styleAndFeel);
+            }
 
-            setTimeout(() => {
-                // Lyrics
-                if (data.lyrics) {
-                    const allTextareas = document.querySelectorAll('textarea');
-                    let lyricsTA = [...allTextareas].find(ta =>
-                        ta.placeholder?.toLowerCase().includes('lyrics') ||
-                        ta.placeholder?.toLowerCase().includes('write your')
-                    );
-                    if (!lyricsTA) lyricsTA = [...allTextareas].sort((a, b) => b.offsetHeight - a.offsetHeight)[0];
-                    if (lyricsTA) setNativeValue(lyricsTA, data.lyrics);
-                }
+            // Song Title
+            if (data.songName) {
+                const titleInput = findField([
+                    'input[aria-label*="title" i]',
+                    'input[placeholder*="Title" i]',
+                    'input[placeholder*="Song" i]',
+                ]);
+                if (titleInput) setNativeValue(titleInput, data.songName);
+            }
 
-                // Style
-                if (data.styleAndFeel) {
-                    let styleTA = findTextareaInSection('style');
-                    if (!styleTA) {
-                        const allTextareas = [...document.querySelectorAll('textarea')];
-                        styleTA = allTextareas.sort((a, b) => b.offsetHeight - a.offsetHeight)[1];
-                    }
-                    if (styleTA && !styleTA.value?.includes(data.styleAndFeel.substring(0, 20))) {
-                        setNativeValue(styleTA, data.styleAndFeel);
-                    }
-                }
+            // Exclude Styles (input[type="text"] in current UI)
+            if (data.excludeStyles) {
+                const excludeInput = findField([
+                    'input[placeholder*="Exclude" i]',
+                    'input[aria-label*="exclude" i]',
+                    'input[aria-label*="Exclude" i]',
+                ]);
+                if (excludeInput) setNativeValue(excludeInput, data.excludeStyles);
+            }
 
-                // Song Title
-                if (data.songName) {
-                    const titleInput = document.querySelector(
-                        'input[placeholder*="Title" i], input[placeholder*="Song" i], input[aria-label*="title" i]'
-                    );
-                    if (titleInput) setNativeValue(titleInput, data.songName);
-                }
+            // Vocal Gender
+            if (data.vocalGender) {
+                const genderBtn = findButtonByText(data.vocalGender, true);
+                if (genderBtn) genderBtn.click();
+            }
 
-                // Advanced セクションを開く
-                const advancedBtn = findButtonByText('advanced');
-                if (advancedBtn && advancedBtn.getAttribute('aria-expanded') !== 'true') {
-                    advancedBtn.click();
-                }
+            // Sliders
+            if (typeof data.weirdness === 'number') {
+                const slider = findField([
+                    'input[type="range"][aria-label*="Weird" i]',
+                    'input[type="range"][aria-label*="weird" i]',
+                ]);
+                if (slider) setNativeValue(slider, data.weirdness);
+            }
+            if (typeof data.styleInfluence === 'number') {
+                const slider = findField([
+                    'input[type="range"][aria-label*="Style" i]',
+                ]);
+                if (slider) setNativeValue(slider, data.styleInfluence);
+            }
+            if (typeof data.audioInfluence === 'number') {
+                const slider = findField([
+                    'input[type="range"][aria-label*="Audio" i]',
+                ]);
+                if (slider) setNativeValue(slider, data.audioInfluence);
+            }
 
-                setTimeout(() => {
-                    // Exclude Styles
-                    if (data.excludeStyles) {
-                        const excludeInput = document.querySelector('input[placeholder*="Exclude" i]');
-                        if (excludeInput) setNativeValue(excludeInput, data.excludeStyles);
-                    }
-
-                    // Vocal Gender
-                    if (data.vocalGender) {
-                        const genderBtn = findButtonByText(data.vocalGender, true);
-                        if (genderBtn) genderBtn.click();
-                    }
-
-                    // Sliders
-                    if (typeof data.weirdness === 'number') {
-                        const slider = document.querySelector('input[type="range"][aria-label*="Weird" i]');
-                        if (slider) setNativeValue(slider, data.weirdness);
-                    }
-                    if (typeof data.styleInfluence === 'number') {
-                        const slider = document.querySelector('input[type="range"][aria-label*="Style" i]');
-                        if (slider) setNativeValue(slider, data.styleInfluence);
-                    }
-                    if (typeof data.audioInfluence === 'number') {
-                        const slider = document.querySelector('input[type="range"][aria-label*="Audio" i]');
-                        if (slider) setNativeValue(slider, data.audioInfluence);
-                    }
-
-                    // URL hash をクリア（再実行防止）
-                    history.replaceState(null, '', window.location.pathname + window.location.search);
-                    console.log('[Suno AutoFill] Done');
-                    executed = true;
-                }, 800);
-            }, 1000);
-
+            // URL hash をクリア（再実行防止）
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+            console.log('[Suno AutoFill] Done');
+            executed = true;
             return true;
         } catch (e) {
             console.error('[Suno AutoFill] Error:', e);
@@ -171,13 +202,14 @@
         }
     }
 
-    function tryFill(retryCount = 0) {
+    async function tryFill(retryCount = 0) {
         if (executed) return;
         if (retryCount >= 15) {
             console.warn('[Suno AutoFill] Gave up after 15 retries');
             return;
         }
-        if (!fillFields()) setTimeout(() => tryFill(retryCount + 1), 500);
+        const ok = await fillFields();
+        if (!ok) setTimeout(() => tryFill(retryCount + 1), 500);
     }
 
     // ページ読み込み完了後に実行
