@@ -28,6 +28,15 @@ version: 2.0.0
 
 必要に応じて以下を `Read` ツールで参照する。**毎回全部読む必要はない** — ジャンルに応じて必要なファイルだけ読む。
 
+**パスの探し方（初回に1回だけ実行）:**
+```bash
+# この SKILL.md の場所から sunomanual リポルートを特定
+SKILL_DIR="$(cd "$(dirname "SKILL.md のパス")/../.." && pwd)"
+# → $SKILL_DIR/knowledge/ にファイルがある
+```
+具体的には: この SKILL.md があるディレクトリの2階層上が sunomanual リポルート。
+`knowledge/` フォルダが見つからない場合は `find ~ -type d -name sunomanual -path '*/knowledge' 2>/dev/null | head -1` で探す。
+
 | ファイル | 内容 | いつ読むか |
 |---------|------|-----------|
 | `knowledge/lyric_craft.md` | 伏線、韻、フック、禁止事項、感情アーク、コーチング仕様 | **初回は必ず読む** |
@@ -35,8 +44,6 @@ version: 2.0.0
 | `knowledge/style_catalog.md` | ジャンル別テンプレ、アノテーション語彙、フック特性 | ジャンル確認時 |
 | `knowledge/rap_and_flow.md` | フロー類型、韻スキーム、16小節構成、日本語ラップ | ラップ/Hip Hop時 |
 | `knowledge/english_lyrics.md` | 英語韻体系、プロソディ、バイリンガル戦略 | 英語/バイリンガル時 |
-
-パスはリポジトリルートからの相対パス。
 
 ---
 
