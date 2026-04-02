@@ -480,26 +480,80 @@ ffmpeg -i "<input.wav>" -af aspectralstats=measure=mean:win_size=4096 -f null - 
 → この内容で処理します
 ```
 
-#### Pass 3: 処理
+#### Pass 3: 処理（Pedalboard — JUCE/DAW品質）
 
-判断結果に基づいてフィルターチェーンを組む。順序は固定: **HPF → EQ → ダイナミクス → loudnorm**
+Spotify 製 Pedalboard ライブラリで本格マスタリングチェーンを組む。
+初回のみ `pip install pedalboard` が必要。
 
-```bash
-ffmpeg -i "<input.wav>" -af \
-  "highpass=f=30,\
-   equalizer=f=4000:t=q:w=0.7:g=-3,\
-   equalizer=f=8000:t=h:w=1:g=-1.5,\
-   equalizer=f=12000:t=h:w=1:g=2,\
-   acompressor=threshold=-18dB:ratio=2:attack=10:release=200,\
-   loudnorm=I=-14:TP=-1:LRA=11" \
-  "<output.wav>"
+判断結果に基づいて、以下のチェーンから**必要なエフェクトだけ**を組み合わせる。
+順序は固定: **HPF → EQ → ダイナミクス → Gain → Limiter**
+
+```python
+from pedalboard import (
+    Pedalboard, Compressor, Gain, Limiter,
+    HighpassFilter, LowShelfFilter, HighShelfFilter, PeakFilter
+)
+from pedalboard.io import AudioFile
+import numpy as np
+
+# --- Pass 2 の判断結果に基づいてチェーンを構築 ---
+effects = []
+
+# 1. ハイパス（常に適用）
+effects.append(HighpassFilter(cutoff_frequency_hz=30))
+
+# 2. EQ（条件付き — Pass 2 で必要と判断したもののみ）
+# シマー除去: 3.5-5kHz が突出している場合
+effects.append(PeakFilter(cutoff_frequency_hz=4000, gain_db=-3, q=0.7))
+
+# 泥カット: 200-400Hz が突出している場合
+effects.append(PeakFilter(cutoff_frequency_hz=300, gain_db=-2.5, q=0.8))
+
+# 刺さり軽減: 8kHz+ が高い場合
+effects.append(HighShelfFilter(cutoff_frequency_hz=8000, gain_db=-1.5))
+
+# 空気感追加: 12kHz+ が不足している場合
+effects.append(HighShelfFilter(cutoff_frequency_hz=12000, gain_db=2))
+
+# 3. ダイナミクス（LRA > 8dB の場合のみ。Suno は大抵圧縮済みなのでスキップが多い）
+effects.append(Compressor(threshold_db=-18, ratio=2, attack_ms=10, release_ms=200))
+
+# 4. ゲイン補正（ノーマライズ前の音量調整）
+effects.append(Gain(gain_db=3))
+
+# 5. リミッター（True Peak を -1 dBTP に制限）
+effects.append(Limiter(threshold_db=-1))
+
+board = Pedalboard(effects)
+
+# --- 処理実行 ---
+with AudioFile('<input.wav>') as f:
+    audio = f.read(f.frames)
+    samplerate = f.samplerate
+
+processed = board(audio, samplerate)
+
+with AudioFile('<output.wav>', 'w', samplerate, audio.shape[0]) as f:
+    f.write(processed)
 ```
 
-**注意:** 上記は全フィルター適用の例。Pass 2 で不要と判断したフィルターは**チェーンから外す**。
+**チェーン構築のルール:**
+- Pass 2 で「スキップ」と判断したエフェクトは `effects` リストに入れない
+- EQ の gain_db は Pass 2 の判断値をそのまま使う
+- コンプは Suno 出力の大半で不要（LRA 3-5dB が典型）。入れる場合も ratio 2:1 以下
+- Limiter は常に最後に入れる
+
+#### ラウドネスノーマライズ（Pedalboard 処理後）
+
+Pedalboard にはラウドネスノーマライズがないため、最終段は ffmpeg で:
+
+```bash
+ffmpeg -i "<pedalboard_output.wav>" -af loudnorm=I=-14:TP=-1:LRA=11 "<mastered.wav>"
+```
 
 #### メタ情報の削除
 
-マスタリング処理の最後に、Suno メタデータを除去する:
+マスタリングの最後に Suno メタデータを除去:
 
 ```bash
 ffmpeg -i "<mastered.wav>" -map_metadata -1 -c copy "<clean.wav>"
@@ -507,26 +561,23 @@ ffmpeg -i "<mastered.wav>" -map_metadata -1 -c copy "<clean.wav>"
 
 #### Matchering（オプション: リファレンス曲がある場合）
 
-ユーザーがリファレンス曲（「この曲みたいな音にして」）を指定した場合:
+ユーザーがリファレンス曲（「この曲みたいな音にして」）を指定した場合、Pedalboard チェーンの**代わり**に使う:
 
-```bash
-pip install matchering  # 初回のみ
-python3 -c "
-import matchering as mg
+```python
+import matchering as mg  # pip install matchering
 mg.process(
     target='<input.wav>',
     reference='<reference.wav>',
     results=[mg.pcm16('<mastered.wav>')],
 )
-"
 ```
 
-Matchering は RMS・周波数特性・ステレオ幅をリファレンスに自動マッチする。ffmpeg 処理の**代わり**に使う（両方かけない）。
+Matchering は RMS・周波数特性・ステレオ幅をリファレンスに自動マッチする。
 
 #### 出力
 
 - マスタリング済み: `songs/<曲名>/<曲名>_mastered.wav`
-- メタ除去済み: `songs/<曲名>/<曲名>_clean.wav`（マスタリング+メタ削除済みの最終版）
+- メタ除去済み: `songs/<曲名>/<曲名>_clean.wav`（最終版）
 
 ### 4-B. X (Twitter) アップロード用動画生成
 
