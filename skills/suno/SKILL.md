@@ -432,6 +432,72 @@ url = 'https://suno.com/create#suno=' + urllib.parse.quote(data, safe='')
 
 ---
 
+## Step 4: ポストプロダクション（任意）
+
+曲が完成した後の処理。ユーザーが WAV ファイルや「Xにアップしたい」と言ったら対応する。
+
+### 4-A. メタ情報の削除
+
+Suno が WAV に埋め込むメタデータ（作者名「Suno」等）を削除する。
+
+```bash
+ffmpeg -i "<input.wav>" -map_metadata -1 -c copy "<output.wav>"
+```
+
+- `-map_metadata -1` で全メタデータを除去
+- `-c copy` で再エンコードなし（音質劣化ゼロ）
+- 出力ファイル名はユーザーに確認（デフォルト: `<曲名>_clean.wav`）
+
+### 4-B. X (Twitter) アップロード用動画生成
+
+X の動画制限: **5MB / 動画のみ（音声ファイル不可）**。
+アーティストのカバー画像を使い、超低ビットレート動画を生成する。
+
+**戦略:**
+- 映像: カバー画像を 480px・1fps・CRF51（最低画質）で極限まで削る
+- 音声: AAC LC 96kbps（X は AAC LC のみ対応。Opus/HE-AAC は非サポート）
+- 5MB = 40,000kbit → 5分で約133kbps（映像5k+音声96k、余裕32k）
+- 5分超の曲は末尾をカットして収める
+
+```bash
+# 曲の長さを取得
+DURATION=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "<audio.wav>")
+
+# 5MB に収まる最大秒数を計算（96kbps audio + 5kbps video = 101kbps）
+MAX_SEC=$(python3 -c "print(min(float('$DURATION'), 5*8*1024/101))")
+
+ffmpeg -loop 1 -i "<cover.png>" -i "<audio.wav>" \
+  -c:v libx264 -tune stillimage -pix_fmt yuv420p \
+  -vf "scale=480:480:force_original_aspect_ratio=decrease,pad=ceil(iw/2)*2:ceil(ih/2)*2" \
+  -r 1 -b:v 5k -crf 51 \
+  -c:a aac -b:a 96k \
+  -t "$MAX_SEC" \
+  -shortest -movflags +faststart \
+  "<output.mp4>"
+```
+
+**手順:**
+1. カバー画像を特定（`artists/<name>-cover.png` またはユーザー指定）
+2. 音声ファイルのパスを確認
+3. 曲の長さをチェック → 5分超なら「末尾カットします」と報告
+4. ffmpeg 実行
+5. 出力ファイルサイズを確認 → 5MB超なら音声ビットレートを下げて再実行
+6. 出力: `songs/<曲名>/<曲名>_x.mp4`
+
+**エンコード戦略:**
+1. まず CBR（`-b:a 96k`）で確実に5MB以内に収める
+2. ファイルサイズに余裕があれば VBR（`-q:a 3`）で再エンコード → 音質向上
+3. VBR で5MB超えたら CBR 版を採用
+
+**5MB超えた場合の調整:**
+1. 音声を 80kbps に下げて再実行
+2. それでも超えたら 64kbps
+3. まだ超えたら曲を短くカット
+
+**X の音声コーデック制限:** AAC LC のみ。Opus、HE-AAC は非サポート。
+
+---
+
 ## Cover / Sample / Inspo 対応
 
 - スライダー安全範囲: **15-85**
