@@ -574,10 +574,42 @@ mg.process(
 
 Matchering は RMS・周波数特性・ステレオ幅をリファレンスに自動マッチする。
 
-#### 出力
+#### 出力（複数フォーマット対応）
 
-- マスタリング済み: `songs/<曲名>/<曲名>_mastered.wav`
-- メタ除去済み: `songs/<曲名>/<曲名>_clean.wav`（最終版）
+マスタリング後、以下のフォーマットで出力する。ユーザーに「どの形式で出す？」と聞く。指定がなければ WAV + MP3 の両方。
+
+```python
+from pedalboard.io import AudioFile
+
+# WAV 24bit（高品質アーカイブ用）
+with AudioFile('songs/<曲名>/<曲名>_mastered.wav', 'w', samplerate, processed.shape[0], bit_depth=24) as f:
+    f.write(processed)
+
+# MP3 320kbps（配布・ストリーミング用）
+with AudioFile('songs/<曲名>/<曲名>_mastered.mp3', 'w', samplerate, processed.shape[0], quality='320k') as f:
+    f.write(processed)
+```
+
+最後にメタ情報を処理:
+```bash
+# Suno メタデータ除去 + アーティスト情報埋め込み（WAV）
+ffmpeg -i "<mastered.wav>" -map_metadata -1 \
+  -metadata title="<曲タイトル>" -metadata artist="<アーティスト名>" \
+  -metadata genre="<ジャンル>" -metadata date="<YYYY>" \
+  -c copy "<clean.wav>"
+
+# MP3 も同様
+ffmpeg -i "<mastered.mp3>" -map_metadata -1 \
+  -metadata title="<曲タイトル>" -metadata artist="<アーティスト名>" \
+  -metadata genre="<ジャンル>" -metadata date="<YYYY>" \
+  -c copy "<clean.mp3>"
+```
+
+| 出力ファイル | 用途 |
+|------------|------|
+| `<曲名>_mastered.wav` | 高品質アーカイブ、DAW取り込み |
+| `<曲名>_mastered.mp3` | 配布、ストリーミング、SNS |
+| `<曲名>_x.mp4` | X (Twitter) 投稿用動画 |
 
 ### 4-B. X (Twitter) アップロード用動画生成
 
