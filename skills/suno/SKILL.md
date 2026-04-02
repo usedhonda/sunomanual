@@ -535,75 +535,73 @@ X の動画制限: **5MB / 動画のみ（音声ファイル不可）**。
 
 **X の制約:** 5MB / 動画のみ / AAC LC のみ（Opus・HE-AAC 非サポート）
 
-ユーザーに「音質重視？長さ重視？」と聞いてモードを選ぶ:
+**基本方針: 5MBをギリギリまで使い切る。** 曲の長さから逆算して音声ビットレートを最大化する。
 
-#### 音質重視モード
+ユーザーに「音質重視？長さ重視？」と聞く:
+- **音質重視**: 全5MBを使って最高音質。曲が長すぎれば末尾カット
+- **長さ重視**: 全曲入れる。その範囲で音質を最大化
 
-音声ビットレートを上げ、曲が入りきらなければ末尾カット。**短くても音が良い方がいい場合。**
-
-| 項目 | 値 |
-|------|-----|
-| 音声 | AAC LC **128kbps** |
-| 映像 | 480px / 1fps / CRF51 / 5kbps |
-| 合計 | ~133kbps |
-| 5MBで入る尺 | **約4分** |
+#### ビットレート逆算ロジック
 
 ```bash
 DURATION=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "<audio.wav>")
-MAX_SEC=$(python3 -c "print(min(float('$DURATION'), 5*8*1024/133))")
 
-ffmpeg -loop 1 -i "<cover.png>" -i "<audio.wav>" \
-  -c:v libx264 -tune stillimage -pix_fmt yuv420p \
-  -vf "scale=480:480:force_original_aspect_ratio=decrease,pad=ceil(iw/2)*2:ceil(ih/2)*2" \
-  -r 1 -b:v 5k -crf 51 \
-  -c:a aac -b:a 128k \
-  -t "$MAX_SEC" \
-  -shortest -movflags +faststart \
-  "<output.mp4>"
-```
+python3 -c "
+dur = float('$DURATION')
+budget_kbit = 5 * 8 * 1024          # 40960 kbit
+video_kbps = 5                       # 静止画は最小限
 
-#### 長さ重視モード
+# 音質重視: 音声上限 128kbps、入らなければ曲をカット
+quality_audio = 128
+quality_max_sec = budget_kbit / (quality_audio + video_kbps)
 
-音声ビットレートを下げ、なるべく全曲入れる。**多少音が荒くても最後まで聴かせたい場合。**
+# 長さ重視: 全曲入れる前提で音声ビットレートを逆算
+length_audio = max(48, int(budget_kbit / dur) - video_kbps)  # 最低 48kbps
+length_max_sec = dur
 
-| 項目 | 値 |
-|------|-----|
-| 音声 | AAC LC **64kbps** |
-| 映像 | 360px / 1fps / CRF51 / 3kbps |
-| 合計 | ~67kbps |
-| 5MBで入る尺 | **約8分** |
-
-```bash
-DURATION=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "<audio.wav>")
-MAX_SEC=$(python3 -c "print(min(float('$DURATION'), 5*8*1024/67))")
-
-ffmpeg -loop 1 -i "<cover.png>" -i "<audio.wav>" \
-  -c:v libx264 -tune stillimage -pix_fmt yuv420p \
-  -vf "scale=360:360:force_original_aspect_ratio=decrease,pad=ceil(iw/2)*2:ceil(ih/2)*2" \
-  -r 1 -b:v 3k -crf 51 \
-  -c:a aac -b:a 64k \
-  -t "$MAX_SEC" \
-  -shortest -movflags +faststart \
-  "<output.mp4>"
+print(f'曲の長さ: {dur:.0f}秒 ({dur/60:.1f}分)')
+print(f'音質重視: AAC {quality_audio}kbps / 最大 {quality_max_sec:.0f}秒 ({quality_max_sec/60:.1f}分)')
+print(f'長さ重視: AAC {length_audio}kbps / 全曲 {length_max_sec:.0f}秒 ({length_max_sec/60:.1f}分)')
+"
 ```
 
 #### 対話での選択
 
 ```
-CC: 「X用動画、音質重視と長さ重視どちらにしますか？」
-  - 音質重視: 128kbps、約4分まで（それ以降カット）
-  - 長さ重視: 64kbps、約8分まで入る
-  - 曲の長さ: <X分Y秒>
+CC: 「X用動画を作ります」
+  曲の長さ: 4分32秒
+  - 音質重視: AAC 128kbps（最大5分7秒 → 全曲入る）
+  - 長さ重視: AAC 128kbps（全曲入る。同じ結果になります）
+  → 音質重視で作りますね
 ```
 
-曲が4分以内なら音質重視を推奨。5分超なら選択を聞く。
+```
+CC: 「X用動画を作ります」
+  曲の長さ: 7分15秒
+  - 音質重視: AAC 128kbps（最大5分7秒 → 末尾2分カット）
+  - 長さ重視: AAC 89kbps（全曲入る）
+  どちらにしますか？
+```
 
-**手順:**
+#### ffmpeg 実行
+
+```bash
+ffmpeg -loop 1 -i "<cover.png>" -i "<audio.wav>" \
+  -c:v libx264 -tune stillimage -pix_fmt yuv420p \
+  -vf "scale=480:480:force_original_aspect_ratio=decrease,pad=ceil(iw/2)*2:ceil(ih/2)*2" \
+  -r 1 -b:v 5k -crf 51 \
+  -c:a aac -b:a <逆算したビットレート>k \
+  -t <使用する秒数> \
+  -shortest -movflags +faststart \
+  "<output.mp4>"
+```
+
+#### 手順
 1. カバー画像を特定（`artists/<name>-cover.png` またはユーザー指定）
-2. 音声ファイルのパスと曲の長さを確認
-3. モード選択を聞く（4分以内なら音質重視をデフォルト推奨）
+2. 音声ファイルのパスと曲の長さを取得
+3. ビットレートを逆算して選択肢を提示
 4. ffmpeg 実行
-5. 出力ファイルサイズを確認 → 5MB超ならビットレートを1段下げて再実行
+5. **出力ファイルサイズを確認** → 5MB超なら音声を5kbps下げて再実行（VBRの揺れ対策）
 6. 出力: `songs/<曲名>/<曲名>_x.mp4`
 
 ---
