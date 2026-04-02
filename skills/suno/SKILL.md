@@ -436,17 +436,97 @@ url = 'https://suno.com/create#suno=' + urllib.parse.quote(data, safe='')
 
 曲が完成した後の処理。ユーザーが WAV ファイルや「Xにアップしたい」と言ったら対応する。
 
-### 4-A. メタ情報の削除
+### 4-A. オートマスタリング（Suno特化）
 
-Suno が WAV に埋め込むメタデータ（作者名「Suno」等）を削除する。
+Suno WAV を指定されたら、3パスで分析→判断→処理する。
+
+#### Pass 1: スキャン（分析）
+
+まず曲をスキャンして数値を取る。**処理の前に必ず実行する。**
 
 ```bash
-ffmpeg -i "<input.wav>" -map_metadata -1 -c copy "<output.wav>"
+# ラウドネス分析（LUFS, LRA, True Peak）
+ffmpeg -i "<input.wav>" -af loudnorm=print_format=json -f null - 2>&1
+
+# 統計分析（RMS, Peak, Crest factor, Noise floor）
+ffmpeg -i "<input.wav>" -af astats=metadata=1:reset=0 -f null - 2>&1
+
+# 周波数帯域分析（シマー判定用）
+ffmpeg -i "<input.wav>" -af aspectralstats=measure=mean:win_size=4096 -f null - 2>&1
 ```
 
-- `-map_metadata -1` で全メタデータを除去
-- `-c copy` で再エンコードなし（音質劣化ゼロ）
-- 出力ファイル名はユーザーに確認（デフォルト: `<曲名>_clean.wav`）
+#### Pass 2: 判断（CC が分析値を見て決定）
+
+分析値を読んで、以下の条件テーブルに照らし合わせる。**全部当てはめるのではなく、該当するものだけ処理に入れる。**
+
+| 計測値 | 条件 | 処理 | 処理しない条件 |
+|-------|------|------|--------------|
+| Integrated LUFS | < -20 | loudnorm 強め（I=-14） | -16〜-14 なら軽く |
+| LRA | < 4 dB | コンプ不要（既に圧縮済み） | > 8 dB なら軽くコンプ |
+| 3.5-5kHz エネルギー | 他帯域より突出 | シマーカット -2〜-4dB | 突出してなければスキップ |
+| 8kHz+ エネルギー | 高い | シェルフカット -1〜-2dB | 正常範囲ならスキップ |
+| 200-400Hz RMS | 他帯域より突出 | 泥カット -2〜-3dB | 正常ならスキップ |
+| 12kHz+ エネルギー | 低い（空気感不足） | シェルフブースト +1〜+2dB | 十分ならスキップ |
+| True Peak | > -1 dBTP | リミッター必要 | -1以下なら不要 |
+
+**判断結果をユーザーに報告してから処理に進む:**
+```
+📊 スキャン結果:
+- LUFS: -22.3 → ノーマライズ必要
+- LRA: 3.2 dB → コンプ不要（既に圧縮済み）
+- 3.5-5kHz: 突出あり → シマーカット -3dB
+- 8kHz+: やや高い → シェルフ -1.5dB
+- 低域: 正常 → スキップ
+→ この内容で処理します
+```
+
+#### Pass 3: 処理
+
+判断結果に基づいてフィルターチェーンを組む。順序は固定: **HPF → EQ → ダイナミクス → loudnorm**
+
+```bash
+ffmpeg -i "<input.wav>" -af \
+  "highpass=f=30,\
+   equalizer=f=4000:t=q:w=0.7:g=-3,\
+   equalizer=f=8000:t=h:w=1:g=-1.5,\
+   equalizer=f=12000:t=h:w=1:g=2,\
+   acompressor=threshold=-18dB:ratio=2:attack=10:release=200,\
+   loudnorm=I=-14:TP=-1:LRA=11" \
+  "<output.wav>"
+```
+
+**注意:** 上記は全フィルター適用の例。Pass 2 で不要と判断したフィルターは**チェーンから外す**。
+
+#### メタ情報の削除
+
+マスタリング処理の最後に、Suno メタデータを除去する:
+
+```bash
+ffmpeg -i "<mastered.wav>" -map_metadata -1 -c copy "<clean.wav>"
+```
+
+#### Matchering（オプション: リファレンス曲がある場合）
+
+ユーザーがリファレンス曲（「この曲みたいな音にして」）を指定した場合:
+
+```bash
+pip install matchering  # 初回のみ
+python3 -c "
+import matchering as mg
+mg.process(
+    target='<input.wav>',
+    reference='<reference.wav>',
+    results=[mg.pcm16('<mastered.wav>')],
+)
+"
+```
+
+Matchering は RMS・周波数特性・ステレオ幅をリファレンスに自動マッチする。ffmpeg 処理の**代わり**に使う（両方かけない）。
+
+#### 出力
+
+- マスタリング済み: `songs/<曲名>/<曲名>_mastered.wav`
+- メタ除去済み: `songs/<曲名>/<曲名>_clean.wav`（マスタリング+メタ削除済みの最終版）
 
 ### 4-B. X (Twitter) アップロード用動画生成
 
