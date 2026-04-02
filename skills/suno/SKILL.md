@@ -436,9 +436,25 @@ url = 'https://suno.com/create#suno=' + urllib.parse.quote(data, safe='')
 
 曲が完成した後の処理。ユーザーが WAV ファイルや「Xにアップしたい」と言ったら対応する。
 
-### 4-A. オートマスタリング（Suno特化）
+### 4-A. オートマスタリング（Suno V5/V5.5 特化）
 
-Suno WAV を指定されたら、3パスで分析→判断→処理する。
+Suno の WAV 出力には共通する音のクセがある。汎用マスタリングではなく、**Suno 出力の特性を前提とした修復的アプローチ**で処理する。
+仕様は ChatGPT × Gemini のクロス議論（2026-04）で策定。
+
+#### Suno 出力の既知の特性
+
+| 特性 | 詳細 | 汎用マスタリングとの違い |
+|------|------|----------------------|
+| **シマー（金属的光沢）** | 3.8-5.2kHz に集中。Udio より高め | 汎用では想定しない帯域の問題 |
+| **高域の刺さり** | 8-12kHz がキツい（v5.5 で顕著） | v5.5 固有 |
+| **低域の泥** | 95-120Hz 付近が膨らむ | 汎用と共通だが Suno は典型的に発生 |
+| **ダイナミクスが既に狭い** | LRA 3-5dB（既に圧縮済み） | 汎用ではコンプが主役だが、Suno では**コンプをスキップすることが多い** |
+| **音量が小さい** | LUFS -22〜-18 前後 | 商業曲より 6-8dB 低い |
+| **Suno sheen** | 特有のリバーブ/アンビエンス | EQ で軽減可能だが完全除去は難しい |
+| **二重マスタリングリスク** | Suno 内部で既にマスタリング済み | 強い外部処理を重ねると濁る・歪む |
+
+**基本方針: 削る→整える→持ち上げる。足す処理（エキサイター等）はデフォルトOFF。**
+**Suno は押し込むほど AI っぽさが露呈する。やりすぎない。**
 
 #### Pass 1: スキャン（分析）
 
@@ -457,72 +473,79 @@ ffmpeg -i "<input.wav>" -af aspectralstats=measure=mean:win_size=4096 -f null - 
 
 #### Pass 2: 判断（CC が分析値を見て決定）
 
-分析値を読んで、以下の条件テーブルに照らし合わせる。**全部当てはめるのではなく、該当するものだけ処理に入れる。**
+分析値を読んで、以下の条件テーブルに照らし合わせる。
+**「削る」方向を優先。全部当てはめるのではなく、該当するものだけ処理に入れる。**
 
 | 計測値 | 条件 | 処理 | 処理しない条件 |
 |-------|------|------|--------------|
-| Integrated LUFS | < -20 | loudnorm 強め（I=-14） | -16〜-14 なら軽く |
-| LRA | < 4 dB | コンプ不要（既に圧縮済み） | > 8 dB なら軽くコンプ |
-| 3.5-5kHz エネルギー | 他帯域より突出 | シマーカット -2〜-4dB | 突出してなければスキップ |
-| 8kHz+ エネルギー | 高い | シェルフカット -1〜-2dB | 正常範囲ならスキップ |
-| 200-400Hz RMS | 他帯域より突出 | 泥カット -2〜-3dB | 正常ならスキップ |
-| 12kHz+ エネルギー | 低い（空気感不足） | シェルフブースト +1〜+2dB | 十分ならスキップ |
-| True Peak | > -1 dBTP | リミッター必要 | -1以下なら不要 |
+| Integrated LUFS | < -20 | 最終段で loudnorm | -16〜-14 なら軽く |
+| LRA | < 5 dB | **コンプ不要**（Suno は大抵ここ） | > 8 dB なら軽くコンプ |
+| 3.8-5.2kHz エネルギー | 他帯域より突出 | シマーカット **-1.0〜-2.0dB** (Q 1.2-2.0) | 突出なしならスキップ |
+| 95-120Hz RMS | 膨らんでいる | 泥カット **-0.5〜-1.5dB** (Q 0.7-1.0) | 正常ならスキップ |
+| 9-12kHz エネルギー | 高い（刺さり） | シェルフカット **-0.5〜-1.5dB** | 正常ならスキップ |
+| True Peak | > -1.5 dBTP | リミッター必要 | -1.5以下なら不要 |
+
+**ガードレール（やりすぎ防止）:**
+- EQ は **1バンドあたり ±2.0dB 以内**（まれに 2.5dB まで）
+- Compressor の合計 GR は **1〜2dB、最大3dB未満**
+- エキサイター / 高域の足し込みは **デフォルトOFF**（Suno のシマーを悪化させるリスク大）
+- Suno Remaster 済みの WAV には **処理を軽くする**（二重マスタリング回避）
 
 **判断結果をユーザーに報告してから処理に進む:**
 ```
 📊 スキャン結果:
-- LUFS: -22.3 → ノーマライズ必要
-- LRA: 3.2 dB → コンプ不要（既に圧縮済み）
-- 3.5-5kHz: 突出あり → シマーカット -3dB
-- 8kHz+: やや高い → シェルフ -1.5dB
+- LUFS: -21.5 → ノーマライズ必要
+- LRA: 3.8 dB → コンプ不要（Suno 典型: 既に圧縮済み）
+- 4.2kHz: 突出あり → シマーカット -1.5dB
+- 10kHz: やや高い → シェルフ -1.0dB
 - 低域: 正常 → スキップ
 → この内容で処理します
 ```
 
 #### Pass 3: 処理（Pedalboard — JUCE/DAW品質）
 
-Spotify 製 Pedalboard ライブラリで本格マスタリングチェーンを組む。
+Spotify 製 Pedalboard ライブラリでマスタリングチェーンを組む。
 初回のみ `pip install pedalboard` が必要。
 
 判断結果に基づいて、以下のチェーンから**必要なエフェクトだけ**を組み合わせる。
-順序は固定: **HPF → EQ → ダイナミクス → Gain → Limiter**
+順序は固定: **HPF → 減算EQ → コンプ（条件付き） → Gain → Limiter**
 
 ```python
 from pedalboard import (
     Pedalboard, Compressor, Gain, Limiter,
-    HighpassFilter, LowShelfFilter, HighShelfFilter, PeakFilter
+    HighpassFilter, HighShelfFilter, PeakFilter
 )
 from pedalboard.io import AudioFile
-import numpy as np
 
 # --- Pass 2 の判断結果に基づいてチェーンを構築 ---
 effects = []
 
-# 1. ハイパス（常に適用）
+# 1. ハイパス 30Hz（常に適用）
 effects.append(HighpassFilter(cutoff_frequency_hz=30))
 
-# 2. EQ（条件付き — Pass 2 で必要と判断したもののみ）
-# シマー除去: 3.5-5kHz が突出している場合
-effects.append(PeakFilter(cutoff_frequency_hz=4000, gain_db=-3, q=0.7))
+# 2. 減算EQ（条件付き — Pass 2 で必要と判断したもののみ追加）
 
-# 泥カット: 200-400Hz が突出している場合
-effects.append(PeakFilter(cutoff_frequency_hz=300, gain_db=-2.5, q=0.8))
+# シマー除去: 3.8-5.2kHz が突出している場合のみ
+# effects.append(PeakFilter(cutoff_frequency_hz=4200, gain_db=-1.5, q=1.5))
 
-# 刺さり軽減: 8kHz+ が高い場合
-effects.append(HighShelfFilter(cutoff_frequency_hz=8000, gain_db=-1.5))
+# 泥カット: 95-120Hz が膨らんでいる場合のみ
+# effects.append(PeakFilter(cutoff_frequency_hz=100, gain_db=-1.0, q=0.8))
 
-# 空気感追加: 12kHz+ が不足している場合
-effects.append(HighShelfFilter(cutoff_frequency_hz=12000, gain_db=2))
+# 高域刺さり: 9-12kHz が高い場合のみ
+# effects.append(HighShelfFilter(cutoff_frequency_hz=10000, gain_db=-1.0))
 
-# 3. ダイナミクス（LRA > 8dB の場合のみ。Suno は大抵圧縮済みなのでスキップが多い）
-effects.append(Compressor(threshold_db=-18, ratio=2, attack_ms=10, release_ms=200))
+# 3. コンプ（LRA > 8dB の場合のみ。Suno は大抵スキップ）
+# effects.append(Compressor(
+#     threshold_db=-20, ratio=1.8,
+#     attack_ms=25, release_ms=120
+# ))
+# ※ GR が 1-2dB を超えないよう threshold を調整
 
-# 4. ゲイン補正（ノーマライズ前の音量調整）
-effects.append(Gain(gain_db=3))
+# 4. Gain（ノーマライズ前の補正）
+effects.append(Gain(gain_db=2))
 
-# 5. リミッター（True Peak を -1 dBTP に制限）
-effects.append(Limiter(threshold_db=-1))
+# 5. Limiter（Pedalboard は True Peak limiter ではないため安全マージンを取る）
+effects.append(Limiter(threshold_db=-1.5))
 
 board = Pedalboard(effects)
 
@@ -538,10 +561,11 @@ with AudioFile('<output.wav>', 'w', samplerate, audio.shape[0]) as f:
 ```
 
 **チェーン構築のルール:**
-- Pass 2 で「スキップ」と判断したエフェクトは `effects` リストに入れない
-- EQ の gain_db は Pass 2 の判断値をそのまま使う
-- コンプは Suno 出力の大半で不要（LRA 3-5dB が典型）。入れる場合も ratio 2:1 以下
-- Limiter は常に最後に入れる
+- コメントアウトされた行は Pass 2 で必要と判断した場合のみ有効化する
+- EQ の gain_db は ±2.0dB 以内に収める
+- コンプは Suno 出力の大半で不要（LRA 3-5dB）。入れても ratio 2:1 以下、GR 1-2dB
+- Limiter threshold は **-1.5dBFS**（Pedalboard は True Peak 保証なし → 安全マージン）
+- **エキサイター、M/S処理、マルチバンドコンプはデフォルトOFF**
 
 #### ラウドネスノーマライズ（Pedalboard 処理後）
 
@@ -550,6 +574,13 @@ Pedalboard にはラウドネスノーマライズがないため、最終段は
 ```bash
 ffmpeg -i "<pedalboard_output.wav>" -af loudnorm=I=-14:TP=-1:LRA=11 "<mastered.wav>"
 ```
+
+**ジャンル別の目安:**
+| ジャンル | ターゲット LUFS |
+|---------|---------------|
+| アコースティック / ジャズ | -16〜-14 |
+| ポップ / ロック | -14.5〜-13.5 |
+| EDM / Hyperpop | -13〜-12（Suno は押し込みに弱いので注意） |
 
 #### メタ情報の削除
 
