@@ -331,7 +331,7 @@ tags: [artist, suno]
 
 ### Suno 制約
 
-- **目標: 4400-4600文字、絶対上限: 4800文字**（タグ・アノテーション・歌詞・空行すべて含む）
+- **絶対上限: 5000文字以下**（タグ・アノテーション・歌詞・空行すべて含む。python3 で機械的にカウントする）
 - **アーティストの `出力ルール.文字数`** がある場合はそちらも遵守（例: 1500-2000文字）
 - V5.5 アノテーションタグ: `[Chorus - explosive, full band, powerful vocal]`（英語、2-5語）
 - **日本語モード:** コードブロック内は漢字→ひらがな。コードブロック外は通常の日本語
@@ -346,7 +346,7 @@ print(f'歌詞文字数: {len(text)}')
 "
 ```
 - `出力ルール.文字数` の目標範囲と比較 → 範囲外なら書き足し/削り
-- Suno 上限（4800文字）と比較 → 超過なら圧縮
+- Suno 上限（5000文字）と比較 → 超過なら圧縮
 - **カウント結果を必ずユーザーに表示する**
 
 ### 出力フォーマット
@@ -528,7 +528,7 @@ else: print('✅ OK')
 
 ▼ 次は YAML + Lyrics を生成する。**ここで止まるな。スキップ禁止。**
 
-**4) YAML + Lyrics（歌詞ありの場合、4500文字以内）**
+**4) YAML + Lyrics（歌詞ありの場合、5000文字以内）**
 ```yaml
 # META (hints; do not sing)
 version: v5.5
@@ -556,8 +556,8 @@ python3 -c "
 yaml_lyrics = '''<YAML+Lyrics全文>'''
 count = len(yaml_lyrics)
 print(f'YAML+Lyrics文字数: {count}')
-if count > 4800: print('⚠️ 超過！圧縮が必要')
-elif count > 4600: print('⚠️ 上限に近い')
+if count > 5000: print('⚠️ 超過！圧縮が必要')
+elif count > 4800: print('⚠️ 上限に近い')
 else: print('✅ OK')
 "
 ```
