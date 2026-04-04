@@ -27,6 +27,35 @@ version: 1.0.0
 
 アーティスト設定 → 歌詞生成 → 楽曲(Style/Exclude/YAML)生成。全ての曲はアーティストに紐づく。
 
+## 起動時チェック（スキル読み込み時に実行）
+
+`/suno` 起動時に以下を Bash で確認し、不足があればユーザーに案内する:
+
+```bash
+# 一括チェック
+python3 -c "
+missing = []
+try: import pedalboard; print('✅ pedalboard')
+except ImportError: missing.append('pedalboard'); print('❌ pedalboard')
+try: import matchering; print('✅ matchering')
+except ImportError: print('⬚ matchering (optional)')
+import shutil
+for cmd in ['ffmpeg', 'ffprobe']:
+    if shutil.which(cmd): print(f'✅ {cmd}')
+    else: missing.append(cmd); print(f'❌ {cmd}')
+if missing:
+    print(f'\n⚠️ 不足: {", ".join(missing)}')
+    if 'pedalboard' in missing: print('  → pip install pedalboard  (マスタリングに必要)')
+    if 'ffmpeg' in missing or 'ffprobe' in missing: print('  → brew install ffmpeg  (分析・変換・動画生成に必要)')
+else:
+    print('\n✅ 全ツール準備OK')
+"
+```
+
+不足があっても歌詞生成（Step 1-3）は問題なく使える。マスタリング（Step 4）で必要になる旨を伝える。
+
+---
+
 ## Knowledge Files
 
 このスキルフォルダ内の `knowledge/` を `Read` ツールで参照する。ジャンルに応じて必要なファイルだけ読む。
