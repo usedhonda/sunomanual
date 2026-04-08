@@ -79,48 +79,59 @@ If YAML block exceeds 4500 characters, reduce META only (NEVER touch lyrics):
 
 ## Style Template
 
-**Target: 900-1000 characters (from "# Style" to final meta.vibe)**
-**Absolute limit: 1000 characters.**
+**V5.5 準拠: タグ形式、4-7 descriptors、120文字以内。**
+**プローズ（散文）禁止。短いカンマ区切りの名詞句で書く。**
 **100% English. Zero Japanese.**
-**USE the full 1000 characters. Be rich and detailed based on URL investigation. Do NOT be brief.**
+**Front-load: genre → BPM → key → mood → vocal → instruments → mix の順。**
+**Max genres: 2 genre pairs（3+ は不安定）。**
+**詳細な production 指示は Style ではなく YAML META の production_notes と annotation tags に任せる。**
 
 ```text
 # Style
 
-<meta.vibe verbatim>
+<genre pair>, <BPM> BPM, <key>, <mood 1-2 words>, <vocal descriptor>, <2-3 key instruments>, <mix keyword>, studio recording
 
-- BPM: <same as meta.tempo>
-- Key: <same as meta.key>
-- Signature: <same as meta.signature>
+例: J-Pop meets Smooth Jazz, 108 BPM, F# major, warm nostalgic, sultry female vocal, Rhodes piano, finger bass, brushed drums, wide stereo, studio recording
 
-- Genre & Era: <max 2-genre pair; detailed era context and stylistic lineage>
-  J-Pop meets Smooth Jazz; upbeat yet unhurried; rooted in late 80s city pop with modern production sensibility; sophisticated harmonic palette drawing from jazz standards.
-
-- Instruments: <5-8 descriptors with rich detail drawn from the reference track>
-  Rhodes electric piano (7th/9th/11th jazz voicings) and grand piano set warm silky harmonic bed; lush string quartet adds sweeping layers, gentle counter-melodies and sustained swells; finger bass with soft rounded attack and walking lines; tight syncopated drums with brush work and controlled dynamics; subtle shaker and tambourine for rhythmic texture; occasional flute or sax fills between phrases.
-
-- Mix Vision: <detailed production characteristics>
-  Clean front-center vocal with intimate proximity; generous spatial depth with layered reverbs; wide stereo field; warm analog glue compression binding elements together; crisp transients on percussion; rounded low-end without mud; airy high-end shimmer without harshness; strings placed wide left-right, supportive never overpowering.
-
-- Texture: <vintage/modern character>
-  Vintage warmth with subtle tape saturation undertone; short-to-medium plate reverb with natural room feel; no cavernous tails; tasteful space between elements; polished sheen with organic imperfection.
-
-- Vocal Production: <delivery style and processing>
-  Clear expressive lead vocal with articulate diction and emotional dynamics; subtle breaths audible for intimacy; light natural vibrato; close-harmony doubles layered on chorus for lift; no heavy autotune; minimal compression preserving natural dynamic range; gentle de-essing.
-
-- Arrangement Notes: <section-by-section guidance>
-  Intro: concise warm entrance, Rhodes and strings only. Verse: 2-3 mid-range instruments max, vocal-forward with rhythmic bass. Chorus: full bloom with stacked harmonies, graceful crescendo never brash. Bridge: stripped to piano and vocal, dynamic shift creating contrast. Transitions: smooth crossfades, no hard stops.
-
-<meta.vibe verbatim>
+例: nu-jazz rap, 150 BPM, G minor, sardonic aggressive, male rap, live jazz drums, fat slap bass, Rhodes, horn stabs, wide stereo, raw analog
 ```
 
-### Style Character Limit Overflow — Reduction Priority
-If Style exceeds 1000 characters, reduce in this order:
-1. **Cut Arrangement Notes details** (highest priority)
-2. **Compress Texture** (2-3 phrases)
-3. **Remove secondary adjectives** (keep primary descriptors)
-4. **Compress Mix Vision / Vocal Production**
-Natural prose can be sacrificed for character limit compliance.
+### Performance Direction（Style 内に追加、任意）
+
+V5.5 はセクション別の演出を Style 内のロールラベルで制御できる。
+annotation tag への長文よりこちらが効果が高い。
+
+**Format**: Style タグの後に改行して `<Section>: <2-3 descriptors>` を追加
+
+```text
+# Style + Performance Direction の例
+
+nu-jazz rap, 150 BPM, G minor, sardonic, male rap, jazz drums, Rhodes, horn stabs, wide stereo, raw
+Spoken Word: dry close-mic sparse Rhodes only no drums
+Verse: full band erupts aggressive
+Hook: explosive brass chant
+Bridge: piano ghost drums only
+```
+
+**注意**:
+- Performance Direction を含めると Style が 120 文字を超える。合計上限は Suno UI の Style フィールド上限（1000文字）に従う
+- コアタグ（120文字以内）+ Performance Direction（必要分のみ）= 実用上 200-400 文字が目安
+- ジャンル・音色は正しいが演奏の態度/デリバリーが違う → Performance Direction を追加
+- 基本的な音作りが違う → Style タグ自体を変更
+
+### [studio recording] アンチライブテクニック
+
+v5.5 は歓声・拍手・ライブ感を勝手に足す癖がある。以下で制御:
+1. 歌詞の先頭に `[studio recording]` タグを追加
+2. Style に `Remove fake crowd cheering and clapping. Small studio room not stadium.` を追加
+3. Exclude に `crowd noise, live audience` を追加
+
+### Style Character Limit — Adjustment
+If core Style tags exceed 120 characters:
+1. **Remove secondary adjectives** (keep primary genre + mood)
+2. **Compress instruments** (keep 2-3 key instruments)
+3. **Move detail to Performance Direction block** (separate from core tags)
+If Performance Direction is needed, total Style field can go up to 400 characters.
 
 ---
 
@@ -152,7 +163,17 @@ Trap, Dubstep, distorted guitars, EDM supersaws, female humming
 ## Annotation Tag Vocabulary (for lyrics section headers)
 
 ### Intro
-atmospheric, fade in, soft pads, ambient, building, sparse
+
+**WARNING**: `[Intro]` タグは Suno がインストパッドを前に足す傾向がある。イントロを短くしたい場合は以下の代替を使う:
+
+| 方法 | 記法 | 効果 |
+|------|------|------|
+| Spoken Word 専用タグ | `[Spoken Word]` | spoken delivery を強制、インスト引き伸ばし回避 |
+| Verse 1 統合 | `[Verse 1 - starts spoken then erupts]` | イントロなしで即歌い出し |
+| イントロ省略 | `[Verse 1]` から開始 | 完全にイントロを排除 |
+
+`[Intro]` を使う場合は長いインストが入ることを許容する前提で。
+推奨 descriptors: atmospheric, fade in, soft pads, ambient, building, sparse
 
 ### Verse
 intimate, storytelling, close vocal, moderate energy, rhythmic, stripped, acoustic
