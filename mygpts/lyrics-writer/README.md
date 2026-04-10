@@ -38,13 +38,13 @@ ChatGPT → `Explore GPTs` → `Create` → `Configure`
 
 ### 4. Knowledge
 
-`knowledge/` フォルダ（リポジトリルート直下）から以下5ファイルをアップロードします。
+`skills/suno/knowledge/` フォルダから以下5ファイルをアップロードします。
 
-1. `knowledge/lyric_craft.md`
-2. `knowledge/song_structures.md`
-3. `knowledge/style_catalog.md`
-4. `knowledge/rap_and_flow.md`
-5. `knowledge/english_lyrics.md`
+1. `skills/suno/knowledge/lyric_craft.md`
+2. `skills/suno/knowledge/song_structures.md`
+3. `skills/suno/knowledge/style_catalog.md`
+4. `skills/suno/knowledge/rap_and_flow.md`
+5. `skills/suno/knowledge/english_lyrics.md`
 
 ### 5. Capabilities
 
@@ -90,7 +90,7 @@ mygpts/lyrics-writer/
 ├── README.md
 └── instructions.md
 
-knowledge/                  ← リポジトリルート（共通）
+skills/suno/knowledge/      ← 正本（/suno スキル配下）
 ├── lyric_craft.md          ← アップロード対象
 ├── song_structures.md      ← アップロード対象
 ├── style_catalog.md        ← アップロード対象

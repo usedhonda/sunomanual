@@ -151,35 +151,27 @@ sunomanual/
 ├── LICENSE
 ├── SunoV5_Prompt_MASTER_REFERENCE.md   # 中核マニュアル（15テクニック+81引用）
 ├── agent/                              # 用途別フロー
-├── knowledge/                          # 共通ナレッジ（原本）
-│   ├── lyric_craft.md                  # 伏線、韻、フック、コーチング
-│   ├── song_structures.md              # 8構成パターン、エネルギーカーブ
-│   ├── style_catalog.md                # ジャンル別テンプレ、楽器/プロダクション語彙
-│   ├── rap_and_flow.md                 # ラップ専用: フロー、韻スキーム、日本語ラップ
-│   ├── english_lyrics.md               # 英語/バイリンガル: プロソディ、クロス韻
-│   ├── suno_v55_reference.md           # V5.5 リファレンス
-│   └── yaml_template.md               # YAML出力テンプレート
 ├── mygpts/                             # ChatGPT CustomGPT
 │   ├── style-analyzer/
 │   └── lyrics-writer/
 ├── scripts/
-│   ├── suno-autofill.user.js           # Tampermonkey（Suno自動入力）
-│   └── sync-knowledge.sh              # knowledge同期スクリプト
+│   └── suno-autofill.user.js           # Tampermonkey（Suno自動入力）
 └── skills/
-    └── suno/                           # /suno スキル（自己完結型）
+    └── suno/                           # /suno スキル（自己完結型・正本）
         ├── SKILL.md
-        └── knowledge/
+        └── knowledge/                  # 共通ナレッジ（正本）
+            ├── lyric_craft.md          # 伏線、韻、フック、コーチング
+            ├── song_structures.md      # 構成パターン、エネルギーカーブ
+            ├── style_catalog.md        # ジャンル別テンプレ、楽器/プロダクション語彙
+            ├── rap_and_flow.md         # ラップ専用: フロー、韻スキーム、日本語ラップ
+            ├── english_lyrics.md       # 英語/バイリンガル: プロソディ、クロス韻
+            ├── suno_v55_reference.md   # V5.5 リファレンス
+            └── yaml_template.md        # YAML出力テンプレート
 ```
 
 ## knowledge 更新時
 
-`knowledge/`（原本）を更新したら:
-
-```bash
-./scripts/sync-knowledge.sh
-```
-
-skills 内のコピーが同期されます。
+knowledge ファイルは `skills/suno/knowledge/` を直接編集する。スキルが自己完結しているため別途同期は不要。
 
 ## 情報の立場
 
