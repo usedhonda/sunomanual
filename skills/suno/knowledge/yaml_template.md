@@ -121,17 +121,9 @@ Bridge: piano ghost drums only
 
 ### Voice Description Priority
 
-- `male vocal` / `female vocal` だけに頼らない
-- Prefer physical descriptors first:
-  - register
-  - breathiness
-  - attack
-  - chest / head placement
-  - delivery
-- Good:
-  - `baritone, low chest register, slow controlled delivery`
-  - `airy alto, breathy, soft attack, intimate`
-- If gender matters, append it after the physical description instead of leading with it
+- Prefer physical voice descriptors before gender labels in vocal fields
+- Use 2-4 traits max: register, breathiness, attack, delivery
+- Example: `baritone, soft attack, controlled delivery, male vocal`
 
 ### Lyrics Control Panel Rule
 

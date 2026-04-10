@@ -214,7 +214,7 @@ Annotation text is NOT sung — it's a production instruction to Suno.
 
 ---
 
-## Recent 30-Day Community Findings (2026-03 to 2026-04)
+## Recent V5.5 Operational Findings (2026-03 to 2026-04)
 
 ### Slider Two-Phase Workflow
 - Treat sliders as a **two-pass system**:
