@@ -298,6 +298,24 @@ Annotation text is NOT sung — it's a production instruction to Suno.
 - Keep it short and use it as a pre-generation framing device, not as bloated Style prose.
 - This is best treated as a continuity scaffold for artist identity, not a magic keyword trick.
 
+### Climax Design: Silence -> Half-Step Transposition
+- Community experiments around v5.5 report that **longer conversational Style prose** plus structural metatags can work well for high-drama section design.
+- Treat this as a **Pattern A technique**. For Pattern B, keep user lyrics unchanged and do not force this structure by rewriting the text.
+- Climax recipe:
+  1. Build the song to about 80% of its final intensity
+  2. Drop for a moment with a structural tag such as `[Silence]`
+  3. Re-enter with a **half-step transposition** (for example `D -> Eb`)
+  4. Increase density and emotional pressure on the entry
+- Basic `[Silence]` usage belongs to `Community-Discovered Techniques -> Negative Space Technique`. This section is about **climax architecture**, not silence as a general timing tool.
+- Reported YAML-style split for planning:
+  - `style:` = conversational long-form style direction
+  - `lyrics:` = structural metatags and section flow
+  - `exclude_styles:` = negative constraints
+- If you apply this planning model, keep it aligned with `knowledge/yaml_template.md` so role separation stays consistent.
+- Confidence: medium. The experiment archive is systematic, but outside replication is still unconfirmed.
+- Risk: overlong Style prose can break adherence, and the frisson effect is not guaranteed on every genre or take.
+- Source note: `danlex/suno-lab` (GitHub experimental archive, latest commit displayed as 2026-04-08).
+
 ### External CLI Automation (Non-Official)
 - Community tools such as SunoCli can speed up batch generation, JSON piping, and section replacement.
 - Treat them as **non-official automation**:
