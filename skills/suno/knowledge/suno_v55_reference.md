@@ -241,6 +241,167 @@ For homophones: "live" → "lyve", "bass" → "basss" to get intended pronunciat
 
 ---
 
+## Odd Time Signature / 変拍子プロンプト戦略
+
+5/4・7/8 等の奇数拍子（odd meter）を Suno V5.5 で「当てに行く」ための体系的戦略。
+公式 KB・Reddit・日本語コミュニティ記事・音楽理論資料からの統合知見。
+**大半の技法は出典元でも「未検証」と明記されている**点に注意。
+
+### Fundamental Caveat（まず知るべき事実）
+
+- **Suno Studio の time signature 設定は edit grid 専用で、モデル条件には送られない**（Suno 公式 KB）。Studio で拍子を指定しても新規生成には影響しない
+- **直接 `5/4` / `7/8` と書いても 4/4 に吸われやすい**。ラベルは高い確率で無視される
+- **「ラベルを信じず必ず数えろ」が鉄則**。出力が出たら人間がカウントして検証する
+- 成功率は曲調・モデル・スライダー・シード有無で大きく変動する
+- 変拍子は「当たればラッキー」ではなく「**当てに行く工程設計**」が必要
+
+### Strategy Ladder（推奨順・堅牢性の順）
+
+#### A. 連符語彙戦略（基本）
+
+拍子記号ではなく「連符（tuplet）語彙」で 5/7 のまとまりを作る。Reddit で最も再現性が高いと報告されている手法:
+
+- `quintuplet` / `quintuplet groove` / `quintuplet subdivision` / `5-note grouping` → 5 拍子狙い
+- `septuplet` / `septuplet groove` / `septuplet subdivision` / `7-note grouping` → 7 拍子狙い
+
+Style にも Lyrics にも分散配置する。
+
+#### B. メトリック・モジュレーション（BPM 関係式）
+
+テンポ変換の理屈で「実質の拍子」を作る手法。Suno はテンポ変更は扱える前提。
+
+**式**: `new_tempo = base_tempo / tuplet_division × meter_base`
+
+**例**: 5:4 感を狙う場合 → 120 BPM を 120 / 5 × 4 = **96 BPM** に。Style/Lyrics に `base 120 BPM, metric modulation 5:4, derived 96 BPM` のように書く。
+
+#### C. 不規則グルーヴ語彙（補助）
+
+以下の語彙で「変拍子っぽさ」を誘発できるという報告:
+
+`irregular meter` / `shifting rhythms` / `polyrhythmic` / `contrametric` / `extra-metric`
+
+※ `polymeter` は報告では効かないとされる。避ける。
+
+#### D. アクセント分割の明示
+
+奇数拍子の体感は「等分」ではなく「非対称分割」で生まれる:
+
+- **5拍子**: `accent 3+2` または `accent 2+3`
+- **7拍子**: `accent 2+2+3`（最典型）/ `3+2+2` / `2+3+2`
+
+これらを Style にもセクションタグにも書く。例: `[Verse - quintuplet feel, accent 3+2]`
+
+#### E. シード戦略（最堅牢）
+
+**言語誘導より堅い**。Upload Audio で 5/4 や 7/8 のクリック/ドラムループを入れ、Extend で延長する。公式の Upload Audio は 6-60 秒（Pro/Premier は最大 120 秒）。
+
+拍頭が分かるよう、各拍頭にクラッシュ/キック等を明確に入れるのがコツ（日本語コミュニティ検証記事より）。
+
+#### F. Song Editor で拍数指定
+
+公式の Song Editor は「追加セクションの拍（beats）数」を調整できる。拍子そのものの保証にはならないが、奇数拍のフレーズ長を保ちやすくなる。
+
+### Slider Settings for Odd Meter
+
+変拍子は構造が壊れやすいので、Weirdness は低め・Style Influence は高めで安定させる:
+
+| スライダー | 推奨値 | 理由 |
+|-----------|-------|------|
+| Weirdness | 25-40 | 低め → 構造崩壊を防ぐ |
+| Style Influence | 70-85 | 高め → 連符語彙・アクセント分割への追従を強める |
+| Audio Influence | 60-75（シード使用時のみ） | シード拍頭を維持する |
+
+### Prompt Templates
+
+#### Example A: 5/4 狙い（progressive rock, 英語）
+
+**Style:**
+```
+progressive rock, tight drums, base 120 BPM, quintuplet-driven groove, accent 3+2, clear downbeats, no straight four-on-the-floor
+```
+
+**Lyrics (Intro):**
+```
+[Intro - instrumental, count-in, quintuplet feel, accent 3+2]
+one two three | one two
+```
+
+#### Example B: 7/8 狙い（math rock, 日本語）
+
+**Style:**
+```
+マスロック、140 BPM、septuplet（7連）グルーヴ、7/8 フィール、アクセント 2+2+3、歯切れの良いギター、タイトなスネア、拍頭明確
+```
+
+**Lyrics (Intro):**
+```
+[Intro - インスト、カウント、7/8 feel, accent 2+2+3]
+いち に｜いち に｜いち に さん
+```
+
+#### Example C: シード前提（Upload Audio + Extend）
+
+**Style:**
+```
+math rock, quintuple meter feel, accent 3+2, locked to uploaded click track, dry drums
+```
+
+**運用:**
+1. 5/4 や 7/8 のクリック/ドラムループ（6-60秒）を Upload Audio
+2. Extend で曲を構築
+3. Style に「locked to uploaded click track」を含める
+4. Audio Influence 60-75% でシード拍頭を維持
+
+### Lyrics Design for Odd Meter（Step 2 連携）
+
+#### Pattern A（テーマから生成 — ゼロから書く場合）
+
+- フレーズ長を奇数拍に合わせる: 5拍子なら「3音節 + 2音節」の息づかい、7拍子なら「2 + 2 + 3」
+- セクション冒頭にカウント歌詞を置く（`one two three | one two` / `いち に さん｜いち に`）
+- アクセント分割をアノテーションタグに明示: `[Verse - quintuplet feel, accent 3+2]`
+- 行の音節数は 4/4 用の 6-12 音節ルールを無理に適用しない。**拍数のまとまりを優先**
+
+#### Pattern B（持ち込み歌詞 — ユーザー提供）
+
+🚨 **Pattern B 絶対ルール: 歌詞本文は一字一句変更しない**。変拍子狙いでも歌詞保護は破らない。
+
+できること:
+- アノテーションタグに変拍子指示を追加: `[Verse - 7/8 feel, accent 2+2+3]`
+- Style 側に連符語彙・アクセント分割・スライダー推奨値を反映
+- ユーザーに「この歌詞は 4/4 前提で書かれている可能性が高い。変拍子のフレーズ長と噛み合わないリスクがある」と注意喚起する
+
+できないこと:
+- 歌詞の行分割・単語追加・カウント歌詞挿入（歌詞保護違反）
+
+### Troubleshooting Flow（4/4 に戻ってしまう場合）
+
+コスト（クレジット）と試行回数を抑える順序:
+
+1. **カウントして確認**: まずラベルを信じず人間が数える。これで「本当に 4/4 か」を確定させる
+2. **連符語彙 + アクセント分割を追加**: `quintuplet` / `septuplet` / `accent 3+2` / `accent 2+2+3` を Style と Lyrics タグに散りばめる
+3. **シードに切り替え**: 言語誘導で効かなければ Upload Audio に 5/4 or 7/8 クリック → Extend（最も強い）
+4. **Song Editor で拍数調整**: セクションの beats 数を指定してフレーズ長を奇数拍に固定
+5. **スライダー再調整**: Weirdness を下げ、Style Influence を上げる
+
+### Vocabulary Cheat Sheet
+
+**効きやすい語:**
+- `quintuplet` / `septuplet`
+- `quintuple meter` / `septuple meter`
+- `5-note grouping` / `7-note grouping`
+- `accent 3+2` / `accent 2+2+3` / `accent 3+2+2` / `accent 2+3+2`
+- `polyrhythmic` / `contrametric` / `extra-metric`
+- `irregular meter` / `shifting rhythms`
+- `metric modulation` / `5:4 modulation` / `7:8 modulation`
+- `clear downbeats` / `strong downbeat` / `tight drums` / `locked to click track`
+
+**避けるべき:**
+- 直接的な `5/4` / `7/8` 記号**だけ**に依存すること（4/4 に吸われやすい）
+- `polymeter`（報告では効かない）
+- 曖昧な「odd time」だけで具体指示なし
+
+---
+
 ## Critical Safety Rules
 
 ### Command Text Gets Sung
