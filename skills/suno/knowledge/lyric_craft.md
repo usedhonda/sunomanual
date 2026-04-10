@@ -265,6 +265,22 @@ Sunoは句読点を「息継ぎ/ポーズ」として解釈する。歌の呼吸
 - 日本語歌詞に英語を混ぜるときは、意図した発音になるか確認
 - 英日クロス韻（night/ないと等）では特に注意
 
+### Ending 設計メモ
+- Ending は最後に直すより、最終行を先に決めた方が安定する
+- Final Chorus の着地点と Outro の長さを先に設計する
+- 最後の1-2行は「まだ続きそう」ではなく、解決・停止・余韻のどれかを明示する
+- `Extend` で引っ張る前に、Final Chorus と Outro の言葉が終止形になっているか見直す
+
+### 構造制御タグの扱い
+- bars / silence / sparse/full band のような制御タグは有効だが、正本ルールは `knowledge/suno_v55_reference.md` の `Lyrics-as-Control-Panel` に置く
+- ここでは歌詞側の原則だけ覚える:
+  - Pattern A: annotation で構造制御してよい
+  - Pattern B: **本文不変**。annotation のみで制御する
+  - タグは短く、演出の核だけ書く
+- 例:
+  - `[Break - silence between phrases]`
+  - `[Verse 2 - 16 bars, minimal piano]`
+
 ---
 
 ## 6. 物語駆動型作詞法

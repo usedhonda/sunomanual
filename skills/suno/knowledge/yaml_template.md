@@ -119,6 +119,40 @@ Bridge: piano ghost drums only
 - ジャンル・音色は正しいが演奏の態度/デリバリーが違う → Performance Direction を追加
 - 基本的な音作りが違う → Style タグ自体を変更
 
+### Voice Description Priority
+
+- `male vocal` / `female vocal` だけに頼らない
+- Prefer physical descriptors first:
+  - register
+  - breathiness
+  - attack
+  - chest / head placement
+  - delivery
+- Good:
+  - `baritone, low chest register, slow controlled delivery`
+  - `airy alto, breathy, soft attack, intimate`
+- If gender matters, append it after the physical description instead of leading with it
+
+### Lyrics Control Panel Rule
+
+- When Style stops responding, keep core tags short and push structure control into annotation tags
+- Safe control items in lyrics headers:
+  - `16 bars` / `32 bars`
+  - `silence between phrases`
+  - `minimal piano + sub bass`
+  - `full band enters`
+- Do not turn every section header into a paragraph. Short control tags beat long pseudo-specs
+- Pattern B remains strict: lyrics text is sacred, so only annotation tags may carry this control
+
+### Ending Guard
+
+- Put ending intent in META or final annotation before generation drifts:
+  - `form: ... final chorus -> short outro -> stop`
+  - `notes: clear ending, no looping continuation`
+- Final section headers may also carry short ending intent:
+  - `[Outro - resolved, short, full stop]`
+- If the ending still breaks, revise generation strategy first. Do not assume Extend will rescue it
+
 ### [studio recording] アンチライブテクニック
 
 v5.5 は歓声・拍手・ライブ感を勝手に足す癖がある。以下で制御:
@@ -145,6 +179,14 @@ If Performance Direction is needed, total Style field can go up to 400 character
 
 Trap, Dubstep, distorted guitars, EDM supersaws, female humming
 ```
+
+### Low-End / Filler-Noise Exclude Example
+
+- To anchor low-end, state it in Style:
+  - `deep sub-bass constant, clearly felt beneath all elements`
+- To remove junk texture, keep Exclude focused:
+  - `metallic ticks, brittle hats, random glitch sounds`
+- Do not exclude the whole rhythmic identity unless that element is truly the problem
 
 ---
 

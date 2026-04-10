@@ -214,6 +214,101 @@ Annotation text is NOT sung — it's a production instruction to Suno.
 
 ---
 
+## Recent 30-Day Community Findings (2026-03 to 2026-04)
+
+### Slider Two-Phase Workflow
+- Treat sliders as a **two-pass system**:
+  - **Exploration**: Style 50-60, Weirdness 10-20
+  - **Convergence**: Style 20-40, Weirdness 5-15
+- Do not rush to Style 100 in the first pass. It often over-locks the output and increases genre drift or unstable vocals.
+- Use this when the broad genre is right but the song still needs several takes to "latch on."
+
+### Voice Description over Gender Labels
+- `male vocal` / `female vocal` alone is weaker than **physical voice description**.
+- Prefer descriptors such as:
+  - `deep low chest register, baritone, slow controlled delivery`
+  - `breathy airy alto, soft attack, intimate tone`
+- When Voices or Cover are active, treat gender as a secondary hint. Lead with register, airflow, attack, and delivery.
+
+### Low-End Anchoring and Filler-Noise Exclusions
+- If you want weight, write low-end intent explicitly:
+  - `deep sub-bass constant, clearly felt beneath all elements`
+- If the arrangement fills with junk texture, move cleanup into Exclude:
+  - `metallic ticks, random glitch sounds, harsh shakers, brittle hats`
+- Do not over-exclude instruments that define the genre. Remove filler first, not the groove core.
+
+### Ending Control Workflow
+- Ending problems are easier to prevent than to repair.
+- Put ending intent in the **first generation**, not only after failure:
+  - `clear ending with full stop`
+  - `no looping or continuation`
+- In Lyrics, give the final line a resolved landing and keep Outro short.
+- If the ending still breaks, prefer **Remix before Extend**. Extend tends to drag unresolved loops forward.
+
+### Lyrics-as-Control-Panel
+- If Style grows too strong and stops listening, shorten Style and move control into Lyrics tags.
+- Use annotation tags to encode:
+  - section energy
+  - sparse/full instrumentation
+  - silence between phrases
+  - section length hints such as `16 bars`, `32 bars`
+- Best use case: when broad genre is already correct, but section pacing, density, and dramatic spacing are wrong.
+- Working range reported by the community:
+  - Weirdness around 65
+  - Style Influence around 35
+- Keep this lighter than a full specification dump. Overlong tag text still breaks.
+
+### Studio Stem Duet Workflow
+- For "real" duets, do not force the first generation to sing both roles at once.
+- More reliable workflow:
+  1. Generate the song as a solo performance
+  2. Open in Studio
+  3. Export or split stems
+  4. Duplicate the vocal stem
+  5. Run Cover on the duplicated vocal only with the new voice direction
+  6. Re-import only the new vocal stem
+  7. Manually mute, cut, and fade lines into duet form
+- This costs more credits and manual editing time, but it is more controllable than one-shot duet prompting.
+
+### My Taste Advanced Tuning
+- My Taste responds to **behavior shaping**, not only passive usage.
+- Strong community pattern:
+  - Spend about 2 weeks generating almost only the target genre
+  - Like / save strong outputs
+  - Ignore weak takes instead of "teaching" noise
+- If the report UI is editable, users also report success from hand-tuning the preference text and then using Magic Wand on top of a short base prompt.
+- If the model keeps flipping gender or role, a hard suffix such as `male vocal only` can calm it down, but use it sparingly.
+
+### Voices Recording Checklist
+- Voices quality starts with the input recording, not the generation prompt.
+- Best-practice checklist:
+  - dead room or closet-like space
+  - mouth 30-50 cm from mic, slightly off-axis
+  - air conditioner / fan / ventilation off
+  - natural voice, not exaggerated "character voice"
+  - 3-4 minute acapella take when possible
+- This extends the existing "clean acapella works best" rule into a repeatable capture standard.
+
+### Persona Resume for Voices / Custom Models
+- A short fictional "resume" can stabilize worldbuilding for repeat generations:
+  - age / background
+  - roots
+  - frustration or wound
+  - imagined recording environment
+- Keep it short and use it as a pre-generation framing device, not as bloated Style prose.
+- This is best treated as a continuity scaffold for artist identity, not a magic keyword trick.
+
+### External CLI Automation (Non-Official)
+- Community tools such as SunoCli can speed up batch generation, JSON piping, and section replacement.
+- Treat them as **non-official automation**:
+  - external API dependency
+  - auth / token handling
+  - logging and privacy risk
+  - terms-of-service review required
+- Use only after security and policy review. Do not assume parity with official Suno product behavior.
+
+---
+
 ## Community-Discovered Techniques
 
 ### 1. Anchoring Strategy

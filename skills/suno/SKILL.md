@@ -285,6 +285,7 @@ tags: [artist, suno]
 1.5. **拍子・リズム判定**: ユーザー指示または `genres` に変拍子を示唆する語（math rock / progressive / odd meter / 5/4 / 7/8 / 変拍子 / プログレ 等）が含まれる → `knowledge/suno_v55_reference.md` の「Odd Time Signature / 変拍子プロンプト戦略」セクションを必ず読む。読んだ上で:
    - **Pattern A（ゼロから生成）の場合**: 歌詞のフレーズ長を奇数拍のまとまりに合わせ、行密度・音節設計を 4/4 デフォルトから変え、カウント歌詞やアクセント指示をセクションタグに含めるか検討する
    - **Pattern B（持ち込み歌詞）の場合**: 🚨 歌詞本文は一切変更しない（Pattern B 絶対ルール）。できるのはアノテーションタグへの拍子情報追加のみ（例: `[Verse - 7/8 feel, accent 2+2+3]`）。変拍子と噛み合わない可能性をユーザーに注意喚起する
+1.6. **Ending 判定**: Ending / outro / fade / ループ終止 / clear stop を示す語がある、または「終わり方が崩れやすい」タイプの曲だと判断したら、`knowledge/suno_v55_reference.md` の `Ending Control Workflow` を読む。Pattern A では最終行と Outro を先に設計し、Pattern B では本文を変えず annotation と META だけで終止感を補助する
 2. **言語モード**: `language` + `english_mix` + `出力ルール.言語比率`
 3. **核イメージ**: ユーザーテーマ × `themes`（方向制約）× `stance`（態度フィルタ）
 4. **伏線マップ**: `foreshadow` 設定に基づき、歌詞を書き始める前に設計する:
@@ -307,6 +308,7 @@ tags: [artist, suno]
 - [ ] 出力ルール → 文字数・言語比率・優先事項を満たしているか
 - [ ] カスタムセクション → 該当するルールを見落としていないか
 - [ ] 変拍子の要求あり → knowledge の変拍子セクションを読んで歌詞設計に反映したか（Pattern B なら歌詞本文を変更していないか）
+- [ ] 終止感が重要な曲 → `Ending Control Workflow` を読んで最終行 / Outro / annotation に反映したか
 
 ### 歌詞の掟
 
@@ -315,6 +317,7 @@ tags: [artist, suno]
 - **韻を踏め**: アーティスト設定の rhyme_style に沿って
 - **フックを立てろ**: Chorus 1行目で核を言い切る
 - **歌えること**: 6-12音節/行（4/4 前提のデフォルト）、セクション間で密度コントラスト。**変拍子の場合は拍数のまとまりを優先し、音節数は副次条件として扱う**（詳細は `knowledge/suno_v55_reference.md` の「Odd Time Signature / 変拍子プロンプト戦略」参照）
+- **終わりを設計しろ**: Ending が弱い曲は最終行と Outro を先に決める。Pattern B では本文不変、annotation と META で終止感を補助する
 - **禁止**: 感情語連打、説明口調、比喩盛りすぎ、抽象名詞連打
 
 ### Pattern B の絶対ルール
@@ -432,6 +435,7 @@ Phase A のヒアリング結果 + アーティスト設定 + 歌詞から、Sty
 - **曲固有のヒアリング結果**: この曲の個性（Phase A で収集）
 - **参照曲の調査結果**: BPM/Key/Genre 等（URL がある場合）
 - **歌詞の内容**: テーマ、感情アーク、密度から逆算したムード
+- **最新運用知見**: `knowledge/suno_v55_reference.md` の slider / ending / duet / voices / My Taste 補足
 
 ### 🚨 プロファイル反映の原則
 
@@ -463,6 +467,9 @@ Phase A のヒアリング結果 + アーティスト設定 + 歌詞から、Sty
 3. Style と Exclude は全て英語
 4. YAML メタデータは全て英語。歌詞のみ日本語（ひらがな）可
 5. アーティスト名、曲名は Style に入れない
+6. Voices / Cover で声を狙うときは gender tag 単体より **物理描写（register, breathiness, attack, delivery）** を優先
+7. 低域が欲しいときは明示する。不要なジャンク質感は Exclude で切る
+8. Style が効きすぎる場合は、Style を短くして annotation / YAML 側へ制御を寄せる
 
 ### 出力
 
@@ -477,6 +484,10 @@ Phase A のヒアリング結果 + アーティスト設定 + 歌詞から、Sty
 - [ ] 出力ルール → 音楽的優先事項を反映するか
 - [ ] ライブ感/歓声の懸念 → `[studio recording]` + Style/Exclude に anti-live 指示
 - [ ] イントロ → `[Intro]` の引き伸ばしリスクを考慮し、代替手段を検討したか
+- [ ] Voices / Cover → gender tag だけで済ませず、物理描写で声を固定したか
+- [ ] 低域 / ノイズ → sub-bass を明示するか、filler-noise を Exclude へ送るか判断したか
+- [ ] Ending が弱いタイプの曲 → ending intent を META / annotation に入れたか
+- [ ] デュエット等の難題 → one-shot で押し切らず、必要なら Studio stem workflow を選ぶか
 
 **🚨 Step 3 出力フロー（順序厳守・スキップ禁止）:**
 
