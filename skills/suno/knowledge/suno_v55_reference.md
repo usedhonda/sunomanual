@@ -325,6 +325,53 @@ Annotation text is NOT sung — it's a production instruction to Suno.
   - terms-of-service review required
 - Use only after security and policy review. Do not assume parity with official Suno product behavior.
 
+### Emotional / Action Words over Technical Terms (Style Block)
+- In V5.5, leading the Style Block with **emotional or motion language** often produces stronger arcs than stacking acoustic-template vocabulary alone.
+- Reported to land reliably:
+  - `desperate`, `late-night confession`, `cracked voice` (情動語)
+  - `building intensity`, `anthemic chorus`, `low headroom` (展開と質感ガード)
+- Suggested ordering: `[情動語], [場面/時刻], [強度の動き], [声の物理描写], [サビ性質], [質感ガード]`.
+  - Example: `desperate, late-night confession, building intensity, cracked voice, anthemic chorus, low headroom, no glossy polish`
+- Do not drop acoustic vocabulary entirely. Lead with emotion + motion, keep acoustic control (register, attack, mix) in the **second half** of the Style prose.
+- Risk: over-loading emotion words blurs genre edges, and `anthemic chorus` pushed too far makes every take sound oversized.
+- Confidence: medium. Reddit / u/Budget_Coach9124 and related threads (late March 2026).
+
+### Instrument and Amp Anchoring
+- For guitar / organ / horn-driven songs, **instrument model + amp + playing verb** shifts tone more than genre labels alone.
+- Usable patterns (1-2 concrete models per prompt, not a gear catalog):
+  - `Epiphone Les Paul Standard, G major blues chord progression`
+  - `Fender American Tele through Vox AC30, choppy rhythm chops`
+  - `Gretsch G5422TG, clean tremolo, held chords`
+  - `Hammond B3 with rotary speaker, slow swell into chorus`
+- Best fit: blues, garage, southern rock, alt-country, soul-organ, classic jazz.
+- Weaker on synth-dominant tracks, abstract electronic, or percussion-first genres. Brand names become noise if stacked.
+- Keep **one** hero instrument + the playing verb. Do not list three brands in one prompt.
+- Confidence: medium-low. Reddit / u/AdSeveral2196, u/Middle-Style-9691 (late March 2026).
+
+### Tag Extraction via Self-Upload
+- Workflow to reverse-engineer a hit you already made:
+  1. Download the winning track from Suno
+  2. Re-upload it (**own material or cleared rights only**)
+  3. V5.5 writes auto-generated style tags into the Lyrics field as part of its analysis
+  4. Clean the transcript (drop obvious artifacts, keep the signal tags)
+  5. Run **Cover** on the original track with the cleaned tag set
+- Use case: capture what made one specific take land, in **Suno's own vocabulary**, so you can re-apply it to future generations.
+- Notes:
+  - Auto-extracted tags mix real style signals with transcription residue. Do not paste them raw. Edit first.
+  - Never do this with other people's copyrighted audio. The technique is for self-reuse and cleared sources only.
+  - Technique is new in the 5.5 cycle; replication reports are still limited.
+- Confidence: medium. Reddit / u/Jstnwrds55 (mid April 2026, search UI: last week).
+
+### Vocal Ornament Exclusion Patterns
+- Extends `Exclude Best Practices` (see Critical Safety Rules below) specifically for **vocal flourishes** (runs, melisma, ad-libs, shouted tags) that the general rule does not enumerate.
+- Target behaviors: overwrought gospel-style runs, excessive melisma, filler ad-libs between lines, "yeah / uh" tags on every bar.
+- Paired-write rule: negative phrasing alone is unstable. Always add a **positive replacement** for the vocal behavior.
+  - Exclude field: `ad-libs, runs, melisma`
+  - Style Block: `straight tone, punk delivery, raw vocals, low register`
+- Works well for: post-punk, coldwave, punk, lo-fi, dry-vocal indie, spoken-leaning folk.
+- Cap at 2-3 negative vocal items per prompt. Suno can latch onto `no X` and emphasize the very thing you excluded.
+- Confidence: low-medium. Reddit / u/BuffaloConscious7919 and related threads (mid April 2026).
+
 ---
 
 ## Community-Discovered Techniques
