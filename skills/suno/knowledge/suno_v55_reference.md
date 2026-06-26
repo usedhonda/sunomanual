@@ -87,6 +87,16 @@ Annotation text is NOT sung — it's a production instruction to Suno.
 [Falsetto]         [Growl]
 ```
 
+### Community-reported inline tags (unofficial — verify per song)
+
+Community-sourced, not confirmed official; effect is context-dependent — A/B test one at a time.
+- `[Energy: High]` (family: `[Energy: Low/Build/Explosive]`): placed in the lyrics right before a section,
+  reported to act as a LOCAL dynamic-peak signal — it raises arrangement intensity for that section only,
+  distinct from a song-wide Style energy descriptor. Confidence: medium. Source: jackrighteous.com
+  (corroborated by a second tag-list source), 2026-06.
+- `[modulate up a key]` in the chorus: reported to force an upward key modulation at that section.
+  Confidence: medium (single source). Source: openmusicprompt.com, 2026-06.
+
 ---
 
 ## Creative Sliders
