@@ -236,6 +236,198 @@ slow fade, loose timing, cavernous reverb, soft ballad, filler percussion
 
 ---
 
+## SNS時代ジャンル Recipes（community + Cdx review, 未実証 - A/B 推奨）
+
+以下は SNS バイラル文脈で使われやすい近年型スタイル。正式ジャンルと production method を混同しないこと。
+Style core は短く保ち、細かい変化はセクション annotation / Performance Direction へ逃がす。
+
+### Phonk Recipe（Drift / Brazilian 分岐）
+
+Phonk は cowbell riff、distorted 808、dark minor key、短い chant / rap chop が核。Trap と重なるが、cowbell と
+drift 感を明示すると差が出る。Brazilian Funk-Phonk は funk carioca / tamborzinho のリズム語彙を足す。
+
+### Style core（<=120字・どちらか）
+```text
+drift phonk, 160 BPM, F minor, dark aggressive, cowbell lead, distorted 808 bass, Memphis rap chops, gritty loud mix
+```
+```text
+Brazilian funk phonk, 150 BPM, G minor, wild kinetic, tamborzinho drums, cowbell riff, distorted 808, chant vocal
+```
+- BPM: 140-170（drift は 150-170、Brazilian は 140-160）
+- Key: minor 推奨（F minor / G minor / C# minor）
+- Gotcha: `cowbell lead` と `distorted 808` を入れないと暗い Trap に吸われる。Brazilian 寄せは `Brazilian funk phonk`
+  と `tamborzinho drums` を短く入れる
+
+### 8小節構成テンプレ
+```text
+[Hook - cold cowbell riff, 4 bars, chant fragment]
+[Verse 1 - 8 bars, Memphis chop, sparse drums]
+[Drop - 8 bars, distorted 808, drift energy]
+[Break - 4 bars, cowbell only, tension reset]
+[Verse 2 - 8 bars, Brazilian drum switch, clipped vocal]
+[Final Drop - 8 bars, densest cowbell and 808, hard stop]
+```
+
+### スライダー
+| Section | Weirdness | Style Influence |
+|---|---:|---:|
+| Hook / Cowbell Intro | 35-45 | 75-85 |
+| Verse | 45-55 | 60-70 |
+| Drop | 40-50 | 75-85 |
+| Break / Switch | 55-65 | 55-65 |
+| Final Drop | 35-45 | 80-85 |
+
+### Exclude
+```text
+soft ballad, acoustic drums, bright pop piano, clean jazz bass, muddy low end
+```
+
+### 歌詞 craft cross-ref
+- chant hook は短く、2-4語で反復（lyric_craft §3）
+- dark minor の単語反復と内部韻で中毒性を作る（rap_and_flow の internal rhyme / cadence）
+- Brazilian 分岐では言葉を詰めすぎず、drum bounce を邪魔しない
+
+---
+
+### Amapiano Recipe
+
+Amapiano は log drum bass、shuffling percussion、piano stab、ゆるい hypnotic groove が核。House / Afrobeat に
+吸われやすいので、log drum と syncopated shuffle を必ず明示する。
+
+### Style core（<=120字）
+```text
+amapiano, 112 BPM, A minor, warm hypnotic, log drum bass, shuffling percussion, airy piano stabs, smooth vocal hook
+```
+- BPM: 100-115（sweet spot 108-112）
+- Key: minor / major どちらも可（A minor / B minor / Db major）
+- Gotcha: `log drum bass` 必須。House 化する時は `four-on-the-floor` を避け、`shuffling percussion` を強める
+
+### 8小節構成テンプレ
+```text
+[Intro - 4 bars, piano motif, no long pad]
+[Verse 1 - 8 bars, smooth vocal, sparse percussion]
+[Pre-Chorus - 8 bars, log drum enters, shakers widen]
+[Chorus - 8 bars, vocal hook, log drum call-response]
+[Post-Chorus - 8 bars, piano stab motif, percussion lift]
+[Bridge - 4 bars, drums thin out, vocal ad-lib]
+[Final Chorus - 8 bars, full log drum, hook returns, clean stop]
+```
+
+### スライダー
+| Section | Weirdness | Style Influence |
+|---|---:|---:|
+| Intro | 30-40 | 70-80 |
+| Verse | 35-45 | 65-75 |
+| Pre-Chorus | 40-50 | 70-80 |
+| Chorus | 35-45 | 75-85 |
+| Post-Chorus | 45-55 | 65-75 |
+| Bridge | 45-55 | 60-70 |
+| Final Chorus | 35-45 | 80-85 |
+
+### Exclude
+```text
+four-on-the-floor, EDM supersaws, rock guitars, muddy bass, long ambient intro
+```
+
+### 歌詞 craft cross-ref
+- hook は滑らかで伸ばせる open vowel を優先（lyric_craft §3 / §5）
+- call-response を Chorus / Post-Chorus に置くと log drum と噛み合う
+- Verse は説明しすぎず、短い反復句で groove を残す
+
+---
+
+### Jersey Club Recipe
+
+Jersey Club は triplet kick pattern、chopped vocal hook、短い chant、bounce 感が核。bed squeak percussion は符号として
+強いが、入れすぎるとコミカルに寄る。
+
+### Style core（<=120字）
+```text
+Jersey club, 150 BPM, D minor, bouncy urgent, triplet kick pattern, chopped vocal hook, squeak percussion, hard drums
+```
+- BPM: 140-160（sweet spot 145-155）
+- Key: minor or bright major（D minor / F minor / E major）
+- Gotcha: `triplet kick pattern` / `chopped vocal hook` が核。`bed squeak` 系は 1タグだけで十分
+
+### 8小節構成テンプレ
+```text
+[Hook - cold open, chopped vocal, 4 bars]
+[Verse 1 - 8 bars, fast chant, kick bounce]
+[Pre-Chorus - 4 bars, drums thin out, vocal chop rises]
+[Drop - 8 bars, triplet kick pattern, hard bounce]
+[Post-Drop - 4 bars, new chopped counter-hook]
+[Verse 2 - 8 bars, call-response, same kick pocket]
+[Bridge - 4 bars, silence hit, vocal chop only]
+[Final Drop - 8 bars, all chops return, hard stop]
+```
+
+### スライダー
+| Section | Weirdness | Style Influence |
+|---|---:|---:|
+| Hook / Cold Open | 35-45 | 75-85 |
+| Verse | 45-55 | 60-70 |
+| Pre-Chorus | 40-50 | 65-75 |
+| Drop | 35-45 | 80-85 |
+| Post-Drop | 50-60 | 60-70 |
+| Bridge | 55-65 | 55-65 |
+| Final Drop | 35-45 | 80-85 |
+
+### Exclude
+```text
+slow ballad, loose timing, ambient pads, acoustic folk, muddy kick
+```
+
+### 歌詞 craft cross-ref
+- hook は chop されても残る 2-4語に絞る（lyric_craft §3）
+- call-response と短い反復で bounce を作る（rap_and_flow の cadence / delivery）
+- Verse は長文にせず、1行を短く切る
+
+---
+
+## SNS Era Light Genre Templates
+
+### Style cores
+```text
+hyperpop, 156 BPM, E major, manic glossy, pitched vocal hook, distorted synth bass, glitch stutters, loud digital mix
+UK garage, 132 BPM, F# minor, sleek nocturnal, 2-step shuffle drums, reese bass, chopped R&B vocal, crisp club mix
+UK drill, 142 BPM, C minor, cold tense, sliding 808 bass, sparse drums, dark piano loop, clipped rap vocal, murky mix
+```
+
+| Genre | BPM / Key | Hook Trait | Gotcha |
+|------|-----------|------------|--------|
+| Hyperpop | 145-170 / major=candy, minor=edge | pitched-up 3-6語 hook、glitch しやすい母音 | Weirdness を上げすぎない。Style は短く、`random glitches` は Exclude 候補 |
+| UK Garage / 2-step | 128-140 / minor 推奨 | chopped R&B vocal に乗る短い refrain | `2-step shuffle` 必須。House 化する時は `four-on-the-floor` を Exclude |
+| Drill (UK/JP) | 138-150 / minor 推奨 | 冷たい短句、語尾反復、低い chant | `sliding 808` と `sparse drums` が核。JP drill は rap_and_flow の日本語多音節韻へ接続 |
+
+---
+
+## Production / Vocal Methods（genre ではない）
+
+### sped-up / Nightcore（Production Method）
+既存ジャンルに重ねる tempo / pitch 処理。単体ジャンルとして扱わず、元の Style core を保ったまま `sped-up edit` と
+`pitched-up vocal` を足す。community + Cdx review、未実証 - A/B 推奨。
+
+```text
+sped-up pop edit, 164 BPM, F# major, bright frantic, pitched-up vocal, fast drums, glossy synths, tight loud mix
+```
+- BPM: 原曲感 +15-25% 目安。Suno 生成なら 155-175
+- Gotcha: `sped-up` だけだと不安定。元ジャンル + `pitched-up vocal` + `tight loud mix` で指定する
+- Exclude 候補: `slow fade, loose timing, deep male vocal`
+
+### Vocaloid / ボカロ（Vocal Method / Synthetic Vocal Style）
+ボカロは厳密には歌唱文化 / synthetic vocal method。自然歌唱を求めず、明瞭で少し機械的な発音を許容する。
+community + Cdx review、未実証 - A/B 推奨。
+
+```text
+Vocaloid-style J-pop, 168 BPM, E minor, bittersweet, synthetic vocal, piano-rock drums, arpeggio synths, crisp mix
+```
+- BPM: 145-190
+- Key: minor / major どちらも可
+- Gotcha: `synthetic bright vocal` / `vocal synth style` が核。human soulful vocal を強く求めると方向がぶれる
+- Exclude 候補: `deep natural soul vocal, bluesy growl, loose live timing`
+
+---
+
 ## Instrument Tag Dictionary
 
 ### Keyboards
