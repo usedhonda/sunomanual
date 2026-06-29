@@ -96,6 +96,13 @@ Community-sourced, not confirmed official; effect is context-dependent — A/B t
   (corroborated by a second tag-list source), 2026-06.
 - `[modulate up a key]` in the chorus: reported to force an upward key modulation at that section.
   Confidence: medium (single source). Source: openmusicprompt.com, 2026-06.
+- Bracket-type reliability hierarchy: `[square brackets]` are the most reliably honored tag container
+  (hard directives — structure, vocal delivery, instrumentation), `(parentheses)` are a softer secondary
+  tier read as ad-libs / background / production cues rather than hard directives, and `{curly braces}`
+  are the least reliable. Practical effect: place anything that must be obeyed in square brackets and
+  reserve parentheses for non-critical color. Confidence: medium (two independent domains; one quantifies
+  it as ~90/70/50% compliance — treat the figures as illustrative). Source: acetaggen.com (2026-04),
+  hookgenius.app (2026-05).
 
 ---
 
