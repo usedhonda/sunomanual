@@ -2,7 +2,7 @@
 
 > **Language**: Japanese (日本語) — technical terms in English
 
-Suno V5/V5.5 で曲を作るための制作キットです。中心は Claude Code の **`/suno` スキル**。knowledge はその判断品質を支える知識エンジンで、将来の `suno-cli` は生成投入・回収を担う実行バックエンドになります。
+Suno V5/V5.5 で曲を作るための制作キットです。中心は Claude Code の **`/suno` スキル**。knowledge はその判断品質を支える知識エンジンで、`suno-cli` は生成投入・回収を担う実行バックエンドです（回収層は出荷済み、create submit は開発中）。
 
 ```text
 knowledge: 何を作るかを決める
@@ -14,7 +14,7 @@ knowledge: 何を作るかを決める
 
 - **`/suno` スキルが顔** — アーティスト設定 → 歌詞 → Style → Suno自動入力 → マスタリング → X投稿用動画まで、対話で進めるメイン体験
 - **knowledge は知識エンジン** — V5.5 仕様、コミュニティ技法、歌詞設計、ジャンル語彙、YAML テンプレートをスキルが参照する正本
-- **将来の `suno-cli` は実行層** — スキルが作った payload を Suno に投入し、2 take URL / audio を JSON で回収するバックエンドとして設計中
+- **`suno-cli` は実行層** — スキルが作った payload を Suno に投入し、2 take URL / audio を JSON で回収するバックエンド。回収コマンド（status / urls / download）は出荷済み、create submit は開発中
 - **プロンプト設計** — Style / Lyrics / Exclude の書き方、V5.5 音声条件付け、Duration Control、inline tags を統合
 - **SNS時代スタイル** — ドパガキ Recipe、Phonk / Amapiano / Jersey Club、Hyperpop / UK Garage / Drill、sped-up / Vocaloid を収録（community + Cdx review、未実証は A/B 推奨）
 - **Suno特化オートマスタリング** — Suno の音のクセ（シマー、泥、既圧縮、音量不足）を前提にスキャン → 判定 → 補正
@@ -62,16 +62,16 @@ knowledge: 何を作るかを決める
 
 ## Execution Layer
 
-`suno-cli` は将来追加予定の実行層です。役割は `/suno` スキルが作った payload を Suno に投入し、2 take の URL と audio を回収することです。
+`suno-cli` は実行層です。役割は `/suno` スキルが作った payload を Suno に投入し、2 take の URL と audio を回収することです。実装は `suno-cli/`（TypeScript + Node 22）。
+
+現状:
+- **回収層（出荷済み・Phase1）** — `status` / `urls` / `download`。Clerk JWT HTTP で回収、JSON output + 安定 exit code の非対話 IF。詳細は [`suno-cli/README.md`](suno-cli/README.md)
+- **create submit（開発中・Phase2）** — stealth browser で投入（warm session + invisible hCaptcha、paid solver なし）
 
 設計方針:
-- create submit は stealth browser で実行（warm session + invisible hCaptcha、paid solver なし）
-- status / URL / audio download は Clerk JWT HTTP で回収
 - `transaction_uuid` で冪等 retry（課金保護）
 - URL-ready と audio-ready を別状態で扱う
-- JSON output + exit code による非対話 IF
-
-現時点では設計段階で、実装ディレクトリはまだありません。
+- secrets / ledger は repo 外の user-data（`~/.local/share/suno-kit`）に隔離
 
 ### Suno自動入力（Tampermonkey）
 
