@@ -1,0 +1,7 @@
+# >>> project-bootstrap managed >>>
+.cc-status-bar.voice.json
+# <<< project-bootstrap managed <<<
+
+# Build artifacts (not published)
+node_modules/
+dist/
