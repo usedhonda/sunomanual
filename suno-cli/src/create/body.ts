@@ -29,7 +29,7 @@ export interface CreateBody {
   title: string;
   make_instrumental: boolean;
   mv: string;
-  metadata: string;
+  metadata: Record<string, unknown>;
   transaction_uuid: string;
   token: string;
   token_provider: string;
@@ -82,7 +82,7 @@ export function buildCreateBody(input: CreateInput): CreateBody {
     title: input.title,
     make_instrumental: input.instrumental ?? false,
     mv: model,
-    metadata: JSON.stringify(metadata),
+    metadata,
     transaction_uuid: transactionUuid,
     token: input.token ?? "__DRY_RUN_CAPTCHA_TOKEN__",
     token_provider: input.tokenProvider ?? "hcaptcha",

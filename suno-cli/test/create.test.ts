@@ -30,7 +30,7 @@ test("buildCreateBody maps R6 create fields", () => {
   assert.equal(body.token_provider, "hcaptcha");
   assert.deepEqual(body.override_fields, []);
   assert.equal(body.persona_id, null);
-  const metadata = JSON.parse(body.metadata);
+  const metadata = body.metadata;
   assert.equal(metadata.vocal_gender, "m");
   assert.equal(metadata.disable_volume_normalization, false);
   assert.equal(metadata.web_client_pathname, "/create");
@@ -45,7 +45,7 @@ test("create dry-run maps persona id to top-level persona_id", async () => {
   ]));
   assert.equal(output.code, 0);
   assert.equal(output.json.body.persona_id, "abc123");
-  assert(!("persona_id" in JSON.parse(output.json.body.metadata)));
+  assert(!("persona_id" in output.json.body.metadata));
 });
 
 test("create dry-run maps cover clip id to live capture cover shape", async () => {
@@ -54,7 +54,7 @@ test("create dry-run maps cover clip id to live capture cover shape", async () =
     ...baseCreateArgs(tempDir, "run_cover"),
     "--cover-clip-id", "CLIP123"
   ]));
-  const metadata = JSON.parse(output.json.body.metadata);
+  const metadata = output.json.body.metadata;
   assert.equal(output.code, 0);
   assert.equal(output.json.body.cover_clip_id, "CLIP123");
   assert.equal(output.json.body.cover_start_s, null);
@@ -130,7 +130,7 @@ test("create dry-run maps weirdness and style influence to metadata control_slid
     "--weirdness", "45",
     "--style-influence", "70"
   ]));
-  const metadata = JSON.parse(output.json.body.metadata);
+  const metadata = output.json.body.metadata;
   assert.equal(output.code, 0);
   assert.equal(metadata.control_sliders.weirdness_constraint, 0.45);
   assert.equal(metadata.control_sliders.style_weight, 0.7);
@@ -143,7 +143,7 @@ test("create dry-run maps audio influence to metadata control_sliders", async ()
     ...baseCreateArgs(tempDir, "run_audio_influence"),
     "--audio-influence", "25"
   ]));
-  const sliders = JSON.parse(output.json.body.metadata).control_sliders;
+  const sliders = output.json.body.metadata.control_sliders;
   assert.equal(output.code, 0);
   assert.equal(sliders.audio_weight, 0.25);
   assert.deepEqual(output.json.body.override_fields, []);
@@ -157,7 +157,7 @@ test("create dry-run combines weirdness style and audio sliders", async () => {
     "--style-influence", "70",
     "--audio-influence", "25"
   ]));
-  const sliders = JSON.parse(output.json.body.metadata).control_sliders;
+  const sliders = output.json.body.metadata.control_sliders;
   assert.equal(output.code, 0);
   assert.equal(sliders.weirdness_constraint, 0.45);
   assert.equal(sliders.style_weight, 0.7);
@@ -171,7 +171,7 @@ test("create body omits control_sliders when sliders are unspecified", () => {
     lyrics: "rain",
     transactionUuid: "tx-omit"
   });
-  const metadata = JSON.parse(body.metadata);
+  const metadata = body.metadata;
   assert(!("control_sliders" in metadata));
   assert.equal(metadata.create_mode, "custom");
   assert.equal(metadata.disable_volume_normalization, false);
@@ -189,7 +189,7 @@ test("create body includes only specified slider key", () => {
     transactionUuid: "tx-one",
     weirdness: 0.33
   });
-  const sliders = JSON.parse(body.metadata).control_sliders;
+  const sliders = body.metadata.control_sliders as Record<string, number>;
   assert.equal(sliders.weirdness_constraint, 0.33);
   assert(!("style_weight" in sliders));
   assert.deepEqual(body.override_fields, []);
@@ -201,7 +201,7 @@ test("create body includes optional session metadata only when supplied", () => 
     style: "lo-fi piano",
     transactionUuid: "tx-no-session"
   });
-  const withoutMetadata = JSON.parse(withoutSession.metadata);
+  const withoutMetadata = withoutSession.metadata;
   assert(!("create_session_token" in withoutMetadata));
   assert(!("user_tier" in withoutMetadata));
 
@@ -212,7 +212,7 @@ test("create body includes optional session metadata only when supplied", () => 
     sessionToken: "session-secret",
     userTier: "tier-uuid"
   });
-  const withMetadata = JSON.parse(withSession.metadata);
+  const withMetadata = withSession.metadata;
   assert.equal(withMetadata.create_session_token, "session-secret");
   assert.equal(withMetadata.user_tier, "tier-uuid");
 });
@@ -406,7 +406,7 @@ test("create --live submits mocked generate request and extracts song URLs", asy
       "--min-minutes-between-creates", "0"
     ]));
     const submittedBody = getGenerateBody();
-    const metadata = JSON.parse(submittedBody.metadata);
+    const metadata = submittedBody.metadata;
     assert.equal(output.code, 0);
     assert.equal(output.json.status, "submitted");
     assert.equal(output.json.clips[0].clipId, LIVE_CLIP_ID);
