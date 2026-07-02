@@ -43,6 +43,61 @@ test("create dry-run maps persona id to top-level persona_id", async () => {
   assert(!("persona_id" in JSON.parse(output.json.body.metadata)));
 });
 
+test("create dry-run maps cover clip id and switches create mode", async () => {
+  const tempDir = await fsTempDir();
+  const output = await captureStdout(() => cliMain([
+    ...baseCreateArgs(tempDir, "run_cover"),
+    "--cover-clip-id", "CLIP123"
+  ]));
+  const metadata = JSON.parse(output.json.body.metadata);
+  assert.equal(output.code, 0);
+  assert.equal(output.json.body.cover_clip_id, "CLIP123");
+  assert.equal(output.json.body.cover_start_s, null);
+  assert.equal(output.json.body.cover_end_s, null);
+  assert.equal(metadata.create_mode, "cover");
+});
+
+test("create dry-run maps cover start and end seconds", async () => {
+  const tempDir = await fsTempDir();
+  const output = await captureStdout(() => cliMain([
+    ...baseCreateArgs(tempDir, "run_cover_range"),
+    "--cover-clip-id", "CLIP123",
+    "--cover-start-s", "10",
+    "--cover-end-s", "30.5"
+  ]));
+  assert.equal(output.code, 0);
+  assert.equal(output.json.body.cover_clip_id, "CLIP123");
+  assert.equal(output.json.body.cover_start_s, 10);
+  assert.equal(output.json.body.cover_end_s, 30.5);
+});
+
+test("create dry-run rejects cover range without cover clip id", async () => {
+  const tempDir = await fsTempDir();
+  const output = await captureStdout(() => cliMain([
+    ...baseCreateArgs(tempDir, "run_cover_missing"),
+    "--cover-start-s", "10"
+  ]));
+  assert.equal(output.code, 2);
+  assert.match(output.json.error, /cover-clip-id/);
+});
+
+test("create dry-run rejects invalid cover values", async () => {
+  const tempDir = await fsTempDir();
+  const emptyClip = await captureStdout(() => cliMain([
+    ...baseCreateArgs(tempDir, "run_cover_empty"),
+    "--cover-clip-id", ""
+  ]));
+  const negativeStart = await captureStdout(() => cliMain([
+    ...baseCreateArgs(tempDir, "run_cover_negative"),
+    "--cover-clip-id", "CLIP123",
+    "--cover-start-s", "-1"
+  ]));
+  assert.equal(emptyClip.code, 2);
+  assert.match(emptyClip.json.error, /--cover-clip-id/);
+  assert.equal(negativeStart.code, 2);
+  assert.match(negativeStart.json.error, /--cover-start-s/);
+});
+
 test("create dry-run keeps persona_id null when unspecified", async () => {
   const tempDir = await fsTempDir();
   const output = await captureStdout(() => cliMain(baseCreateArgs(tempDir, "run_no_persona")));
@@ -75,6 +130,33 @@ test("create dry-run maps weirdness and style influence to metadata control_slid
   assert.equal(output.json.body.override_fields, "[]");
 });
 
+test("create dry-run maps audio influence to metadata control_sliders", async () => {
+  const tempDir = await fsTempDir();
+  const output = await captureStdout(() => cliMain([
+    ...baseCreateArgs(tempDir, "run_audio_influence"),
+    "--audio-influence", "25"
+  ]));
+  const sliders = JSON.parse(output.json.body.metadata).control_sliders;
+  assert.equal(output.code, 0);
+  assert.equal(sliders.audio_weight, 0.25);
+  assert.equal(output.json.body.override_fields, "[]");
+});
+
+test("create dry-run combines weirdness style and audio sliders", async () => {
+  const tempDir = await fsTempDir();
+  const output = await captureStdout(() => cliMain([
+    ...baseCreateArgs(tempDir, "run_all_sliders"),
+    "--weirdness", "45",
+    "--style-influence", "70",
+    "--audio-influence", "25"
+  ]));
+  const sliders = JSON.parse(output.json.body.metadata).control_sliders;
+  assert.equal(output.code, 0);
+  assert.equal(sliders.weirdness_constraint, 0.45);
+  assert.equal(sliders.style_weight, 0.7);
+  assert.equal(sliders.audio_weight, 0.25);
+});
+
 test("create body omits control_sliders when sliders are unspecified", () => {
   const body = buildCreateBody({
     title: "verify probe",
@@ -84,6 +166,8 @@ test("create body omits control_sliders when sliders are unspecified", () => {
   });
   const metadata = JSON.parse(body.metadata);
   assert(!("control_sliders" in metadata));
+  assert.equal(metadata.create_mode, "custom");
+  assert.equal(body.cover_clip_id, null);
   assert.equal(body.override_fields, "[]");
 });
 
@@ -122,6 +206,16 @@ test("create dry-run rejects slider values outside 0-100", async () => {
   assert.match(high.json.error, /--style-influence/);
   assert.equal(nonNumeric.code, 2);
   assert.match(nonNumeric.json.error, /--weirdness/);
+});
+
+test("create dry-run rejects audio influence outside 0-100", async () => {
+  const tempDir = await fsTempDir();
+  const output = await captureStdout(() => cliMain([
+    ...baseCreateArgs(tempDir, "run_audio_bad"),
+    "--audio-influence", "101"
+  ]));
+  assert.equal(output.code, 2);
+  assert.match(output.json.error, /--audio-influence/);
 });
 
 test("create --dry-run emits redacted body without live network", async () => {

@@ -125,8 +125,12 @@ node dist/src/cli.js create --dry-run \
   --lyrics "rain on the window" \
   --vocal-gender m \
   --persona-id abc123 \
+  --cover-clip-id CLIP123 \
+  --cover-start-s 10 \
+  --cover-end-s 30 \
   --weirdness 45 \
-  --style-influence 70
+  --style-influence 70 \
+  --audio-influence 25
 ```
 
 Dry-run builds the verified request shape for:
@@ -152,9 +156,16 @@ Optional create controls:
 |---|---:|---|---|
 | `--weirdness <n>` | 0-100 | `metadata.control_sliders.weirdness_constraint` as `n / 100` | key omitted |
 | `--style-influence <n>` | 0-100 | `metadata.control_sliders.style_weight` as `n / 100` | key omitted |
+| `--audio-influence <n>` | 0-100 | `metadata.control_sliders.audio_weight` as `n / 100` | key omitted |
 | `--persona-id <id>` | Suno persona id string | top-level `persona_id` | `null` |
+| `--cover-clip-id <id>` | existing Suno clip id | top-level `cover_clip_id`, `metadata.create_mode="cover"` | `null`, `create_mode="custom"` |
+| `--cover-start-s <sec>` / `--cover-end-s <sec>` | non-negative seconds | top-level `cover_start_s` / `cover_end_s` | `null` |
 
 When neither flag is provided, `metadata.control_sliders` is omitted entirely. `override_fields` remains `[]`.
+
+Cover mode uses an existing Suno clip id that you already know. External audio upload is not implemented in this package. `--cover-start-s` and `--cover-end-s` require `--cover-clip-id`.
+
+`audio_weight` is marked [S] speculative: it follows the same `metadata.control_sliders` shape as captured sliders, but the field name still needs cover live observation before being treated as confirmed. Dry-run output is safe and does not spend credits.
 
 Live create without `--dry-run` is intentionally blocked in this build.
 

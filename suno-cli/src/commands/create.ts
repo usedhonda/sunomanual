@@ -48,6 +48,10 @@ export async function createCommand(options: CreateCommandOptions): Promise<numb
   if (options.weirdness !== undefined) bodyInput.weirdness = options.weirdness;
   if (options.styleInfluence !== undefined) bodyInput.styleInfluence = options.styleInfluence;
   if (options.personaId) bodyInput.personaId = options.personaId;
+  if (options.coverClipId) bodyInput.coverClipId = options.coverClipId;
+  if (options.coverStartS !== undefined) bodyInput.coverStartS = options.coverStartS;
+  if (options.coverEndS !== undefined) bodyInput.coverEndS = options.coverEndS;
+  if (options.audioInfluence !== undefined) bodyInput.audioInfluence = options.audioInfluence;
   const body = buildCreateBody(bodyInput);
   const finalRequestHash = hashCreateBody(body);
   writeJson({

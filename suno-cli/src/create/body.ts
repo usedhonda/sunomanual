@@ -14,6 +14,10 @@ export interface CreateInput {
   weirdness?: number;
   styleInfluence?: number;
   personaId?: string;
+  coverClipId?: string;
+  coverStartS?: number;
+  coverEndS?: number;
+  audioInfluence?: number;
 }
 
 export interface CreateBody {
@@ -29,9 +33,9 @@ export interface CreateBody {
   token_provider: string;
   override_fields: string;
   persona_id: string | null;
-  cover_clip_id: null;
-  cover_start_s: null;
-  cover_end_s: null;
+  cover_clip_id: string | null;
+  cover_start_s: number | null;
+  cover_end_s: number | null;
   continue_clip_id: null;
   continue_at: null;
   continued_aligned_prompt: null;
@@ -53,7 +57,7 @@ export function buildCreateBody(input: CreateInput): CreateBody {
   const model = MODEL_ALIASES[input.model ?? "v5.5"] ?? input.model ?? "chirp-fenix";
   const transactionUuid = input.transactionUuid ?? randomUUID();
   const metadata: Record<string, unknown> = {
-    create_mode: "custom",
+    create_mode: input.coverClipId ? "cover" : "custom",
     is_max_mode: false,
     is_mumble: false
   };
@@ -61,6 +65,7 @@ export function buildCreateBody(input: CreateInput): CreateBody {
   const controlSliders: Record<string, number> = {};
   if (input.weirdness !== undefined) controlSliders.weirdness_constraint = input.weirdness;
   if (input.styleInfluence !== undefined) controlSliders.style_weight = input.styleInfluence;
+  if (input.audioInfluence !== undefined) controlSliders.audio_weight = input.audioInfluence;
   if (Object.keys(controlSliders).length > 0) metadata.control_sliders = controlSliders;
   return {
     tags: input.style,
@@ -75,9 +80,9 @@ export function buildCreateBody(input: CreateInput): CreateBody {
     token_provider: input.tokenProvider ?? "hcaptcha",
     override_fields: "[]",
     persona_id: input.personaId ?? null,
-    cover_clip_id: null,
-    cover_start_s: null,
-    cover_end_s: null,
+    cover_clip_id: input.coverClipId ?? null,
+    cover_start_s: input.coverStartS ?? null,
+    cover_end_s: input.coverEndS ?? null,
     continue_clip_id: null,
     continue_at: null,
     continued_aligned_prompt: null,

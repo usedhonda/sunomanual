@@ -33,6 +33,10 @@ interface ParsedArgs {
   weirdness?: number | undefined;
   styleInfluence?: number | undefined;
   personaId?: string | undefined;
+  coverClipId?: string | undefined;
+  coverStartS?: number | undefined;
+  coverEndS?: number | undefined;
+  audioInfluence?: number | undefined;
   runId?: string | undefined;
   maxGenerationsPerDay?: number | undefined;
   minMinutesBetweenCreates?: number | undefined;
@@ -112,6 +116,10 @@ async function runCreate(args: ParsedArgs): Promise<number> {
   if (args.weirdness !== undefined) Object.assign(createOptions, { weirdness: args.weirdness });
   if (args.styleInfluence !== undefined) Object.assign(createOptions, { styleInfluence: args.styleInfluence });
   if (args.personaId) Object.assign(createOptions, { personaId: args.personaId });
+  if (args.coverClipId) Object.assign(createOptions, { coverClipId: args.coverClipId });
+  if (args.coverStartS !== undefined) Object.assign(createOptions, { coverStartS: args.coverStartS });
+  if (args.coverEndS !== undefined) Object.assign(createOptions, { coverEndS: args.coverEndS });
+  if (args.audioInfluence !== undefined) Object.assign(createOptions, { audioInfluence: args.audioInfluence });
   if (args.runId) Object.assign(createOptions, { runId: args.runId });
   return createCommand(createOptions);
 }
@@ -173,6 +181,18 @@ function parseArgs(argv: string[]): ParsedArgs {
     } else if (arg === "--persona-id") {
       result.personaId = parseNonEmptyStringFlag("--persona-id", argv[index + 1]);
       index += 1;
+    } else if (arg === "--cover-clip-id") {
+      result.coverClipId = parseNonEmptyStringFlag("--cover-clip-id", argv[index + 1]);
+      index += 1;
+    } else if (arg === "--cover-start-s") {
+      result.coverStartS = parseNonNegativeNumberFlag("--cover-start-s", argv[index + 1]);
+      index += 1;
+    } else if (arg === "--cover-end-s") {
+      result.coverEndS = parseNonNegativeNumberFlag("--cover-end-s", argv[index + 1]);
+      index += 1;
+    } else if (arg === "--audio-influence") {
+      result.audioInfluence = parsePercentFlag("--audio-influence", argv[index + 1]);
+      index += 1;
     } else if (arg === "--run-id") {
       result.runId = argv[index + 1];
       index += 1;
@@ -194,6 +214,7 @@ function parseArgs(argv: string[]): ParsedArgs {
   }
   result.command = rest[0];
   result.target = rest[1];
+  validateCoverArgs(result);
   return result;
 }
 
@@ -204,7 +225,7 @@ function usage(): void {
       "suno-cli status <run-id|clip-id|song-url> [--json] [--data-dir <dir>] [--cookie-file <file>]",
       "suno-cli urls <run-id|clip-id|song-url> [--json] [--data-dir <dir>] [--cookie-file <file>]",
       "suno-cli download <run-id|clip-id|song-url> --out <dir> [--timeout-ms <ms>] [--poll-ms <ms>]",
-      "suno-cli create --dry-run --title <title> --style <style> [--lyrics <text>|--instrumental] [--exclude <text>] [--weirdness 0-100] [--style-influence 0-100] [--persona-id <id>]"
+      "suno-cli create --dry-run --title <title> --style <style> [--lyrics <text>|--instrumental] [--exclude <text>] [--weirdness 0-100] [--style-influence 0-100] [--audio-influence 0-100] [--persona-id <id>] [--cover-clip-id <id> --cover-start-s <sec> --cover-end-s <sec>]"
     ]
   });
 }
@@ -222,6 +243,20 @@ function parseNonEmptyStringFlag(flag: string, value: string | undefined): strin
     throw new Error(`Usage: ${flag} requires a non-empty value.`);
   }
   return value;
+}
+
+function parseNonNegativeNumberFlag(flag: string, value: string | undefined): number {
+  const parsed = Number(value);
+  if (value === undefined || !Number.isFinite(parsed) || parsed < 0) {
+    throw new Error(`Usage: ${flag} must be a non-negative number.`);
+  }
+  return parsed;
+}
+
+function validateCoverArgs(args: ParsedArgs): void {
+  if (!args.coverClipId && (args.coverStartS !== undefined || args.coverEndS !== undefined)) {
+    throw new Error("Usage: --cover-start-s/--cover-end-s require --cover-clip-id.");
+  }
 }
 
 function compactPathOptions(args: ParsedArgs): { dataDir?: string; cookieFile?: string } {
