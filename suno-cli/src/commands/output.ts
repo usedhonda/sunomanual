@@ -22,3 +22,12 @@ export function commandError(status: string, message: string, details?: unknown)
     ...(details === undefined ? {} : { details })
   };
 }
+
+export function classifyError(error: unknown): number {
+  const message = error instanceof Error ? error.message : String(error);
+  if (message.includes("cookie is required")) return ExitCode.blockedLogin;
+  if (message.includes("Ledger is corrupt")) return ExitCode.schemaDrift;
+  if (message.includes("Budget gate blocked")) return ExitCode.blockedPaymentOrQuota;
+  if (message.includes("fetch") || message.includes("network") || message.includes("request failed")) return ExitCode.retryableUnknown;
+  return ExitCode.internal;
+}

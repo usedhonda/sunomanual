@@ -11,9 +11,6 @@ export function defaultDataDir(): string {
   if (process.env.SUNO_KIT_DATA_DIR) {
     return path.resolve(process.env.SUNO_KIT_DATA_DIR);
   }
-  if (process.platform === "darwin") {
-    return path.join(os.homedir(), "Library", "Application Support", "suno-kit");
-  }
   return path.join(os.homedir(), ".local", "share", "suno-kit");
 }
 

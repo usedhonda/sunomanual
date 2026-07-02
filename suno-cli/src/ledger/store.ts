@@ -12,6 +12,8 @@ export interface RunRecord {
   createdAt: string;
   updatedAt: string;
   downloadedFiles?: string[];
+  requestHash?: string;
+  creditsReserved?: number;
 }
 
 export interface LedgerFile {
@@ -93,6 +95,67 @@ export class LedgerStore {
         run.clipIds.includes(target) ||
         run.songUrls.includes(target);
     });
+  }
+
+  async reserveCreateRun(options: ReserveCreateOptions): Promise<RunRecord> {
+    return this.withLock(async () => {
+      const ledger = await this.read();
+      const existing = ledger.runs.find((run) => run.runId === options.runId);
+      if (existing?.transactionUuid) {
+        if (existing.requestHash && existing.requestHash !== options.requestHash) {
+          throw new Error("Budget gate blocked: run id already exists with a different request hash.");
+        }
+        return existing;
+      }
+      assertBudgetAllowsReserve(ledger, options.policy, options.now);
+      const record: RunRecord = {
+        runId: options.runId,
+        transactionUuid: options.transactionUuid,
+        clipIds: [],
+        songUrls: [],
+        status: "reserved",
+        createdAt: options.now.toISOString(),
+        updatedAt: options.now.toISOString(),
+        requestHash: options.requestHash,
+        creditsReserved: options.creditsReserved
+      };
+      ledger.runs.push(record);
+      await this.writeAtomic(ledger);
+      return record;
+    });
+  }
+}
+
+export interface BudgetPolicy {
+  maxGenerationsPerDay: number;
+  minMinutesBetweenCreates: number;
+}
+
+export interface ReserveCreateOptions {
+  runId: string;
+  transactionUuid: string;
+  requestHash: string;
+  creditsReserved: number;
+  policy: BudgetPolicy;
+  now: Date;
+}
+
+function assertBudgetAllowsReserve(ledger: LedgerFile, policy: BudgetPolicy, now: Date): void {
+  const creates = ledger.runs.filter((run) => run.transactionUuid);
+  const today = now.toISOString().slice(0, 10);
+  const createsToday = creates.filter((run) => run.createdAt.slice(0, 10) === today);
+  if (createsToday.length >= policy.maxGenerationsPerDay) {
+    throw new Error(`Budget gate blocked: daily create limit ${policy.maxGenerationsPerDay} reached.`);
+  }
+  const latestCreate = creates
+    .map((run) => Date.parse(run.createdAt))
+    .filter((value) => Number.isFinite(value))
+    .sort((a, b) => b - a)[0];
+  if (latestCreate !== undefined) {
+    const elapsedMinutes = (now.getTime() - latestCreate) / 60000;
+    if (elapsedMinutes < policy.minMinutesBetweenCreates) {
+      throw new Error(`Budget gate blocked: minMinutesBetweenCreates ${policy.minMinutesBetweenCreates} not satisfied.`);
+    }
   }
 }
 

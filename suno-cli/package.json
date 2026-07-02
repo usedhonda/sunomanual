@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Phase1 HTTP retrieval CLI for Suno clips.",
+  "description": "Suno retrieval and dry-run create CLI.",
   "bin": {
     "suno-cli": "./dist/src/cli.js"
   },

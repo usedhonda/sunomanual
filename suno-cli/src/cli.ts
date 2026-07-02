@@ -1,9 +1,14 @@
 #!/usr/bin/env node
+import { pathToFileURL } from "node:url";
 import { createCommandContext } from "./commands/context.js";
+import { createCommand } from "./commands/create.js";
 import { downloadCommand } from "./commands/download.js";
-import { commandError, ExitCode, writeJson } from "./commands/output.js";
+import { commandError, ExitCode, classifyError, writeJson } from "./commands/output.js";
+import { resolveTarget } from "./commands/resolve-target.js";
 import { statusCommand } from "./commands/status.js";
 import { urlsCommand } from "./commands/urls.js";
+import { resolvePathConfig } from "./config/paths.js";
+import { LedgerStore } from "./ledger/store.js";
 import { redactString } from "./safety/redact.js";
 
 interface ParsedArgs {
@@ -15,20 +20,53 @@ interface ParsedArgs {
   outDir?: string | undefined;
   pollMs?: number | undefined;
   timeoutMs?: number | undefined;
+  dryRun?: boolean | undefined;
+  title?: string | undefined;
+  style?: string | undefined;
+  exclude?: string | undefined;
+  lyrics?: string | undefined;
+  instrumental?: boolean | undefined;
+  model?: string | undefined;
+  vocalGender?: string | undefined;
+  captchaToken?: string | undefined;
+  tokenProvider?: string | undefined;
+  runId?: string | undefined;
+  maxGenerationsPerDay?: number | undefined;
+  minMinutesBetweenCreates?: number | undefined;
 }
 
-async function main(argv: string[]): Promise<number> {
+export async function cliMain(argv: string[]): Promise<number> {
+  try {
+    return await runCli(argv);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    writeJson(commandError("error", redactString(message)));
+    return classifyError(error);
+  }
+}
+
+async function runCli(argv: string[]): Promise<number> {
   const args = parseArgs(argv);
   if (args.help || !args.command) {
     usage();
     return ExitCode.ok;
   }
-  if (!["status", "urls", "download"].includes(args.command)) {
-    writeJson(commandError("usage", `Unsupported Phase1 command: ${args.command}`));
+  if (!["status", "urls", "download", "create"].includes(args.command)) {
+    writeJson(commandError("usage", `Unsupported command: ${args.command}`));
     return ExitCode.usage;
+  }
+  if (args.command === "create") {
+    return runCreate(args);
   }
   if (!args.target) {
     writeJson(commandError("usage", `${args.command} requires <run-id|clip-id|song-url>.`));
+    return ExitCode.usage;
+  }
+  const paths = resolvePathConfig(compactPathOptions(args));
+  const ledgerOnly = new LedgerStore(paths.ledgerPath);
+  const resolved = await resolveTarget(args.target, ledgerOnly);
+  if (resolved.clipIds.length === 0) {
+    writeJson(commandError("not_found", `No ledger run or clip id matched: ${args.target}`));
     return ExitCode.usage;
   }
   const contextOptions: { dataDir?: string; cookieFile?: string } = {};
@@ -46,6 +84,30 @@ async function main(argv: string[]): Promise<number> {
     pollMs: args.pollMs ?? 5000,
     timeoutMs: args.timeoutMs ?? 0
   }, context);
+}
+
+async function runCreate(args: ParsedArgs): Promise<number> {
+  const paths = resolvePathConfig(compactPathOptions(args));
+  const ledger = new LedgerStore(paths.ledgerPath);
+  const createOptions = {
+    dryRun: Boolean(args.dryRun),
+    title: args.title ?? "",
+    style: args.style ?? "",
+    ledger,
+    policy: {
+      maxGenerationsPerDay: args.maxGenerationsPerDay ?? 4,
+      minMinutesBetweenCreates: args.minMinutesBetweenCreates ?? 20
+    }
+  };
+  if (args.exclude) Object.assign(createOptions, { exclude: args.exclude });
+  if (args.lyrics) Object.assign(createOptions, { lyrics: args.lyrics });
+  if (args.instrumental !== undefined) Object.assign(createOptions, { instrumental: args.instrumental });
+  if (args.model) Object.assign(createOptions, { model: args.model });
+  if (args.vocalGender) Object.assign(createOptions, { vocalGender: args.vocalGender });
+  if (args.captchaToken) Object.assign(createOptions, { token: args.captchaToken });
+  if (args.tokenProvider) Object.assign(createOptions, { tokenProvider: args.tokenProvider });
+  if (args.runId) Object.assign(createOptions, { runId: args.runId });
+  return createCommand(createOptions);
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
@@ -68,6 +130,43 @@ function parseArgs(argv: string[]): ParsedArgs {
     } else if (arg === "--timeout-ms") {
       result.timeoutMs = Number(argv[index + 1]);
       index += 1;
+    } else if (arg === "--dry-run") {
+      result.dryRun = true;
+    } else if (arg === "--title") {
+      result.title = argv[index + 1];
+      index += 1;
+    } else if (arg === "--style") {
+      result.style = argv[index + 1];
+      index += 1;
+    } else if (arg === "--exclude") {
+      result.exclude = argv[index + 1];
+      index += 1;
+    } else if (arg === "--lyrics") {
+      result.lyrics = argv[index + 1];
+      index += 1;
+    } else if (arg === "--instrumental") {
+      result.instrumental = true;
+    } else if (arg === "--model") {
+      result.model = argv[index + 1];
+      index += 1;
+    } else if (arg === "--vocal-gender") {
+      result.vocalGender = argv[index + 1];
+      index += 1;
+    } else if (arg === "--captcha-token") {
+      result.captchaToken = argv[index + 1];
+      index += 1;
+    } else if (arg === "--token-provider") {
+      result.tokenProvider = argv[index + 1];
+      index += 1;
+    } else if (arg === "--run-id") {
+      result.runId = argv[index + 1];
+      index += 1;
+    } else if (arg === "--max-generations-per-day") {
+      result.maxGenerationsPerDay = Number(argv[index + 1]);
+      index += 1;
+    } else if (arg === "--min-minutes-between-creates") {
+      result.minMinutesBetweenCreates = Number(argv[index + 1]);
+      index += 1;
     } else if (arg === "--json") {
       continue;
     } else if (arg === "--help" || arg === "-h") {
@@ -89,17 +188,22 @@ function usage(): void {
     usage: [
       "suno-cli status <run-id|clip-id|song-url> [--json] [--data-dir <dir>] [--cookie-file <file>]",
       "suno-cli urls <run-id|clip-id|song-url> [--json] [--data-dir <dir>] [--cookie-file <file>]",
-      "suno-cli download <run-id|clip-id|song-url> --out <dir> [--timeout-ms <ms>] [--poll-ms <ms>]"
+      "suno-cli download <run-id|clip-id|song-url> --out <dir> [--timeout-ms <ms>] [--poll-ms <ms>]",
+      "suno-cli create --dry-run --title <title> --style <style> [--lyrics <text>|--instrumental] [--exclude <text>]"
     ]
   });
 }
 
-main(process.argv.slice(2))
-  .then((code) => {
-    process.exitCode = code;
-  })
-  .catch((error: unknown) => {
-    const message = error instanceof Error ? error.message : String(error);
-    writeJson(commandError("error", redactString(message)));
-    process.exitCode = message.includes("cookie is required") ? ExitCode.blockedLogin : ExitCode.internal;
-  });
+function compactPathOptions(args: ParsedArgs): { dataDir?: string; cookieFile?: string } {
+  const options: { dataDir?: string; cookieFile?: string } = {};
+  if (args.dataDir) options.dataDir = args.dataDir;
+  if (args.cookieFile) options.cookieFile = args.cookieFile;
+  return options;
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  cliMain(process.argv.slice(2))
+    .then((code) => {
+      process.exitCode = code;
+    });
+}
