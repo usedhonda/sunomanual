@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         Suno AutoFill (sunomanual)
-// @namespace    https://github.com/usedhonda/sunomanual
+// @name         Suno AutoFill (suno-kit)
+// @namespace    https://github.com/usedhonda/suno-kit
 // @version      2.0.0
 // @description  URL hash + clipboard 経由で Suno の Style / Lyrics / Exclude / Sliders を自動入力する
 // @match        https://suno.com/*

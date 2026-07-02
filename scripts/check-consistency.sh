@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sunomanual consistency gate (Loop 1) — deterministic, positive-presence checks.
+# suno-kit consistency gate (Loop 1) — deterministic, positive-presence checks.
 # PASS = exit 0 (prints "GATE: GREEN"). FAIL = exit 1 (prints "GATE: RED" + one FAIL line per broken invariant).
 # This is the frozen checker. maker != checker: never edit this to make the loop pass.
 # Runbook: docs/loop/consistency-audit.md
