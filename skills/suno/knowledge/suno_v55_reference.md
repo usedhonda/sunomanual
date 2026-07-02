@@ -126,6 +126,7 @@ Community-sourced, not confirmed official; effect is context-dependent — A/B t
 - 25-50%: Moderate reference (increment +5% to find "latch on")
 - 60-75%: Featured, voice-forward (Cover sweet spot)
 - >75%: ⚠️ WARNING — artifacts, pronunciation breakdown, diminishing returns
+- Exception recipes below may intentionally use 85-100% (whole-song Sample preservation / v5.5 vocal upgrade). Treat those as A/B exceptions, not the default safety range.
 
 ### Section-Specific Recommendations
 
@@ -211,7 +212,7 @@ Community-sourced, not confirmed official; effect is context-dependent — A/B t
   2. Generate vocals in v5.5 using Add Vocals / Cover (Audio: 85-90% recommended)
   3. Export stems and replace/combine externally
 - Best use case: keep v5.5 vocal expression without inheriting unstable v5.5 backing
-- Audio=100% maximizes preservation but increases glitch risk
+- Audio=85-100% is an exception recipe for preservation; it increases glitch risk and should be backed down if artifacts appear
 - ⚠️ Add Vocals path may not support Voices/Persona — use Cover if Persona is needed
 - Caution: stem reverb / phase / ambience may not align cleanly
 
@@ -361,7 +362,7 @@ Confidence: medium-high (r≈0.11 and the truncation thresholds are corpus-quant
   - `desperate`, `late-night confession`, `cracked voice` (情動語)
   - `building intensity`, `anthemic chorus`, `low headroom` (展開と質感ガード)
 - Suggested ordering: `[情動語], [場面/時刻], [強度の動き], [声の物理描写], [サビ性質], [質感ガード]`.
-  - Example: `desperate, late-night confession, building intensity, cracked voice, anthemic chorus, low headroom, no glossy polish`
+  - Example: `desperate, late-night confession, building intensity, cracked voice, anthemic chorus, low headroom, matte unpolished finish`
 - Do not drop acoustic vocabulary entirely. Lead with emotion + motion, keep acoustic control (register, attack, mix) in the **second half** of the Style prose.
 - Risk: over-loading emotion words blurs genre edges, and `anthemic chorus` pushed too far makes every take sound oversized.
 - Confidence: medium. Reddit / u/Budget_Coach9124 and related threads (late March 2026).
@@ -483,7 +484,7 @@ Style にも Lyrics にも分散配置する。
 
 #### E. シード戦略（最堅牢）
 
-**言語誘導より堅い**。Upload Audio で 5/4 や 7/8 のクリック/ドラムループを入れ、Extend で延長する。公式の Upload Audio は 6-60 秒（Pro/Premier は最大 120 秒）。
+**言語誘導より堅い**。Upload Audio で 5/4 や 7/8 のクリック/ドラムループを入れ、Extend で延長する。公式の一般 Upload Audio 上限は plan により異なる（Free は最大 8 分、Pro/Premier は最大 30 分）。変拍子シード素材としては、拍頭が明確な 6-60 秒程度のクリック/ドラムループが実用的。
 
 拍頭が分かるよう、各拍頭にクラッシュ/キック等を明確に入れるのがコツ（日本語コミュニティ検証記事より）。
 
@@ -507,7 +508,7 @@ Style にも Lyrics にも分散配置する。
 
 **Style:**
 ```
-progressive rock, tight drums, base 120 BPM, quintuplet-driven groove, accent 3+2, clear downbeats, no straight four-on-the-floor
+progressive rock, tight drums, base 120 BPM, quintuplet-driven groove, accent 3+2, clear downbeats, broken pulse
 ```
 
 **Lyrics (Intro):**
@@ -537,7 +538,7 @@ math rock, quintuple meter feel, accent 3+2, locked to uploaded click track, dry
 ```
 
 **運用:**
-1. 5/4 や 7/8 のクリック/ドラムループ（6-60秒）を Upload Audio
+1. 5/4 や 7/8 のクリック/ドラムループ（実用目安 6-60秒）を Upload Audio
 2. Extend で曲を構築
 3. Style に「locked to uploaded click track」を含める
 4. Audio Influence 60-75% でシード拍頭を維持
