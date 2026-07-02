@@ -66,7 +66,7 @@ knowledge: 何を作るかを決める
 
 現状:
 - **回収層（出荷済み・Phase1）** — `status` / `urls` / `download`。Clerk JWT HTTP で回収、JSON output + 安定 exit code の非対話 IF。詳細は [`suno-cli/README.md`](suno-cli/README.md)
-- **create submit（開発中・Phase2）** — stealth browser で投入（warm session + invisible hCaptcha、paid solver なし）
+- **create（dry-run 実装済み / live-fire は manual gate・Phase2）** — `create --dry-run` で R6 body（Style / Lyrics / Exclude / model / vocal gender / **weirdness・style influence** slider 等）を構築・検証できる。実課金 live-fire は stealth browser 投入（warm session + invisible hCaptcha、paid solver なし）で、owner GO 必須の manual gate
 
 設計方針:
 - `transaction_uuid` で冪等 retry（課金保護）
