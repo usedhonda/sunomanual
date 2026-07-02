@@ -32,6 +32,7 @@ interface ParsedArgs {
   tokenProvider?: string | undefined;
   weirdness?: number | undefined;
   styleInfluence?: number | undefined;
+  personaId?: string | undefined;
   runId?: string | undefined;
   maxGenerationsPerDay?: number | undefined;
   minMinutesBetweenCreates?: number | undefined;
@@ -110,6 +111,7 @@ async function runCreate(args: ParsedArgs): Promise<number> {
   if (args.tokenProvider) Object.assign(createOptions, { tokenProvider: args.tokenProvider });
   if (args.weirdness !== undefined) Object.assign(createOptions, { weirdness: args.weirdness });
   if (args.styleInfluence !== undefined) Object.assign(createOptions, { styleInfluence: args.styleInfluence });
+  if (args.personaId) Object.assign(createOptions, { personaId: args.personaId });
   if (args.runId) Object.assign(createOptions, { runId: args.runId });
   return createCommand(createOptions);
 }
@@ -168,6 +170,9 @@ function parseArgs(argv: string[]): ParsedArgs {
     } else if (arg === "--style-influence") {
       result.styleInfluence = parsePercentFlag("--style-influence", argv[index + 1]);
       index += 1;
+    } else if (arg === "--persona-id") {
+      result.personaId = parseNonEmptyStringFlag("--persona-id", argv[index + 1]);
+      index += 1;
     } else if (arg === "--run-id") {
       result.runId = argv[index + 1];
       index += 1;
@@ -199,7 +204,7 @@ function usage(): void {
       "suno-cli status <run-id|clip-id|song-url> [--json] [--data-dir <dir>] [--cookie-file <file>]",
       "suno-cli urls <run-id|clip-id|song-url> [--json] [--data-dir <dir>] [--cookie-file <file>]",
       "suno-cli download <run-id|clip-id|song-url> --out <dir> [--timeout-ms <ms>] [--poll-ms <ms>]",
-      "suno-cli create --dry-run --title <title> --style <style> [--lyrics <text>|--instrumental] [--exclude <text>] [--weirdness 0-100] [--style-influence 0-100]"
+      "suno-cli create --dry-run --title <title> --style <style> [--lyrics <text>|--instrumental] [--exclude <text>] [--weirdness 0-100] [--style-influence 0-100] [--persona-id <id>]"
     ]
   });
 }
@@ -210,6 +215,13 @@ function parsePercentFlag(flag: string, value: string | undefined): number {
     throw new Error(`Usage: ${flag} must be a number from 0 to 100.`);
   }
   return parsed / 100;
+}
+
+function parseNonEmptyStringFlag(flag: string, value: string | undefined): string {
+  if (value === undefined || value.length === 0) {
+    throw new Error(`Usage: ${flag} requires a non-empty value.`);
+  }
+  return value;
 }
 
 function compactPathOptions(args: ParsedArgs): { dataDir?: string; cookieFile?: string } {

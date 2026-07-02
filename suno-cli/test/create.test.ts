@@ -27,8 +27,38 @@ test("buildCreateBody maps R6 create fields", () => {
   assert.equal(body.token, "captcha-secret");
   assert.equal(body.token_provider, "hcaptcha");
   assert.equal(body.override_fields, "[]");
+  assert.equal(body.persona_id, null);
   assert.equal(JSON.parse(body.metadata).vocal_gender, "m");
   assert(!("control_sliders" in JSON.parse(body.metadata)));
+});
+
+test("create dry-run maps persona id to top-level persona_id", async () => {
+  const tempDir = await fsTempDir();
+  const output = await captureStdout(() => cliMain([
+    ...baseCreateArgs(tempDir, "run_persona"),
+    "--persona-id", "abc123"
+  ]));
+  assert.equal(output.code, 0);
+  assert.equal(output.json.body.persona_id, "abc123");
+  assert(!("persona_id" in JSON.parse(output.json.body.metadata)));
+});
+
+test("create dry-run keeps persona_id null when unspecified", async () => {
+  const tempDir = await fsTempDir();
+  const output = await captureStdout(() => cliMain(baseCreateArgs(tempDir, "run_no_persona")));
+  assert.equal(output.code, 0);
+  assert.equal(output.json.body.persona_id, null);
+});
+
+test("create dry-run rejects empty persona id", async () => {
+  const tempDir = await fsTempDir();
+  const output = await captureStdout(() => cliMain([
+    ...baseCreateArgs(tempDir, "run_empty_persona"),
+    "--persona-id", ""
+  ]));
+  assert.equal(output.code, 2);
+  assert.equal(output.json.status, "error");
+  assert.match(output.json.error, /--persona-id/);
 });
 
 test("create dry-run maps weirdness and style influence to metadata control_sliders", async () => {

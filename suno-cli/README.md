@@ -124,6 +124,7 @@ node dist/src/cli.js create --dry-run \
   --exclude "brass, aggressive" \
   --lyrics "rain on the window" \
   --vocal-gender m \
+  --persona-id abc123 \
   --weirdness 45 \
   --style-influence 70
 ```
@@ -151,6 +152,7 @@ Optional create controls:
 |---|---:|---|---|
 | `--weirdness <n>` | 0-100 | `metadata.control_sliders.weirdness_constraint` as `n / 100` | key omitted |
 | `--style-influence <n>` | 0-100 | `metadata.control_sliders.style_weight` as `n / 100` | key omitted |
+| `--persona-id <id>` | Suno persona id string | top-level `persona_id` | `null` |
 
 When neither flag is provided, `metadata.control_sliders` is omitted entirely. `override_fields` remains `[]`.
 

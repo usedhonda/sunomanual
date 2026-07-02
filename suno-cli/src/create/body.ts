@@ -13,6 +13,7 @@ export interface CreateInput {
   tokenProvider?: string;
   weirdness?: number;
   styleInfluence?: number;
+  personaId?: string;
 }
 
 export interface CreateBody {
@@ -27,7 +28,7 @@ export interface CreateBody {
   token: string;
   token_provider: string;
   override_fields: string;
-  persona_id: null;
+  persona_id: string | null;
   cover_clip_id: null;
   cover_start_s: null;
   cover_end_s: null;
@@ -73,7 +74,7 @@ export function buildCreateBody(input: CreateInput): CreateBody {
     token: input.token ?? "__DRY_RUN_CAPTCHA_TOKEN__",
     token_provider: input.tokenProvider ?? "hcaptcha",
     override_fields: "[]",
-    persona_id: null,
+    persona_id: input.personaId ?? null,
     cover_clip_id: null,
     cover_start_s: null,
     cover_end_s: null,
