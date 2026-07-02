@@ -1,0 +1,21 @@
+{
+  "name": "@usedhonda/suno-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Phase1 HTTP retrieval CLI for Suno clips.",
+  "bin": {
+    "suno-cli": "./dist/src/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test \"dist/test/**/*.test.js\""
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.10",
+    "typescript": "^5.8.3"
+  }
+}
