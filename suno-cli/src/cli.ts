@@ -30,7 +30,7 @@ interface ParsedArgs {
   model?: string | undefined;
   vocalGender?: string | undefined;
   captchaToken?: string | undefined;
-  tokenProvider?: string | undefined;
+  tokenProvider?: string | number | undefined;
   weirdness?: number | undefined;
   styleInfluence?: number | undefined;
   personaId?: string | undefined;
@@ -117,7 +117,7 @@ async function runCreate(args: ParsedArgs): Promise<number> {
   if (args.model) Object.assign(createOptions, { model: args.model });
   if (args.vocalGender) Object.assign(createOptions, { vocalGender: args.vocalGender });
   if (args.captchaToken) Object.assign(createOptions, { token: args.captchaToken });
-  if (args.tokenProvider) Object.assign(createOptions, { tokenProvider: args.tokenProvider });
+  if (args.tokenProvider !== undefined) Object.assign(createOptions, { tokenProvider: args.tokenProvider });
   if (args.weirdness !== undefined) Object.assign(createOptions, { weirdness: args.weirdness });
   if (args.styleInfluence !== undefined) Object.assign(createOptions, { styleInfluence: args.styleInfluence });
   if (args.personaId) Object.assign(createOptions, { personaId: args.personaId });
@@ -181,7 +181,7 @@ function parseArgs(argv: string[]): ParsedArgs {
       result.captchaToken = argv[index + 1];
       index += 1;
     } else if (arg === "--token-provider") {
-      result.tokenProvider = argv[index + 1];
+      result.tokenProvider = parseTokenProviderFlag(argv[index + 1]);
       index += 1;
     } else if (arg === "--weirdness") {
       result.weirdness = parsePercentFlag("--weirdness", argv[index + 1]);
@@ -242,7 +242,7 @@ function usage(): void {
       "suno-cli status <run-id|clip-id|song-url> [--json] [--data-dir <dir>] [--cookie-file <file>]",
       "suno-cli urls <run-id|clip-id|song-url> [--json] [--data-dir <dir>] [--cookie-file <file>]",
       "suno-cli download <run-id|clip-id|song-url> --out <dir> [--timeout-ms <ms>] [--poll-ms <ms>]",
-      "suno-cli create (--dry-run|--live) --title <title> --style <style> [--lyrics <text>|--instrumental] [--exclude <text>] [--captcha-token <token>] [--session-token <token>] [--user-tier <uuid>] [--weirdness 0-100] [--style-influence 0-100] [--audio-influence 0-100] [--persona-id <id>] [--cover-clip-id <id> --cover-start-s <sec> --cover-end-s <sec>]"
+      "suno-cli create (--dry-run|--live) --title <title> --style <style> [--lyrics <text>|--instrumental] [--exclude <text>] [--captcha-token <token>] [--token-provider <integer>] [--session-token <token>] [--user-tier <uuid>] [--weirdness 0-100] [--style-influence 0-100] [--audio-influence 0-100] [--persona-id <id>] [--cover-clip-id <id> --cover-start-s <sec> --cover-end-s <sec>]"
     ]
   });
 }
@@ -260,6 +260,12 @@ function parseNonEmptyStringFlag(flag: string, value: string | undefined): strin
     throw new Error(`Usage: ${flag} requires a non-empty value.`);
   }
   return value;
+}
+
+function parseTokenProviderFlag(value: string | undefined): string | number {
+  const raw = parseNonEmptyStringFlag("--token-provider", value);
+  if (/^-?\d+$/.test(raw)) return Number(raw);
+  return raw;
 }
 
 function parseNonNegativeNumberFlag(flag: string, value: string | undefined): number {

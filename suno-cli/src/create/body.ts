@@ -10,7 +10,7 @@ export interface CreateInput {
   vocalGender?: string;
   transactionUuid?: string;
   token?: string;
-  tokenProvider?: string;
+  tokenProvider?: string | number;
   weirdness?: number;
   styleInfluence?: number;
   personaId?: string;
@@ -32,7 +32,7 @@ export interface CreateBody {
   metadata: Record<string, unknown>;
   transaction_uuid: string;
   token: string;
-  token_provider: string;
+  token_provider: string | number;
   override_fields: unknown[];
   task?: "cover";
   persona_id: string | null;

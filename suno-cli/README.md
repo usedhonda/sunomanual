@@ -180,6 +180,7 @@ It requires:
 - a Clerk cookie via `SUNO_KIT_COOKIE`, `SUNO_KIT_COOKIE_FILE`, or `--cookie-file`
 - `--live`
 - `--captcha-token <token>`
+- `--token-provider <integer>`
 - explicit owner GO, because a successful request can spend Suno credits
 
 Example:
@@ -190,6 +191,7 @@ node dist/src/cli.js create --live \
   --style "lo-fi piano, mellow, rain, tape hiss" \
   --lyrics "rain on the window" \
   --captcha-token "$SUNO_CAPTCHA_TOKEN" \
+  --token-provider "$SUNO_TOKEN_PROVIDER" \
   --run-id paid-probe-001
 ```
 
@@ -202,6 +204,7 @@ node dist/src/cli.js create --live \
   --title "verify probe" \
   --style "lo-fi piano" \
   --captcha-token "$SUNO_CAPTCHA_TOKEN" \
+  --token-provider "$SUNO_TOKEN_PROVIDER" \
   --session-token "$SUNO_CREATE_SESSION_TOKEN" \
   --user-tier "$SUNO_USER_TIER"
 ```
@@ -217,9 +220,10 @@ The CLI does not solve or mint hCaptcha tokens. Get a fresh token immediately be
 3. During an owner-approved browser create attempt, trigger the request.
 4. Select the `/api/generate/v2-web/` request.
 5. Copy the request body field named `token`.
-6. Use it once with `--captcha-token`.
+6. Copy the request body field named `token_provider`; live submit requires it as an integer.
+7. Use them once with `--captcha-token` and `--token-provider`.
 
-The token has a short TTL. Do not log it, paste it into chat, or commit it.
+The token has a short TTL. Do not log it, paste it into chat, or commit it. Dry-run keeps the legacy default `token_provider` placeholder, but `--live` fails closed unless `--token-provider <integer>` is supplied.
 
 ## Exit Codes
 
@@ -240,7 +244,7 @@ Errors are JSON and are redacted before output.
 - Cookies, JWTs, bearer tokens, Clerk tokens, and `create_session_token` are redacted from JSON output.
 - Runtime data is kept outside the repo by default.
 - `node_modules/` and `dist/` are ignored in this package.
-- Live create is behind `--live` and `--captcha-token` because it can spend Suno credits.
+- Live create is behind `--live`, `--captcha-token`, and `--token-provider` because it can spend Suno credits.
 
 ## Manual Live-Fire Checklist
 
@@ -251,7 +255,7 @@ Do not run this checklist without explicit owner GO.
 3. Confirm `npm test` is green.
 4. Confirm `create --dry-run` emits the expected body and reuses `transactionUuid` for retry.
 5. Get a fresh `token` from the browser DevTools `/api/generate/v2-web/` request body.
-6. Submit exactly one request with `create --live --captcha-token <token>`.
+6. Submit exactly one request with `create --live --captcha-token <token> --token-provider <integer>`.
 7. Record the returned `clips[].id` values only; do not log captcha token, Clerk JWT, cookie, or `create_session_token`.
 8. Use `status`, `urls`, and `download` to retrieve results.
 

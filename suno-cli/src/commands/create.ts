@@ -29,6 +29,14 @@ export async function createCommand(options: CreateCommandOptions): Promise<numb
     writeJson(commandError("usage", "Usage: create --live requires --captcha-token."));
     return ExitCode.usage;
   }
+  if (options.live && options.tokenProvider === undefined) {
+    writeJson(commandError("usage", "Usage: create --live requires --token-provider <integer>."));
+    return ExitCode.usage;
+  }
+  if (options.live && !Number.isSafeInteger(options.tokenProvider)) {
+    writeJson(commandError("usage", "Usage: --token-provider must be an integer for --live."));
+    return ExitCode.usage;
+  }
   const provisionalBody = buildCreateBody(options);
   const requestHash = hashCreateBody(provisionalBody);
   const runId = options.runId ?? `run_${randomUUID()}`;
@@ -52,7 +60,7 @@ export async function createCommand(options: CreateCommandOptions): Promise<numb
   if (options.model) bodyInput.model = options.model;
   if (options.vocalGender) bodyInput.vocalGender = options.vocalGender;
   if (options.token) bodyInput.token = options.token;
-  if (options.tokenProvider) bodyInput.tokenProvider = options.tokenProvider;
+  if (options.tokenProvider !== undefined) bodyInput.tokenProvider = options.tokenProvider;
   if (options.weirdness !== undefined) bodyInput.weirdness = options.weirdness;
   if (options.styleInfluence !== undefined) bodyInput.styleInfluence = options.styleInfluence;
   if (options.personaId) bodyInput.personaId = options.personaId;

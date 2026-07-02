@@ -19,7 +19,7 @@ test("buildCreateBody maps R6 create fields", () => {
     vocalGender: "m",
     transactionUuid: "tx-1",
     token: "captcha-secret",
-    tokenProvider: "hcaptcha"
+    tokenProvider: 1
   });
   assert.equal(body.tags, "lo-fi piano, mellow");
   assert.equal(body.negative_tags, "brass");
@@ -27,7 +27,7 @@ test("buildCreateBody maps R6 create fields", () => {
   assert.equal(body.mv, "chirp-fenix");
   assert.equal(body.transaction_uuid, "tx-1");
   assert.equal(body.token, "captcha-secret");
-  assert.equal(body.token_provider, "hcaptcha");
+  assert.equal(body.token_provider, 1);
   assert.deepEqual(body.override_fields, []);
   assert.equal(body.persona_id, null);
   const metadata = body.metadata;
@@ -375,6 +375,7 @@ test("create --live returns blocked login when cookie is missing", async () => {
       "--title", "verify probe",
       "--style", "lo-fi piano",
       "--captcha-token", "captcha-secret",
+      "--token-provider", "1",
       "--run-id", "run_live_missing_cookie",
       "--min-minutes-between-creates", "0"
     ]));
@@ -384,6 +385,31 @@ test("create --live returns blocked login when cookie is missing", async () => {
     restoreEnv("SUNO_KIT_COOKIE", originalCookie);
     restoreEnv("SUNO_KIT_COOKIE_FILE", originalCookieFile);
   }
+});
+
+test("create --live requires integer token provider before submit", async () => {
+  const tempDir = await fsTempDir();
+  const missing = await captureStdout(() => cliMain([
+    "create",
+    "--live",
+    "--data-dir", tempDir,
+    "--title", "verify probe",
+    "--style", "lo-fi piano",
+    "--captcha-token", "captcha-secret"
+  ]));
+  const nonInteger = await captureStdout(() => cliMain([
+    "create",
+    "--live",
+    "--data-dir", tempDir,
+    "--title", "verify probe",
+    "--style", "lo-fi piano",
+    "--captcha-token", "captcha-secret",
+    "--token-provider", "hcaptcha"
+  ]));
+  assert.equal(missing.code, 2);
+  assert.match(missing.json.error, /token-provider/);
+  assert.equal(nonInteger.code, 2);
+  assert.match(nonInteger.json.error, /integer/);
 });
 
 test("create --live submits mocked generate request and extracts song URLs", async () => {
@@ -400,6 +426,7 @@ test("create --live submits mocked generate request and extracts song URLs", asy
       "--title", "verify probe",
       "--style", "lo-fi piano",
       "--captcha-token", "captcha-secret",
+      "--token-provider", "1",
       "--session-token", "session-secret",
       "--user-tier", "tier-uuid",
       "--run-id", "run_live_ok",
@@ -412,6 +439,7 @@ test("create --live submits mocked generate request and extracts song URLs", asy
     assert.equal(output.json.clips[0].clipId, LIVE_CLIP_ID);
     assert.equal(output.json.clips[0].songUrl, `https://suno.com/song/${LIVE_CLIP_ID}`);
     assert.deepEqual(submittedBody.override_fields, []);
+    assert.equal(submittedBody.token_provider, 1);
     assert.equal(metadata.create_session_token, "session-secret");
     assert.equal(metadata.user_tier, "tier-uuid");
     assert.equal(output.text.includes("captcha-secret"), false);
@@ -438,6 +466,7 @@ test("create --live maps mocked generate HTTP failures to stable exit codes", as
         "--title", "verify probe",
         "--style", "lo-fi piano",
         "--captcha-token", "captcha-secret",
+        "--token-provider", "1",
         "--run-id", `run_live_${item.status}`,
         "--min-minutes-between-creates", "0"
       ]));
