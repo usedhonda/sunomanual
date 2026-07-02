@@ -7,6 +7,8 @@ import { cliMain } from "../src/cli.js";
 import { buildCreateBody } from "../src/create/body.js";
 import { LedgerStore } from "../src/ledger/store.js";
 
+const LIVE_CLIP_ID = "329414b4-1234-4567-8abc-1234567890ab";
+
 test("buildCreateBody maps R6 create fields", () => {
   const body = buildCreateBody({
     title: "verify probe",
@@ -26,10 +28,13 @@ test("buildCreateBody maps R6 create fields", () => {
   assert.equal(body.transaction_uuid, "tx-1");
   assert.equal(body.token, "captcha-secret");
   assert.equal(body.token_provider, "hcaptcha");
-  assert.equal(body.override_fields, "[]");
+  assert.deepEqual(body.override_fields, []);
   assert.equal(body.persona_id, null);
-  assert.equal(JSON.parse(body.metadata).vocal_gender, "m");
-  assert(!("control_sliders" in JSON.parse(body.metadata)));
+  const metadata = JSON.parse(body.metadata);
+  assert.equal(metadata.vocal_gender, "m");
+  assert.equal(metadata.disable_volume_normalization, false);
+  assert.equal(metadata.web_client_pathname, "/create");
+  assert(!("control_sliders" in metadata));
 });
 
 test("create dry-run maps persona id to top-level persona_id", async () => {
@@ -43,7 +48,7 @@ test("create dry-run maps persona id to top-level persona_id", async () => {
   assert(!("persona_id" in JSON.parse(output.json.body.metadata)));
 });
 
-test("create dry-run maps cover clip id and switches create mode", async () => {
+test("create dry-run maps cover clip id to live capture cover shape", async () => {
   const tempDir = await fsTempDir();
   const output = await captureStdout(() => cliMain([
     ...baseCreateArgs(tempDir, "run_cover"),
@@ -54,7 +59,9 @@ test("create dry-run maps cover clip id and switches create mode", async () => {
   assert.equal(output.json.body.cover_clip_id, "CLIP123");
   assert.equal(output.json.body.cover_start_s, null);
   assert.equal(output.json.body.cover_end_s, null);
-  assert.equal(metadata.create_mode, "cover");
+  assert.equal(output.json.body.task, "cover");
+  assert.equal(metadata.create_mode, "custom");
+  assert.equal(metadata.is_remix, true);
 });
 
 test("create dry-run maps cover start and end seconds", async () => {
@@ -127,7 +134,7 @@ test("create dry-run maps weirdness and style influence to metadata control_slid
   assert.equal(output.code, 0);
   assert.equal(metadata.control_sliders.weirdness_constraint, 0.45);
   assert.equal(metadata.control_sliders.style_weight, 0.7);
-  assert.equal(output.json.body.override_fields, "[]");
+  assert.deepEqual(output.json.body.override_fields, []);
 });
 
 test("create dry-run maps audio influence to metadata control_sliders", async () => {
@@ -139,7 +146,7 @@ test("create dry-run maps audio influence to metadata control_sliders", async ()
   const sliders = JSON.parse(output.json.body.metadata).control_sliders;
   assert.equal(output.code, 0);
   assert.equal(sliders.audio_weight, 0.25);
-  assert.equal(output.json.body.override_fields, "[]");
+  assert.deepEqual(output.json.body.override_fields, []);
 });
 
 test("create dry-run combines weirdness style and audio sliders", async () => {
@@ -167,8 +174,11 @@ test("create body omits control_sliders when sliders are unspecified", () => {
   const metadata = JSON.parse(body.metadata);
   assert(!("control_sliders" in metadata));
   assert.equal(metadata.create_mode, "custom");
+  assert.equal(metadata.disable_volume_normalization, false);
+  assert.equal(metadata.web_client_pathname, "/create");
   assert.equal(body.cover_clip_id, null);
-  assert.equal(body.override_fields, "[]");
+  assert(!("task" in body));
+  assert.deepEqual(body.override_fields, []);
 });
 
 test("create body includes only specified slider key", () => {
@@ -182,7 +192,29 @@ test("create body includes only specified slider key", () => {
   const sliders = JSON.parse(body.metadata).control_sliders;
   assert.equal(sliders.weirdness_constraint, 0.33);
   assert(!("style_weight" in sliders));
-  assert.equal(body.override_fields, "[]");
+  assert.deepEqual(body.override_fields, []);
+});
+
+test("create body includes optional session metadata only when supplied", () => {
+  const withoutSession = buildCreateBody({
+    title: "verify probe",
+    style: "lo-fi piano",
+    transactionUuid: "tx-no-session"
+  });
+  const withoutMetadata = JSON.parse(withoutSession.metadata);
+  assert(!("create_session_token" in withoutMetadata));
+  assert(!("user_tier" in withoutMetadata));
+
+  const withSession = buildCreateBody({
+    title: "verify probe",
+    style: "lo-fi piano",
+    transactionUuid: "tx-session",
+    sessionToken: "session-secret",
+    userTier: "tier-uuid"
+  });
+  const withMetadata = JSON.parse(withSession.metadata);
+  assert.equal(withMetadata.create_session_token, "session-secret");
+  assert.equal(withMetadata.user_tier, "tier-uuid");
 });
 
 test("create dry-run rejects slider values outside 0-100", async () => {
@@ -316,6 +348,106 @@ test("create live-fire path is blocked without manual gate", async () => {
   assert.equal(output.json.status, "manual_gate_required");
 });
 
+test("create --live requires captcha token before submit", async () => {
+  const tempDir = await fsTempDir();
+  const output = await captureStdout(() => cliMain([
+    "create",
+    "--live",
+    "--data-dir", tempDir,
+    "--title", "verify probe",
+    "--style", "lo-fi piano"
+  ]));
+  assert.equal(output.code, 2);
+  assert.match(output.json.error, /captcha-token/);
+});
+
+test("create --live returns blocked login when cookie is missing", async () => {
+  const tempDir = await fsTempDir();
+  const originalCookie = process.env.SUNO_KIT_COOKIE;
+  const originalCookieFile = process.env.SUNO_KIT_COOKIE_FILE;
+  delete process.env.SUNO_KIT_COOKIE;
+  delete process.env.SUNO_KIT_COOKIE_FILE;
+  try {
+    const output = await captureStdout(() => cliMain([
+      "create",
+      "--live",
+      "--data-dir", tempDir,
+      "--title", "verify probe",
+      "--style", "lo-fi piano",
+      "--captcha-token", "captcha-secret",
+      "--run-id", "run_live_missing_cookie",
+      "--min-minutes-between-creates", "0"
+    ]));
+    assert.equal(output.code, 30);
+    assert.equal(output.json.status, "blocked_login");
+  } finally {
+    restoreEnv("SUNO_KIT_COOKIE", originalCookie);
+    restoreEnv("SUNO_KIT_COOKIE_FILE", originalCookieFile);
+  }
+});
+
+test("create --live submits mocked generate request and extracts song URLs", async () => {
+  const tempDir = await fsTempDir();
+  const { restore, getGenerateBody } = mockLiveFetch(200, {
+    id: "batch_1",
+    clips: [{ id: LIVE_CLIP_ID }]
+  });
+  try {
+    const output = await captureStdout(() => cliMain([
+      "create",
+      "--live",
+      "--data-dir", tempDir,
+      "--title", "verify probe",
+      "--style", "lo-fi piano",
+      "--captcha-token", "captcha-secret",
+      "--session-token", "session-secret",
+      "--user-tier", "tier-uuid",
+      "--run-id", "run_live_ok",
+      "--min-minutes-between-creates", "0"
+    ]));
+    const submittedBody = getGenerateBody();
+    const metadata = JSON.parse(submittedBody.metadata);
+    assert.equal(output.code, 0);
+    assert.equal(output.json.status, "submitted");
+    assert.equal(output.json.clips[0].clipId, LIVE_CLIP_ID);
+    assert.equal(output.json.clips[0].songUrl, `https://suno.com/song/${LIVE_CLIP_ID}`);
+    assert.deepEqual(submittedBody.override_fields, []);
+    assert.equal(metadata.create_session_token, "session-secret");
+    assert.equal(metadata.user_tier, "tier-uuid");
+    assert.equal(output.text.includes("captcha-secret"), false);
+    assert.equal(output.text.includes("session-secret"), false);
+  } finally {
+    restore();
+  }
+});
+
+test("create --live maps mocked generate HTTP failures to stable exit codes", async () => {
+  const cases = [
+    { status: 401, expected: 30 },
+    { status: 402, expected: 32 },
+    { status: 500, expected: 50 }
+  ];
+  for (const item of cases) {
+    const tempDir = await fsTempDir();
+    const { restore } = mockLiveFetch(item.status, { error: "blocked" });
+    try {
+      const output = await captureStdout(() => cliMain([
+        "create",
+        "--live",
+        "--data-dir", tempDir,
+        "--title", "verify probe",
+        "--style", "lo-fi piano",
+        "--captcha-token", "captcha-secret",
+        "--run-id", `run_live_${item.status}`,
+        "--min-minutes-between-creates", "0"
+      ]));
+      assert.equal(output.code, item.expected);
+    } finally {
+      restore();
+    }
+  }
+});
+
 function baseCreateArgs(tempDir: string, runId: string): string[] {
   return [
     "create",
@@ -347,4 +479,47 @@ async function captureStdout(fn: () => Promise<number>): Promise<{ code: number;
 
 async function fsTempDir(): Promise<string> {
   return fs.mkdtemp(path.join(os.tmpdir(), "suno-cli-test-"));
+}
+
+function mockLiveFetch(generateStatus: number, generatePayload: unknown): {
+  restore: () => void;
+  getGenerateBody: () => any;
+} {
+  const originalFetch = globalThis.fetch;
+  const originalCookie = process.env.SUNO_KIT_COOKIE;
+  const originalCookieFile = process.env.SUNO_KIT_COOKIE_FILE;
+  let generateBody: any;
+  process.env.SUNO_KIT_COOKIE = "__session=session-cookie-value";
+  delete process.env.SUNO_KIT_COOKIE_FILE;
+  globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
+    const url = String(input);
+    if (url.includes("/tokens")) {
+      return new Response(JSON.stringify({ jwt: "jwt-secret" }), { status: 200, headers: { "content-type": "application/json" } });
+    }
+    if (url.includes("auth.suno.com/v1/client")) {
+      return new Response(JSON.stringify({ response: { sessions: [{ id: "sess_1" }] } }), { status: 200, headers: { "content-type": "application/json" } });
+    }
+    if (url.includes("/api/generate/v2-web/")) {
+      const bodyText = typeof init?.body === "string" ? init.body : "";
+      generateBody = JSON.parse(bodyText);
+      return new Response(JSON.stringify(generatePayload), { status: generateStatus, headers: { "content-type": "application/json" } });
+    }
+    throw new Error(`unexpected fetch: ${url}`);
+  }) as typeof fetch;
+  return {
+    restore: () => {
+      globalThis.fetch = originalFetch;
+      restoreEnv("SUNO_KIT_COOKIE", originalCookie);
+      restoreEnv("SUNO_KIT_COOKIE_FILE", originalCookieFile);
+    },
+    getGenerateBody: () => generateBody
+  };
+}
+
+function restoreEnv(key: string, value: string | undefined): void {
+  if (value === undefined) {
+    delete process.env[key];
+  } else {
+    process.env[key] = value;
+  }
 }

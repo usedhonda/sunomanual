@@ -5,8 +5,8 @@
 Current status:
 
 - Phase1 retrieval is implemented: `status`, `urls`, and `download`.
-- Phase2 create is code-complete only for `--dry-run`: it builds the verified Suno request body and reserves an idempotent `transaction_uuid`, but it does not spend credits.
-- Live create submit is blocked unless the owner explicitly gives manual GO.
+- Phase2 create supports safe `--dry-run` body inspection and gated `--live` HTTP submit.
+- Live create can spend credits and requires explicit owner GO plus a fresh hCaptcha token.
 
 ## Install And Build
 
@@ -158,16 +158,68 @@ Optional create controls:
 | `--style-influence <n>` | 0-100 | `metadata.control_sliders.style_weight` as `n / 100` | key omitted |
 | `--audio-influence <n>` | 0-100 | `metadata.control_sliders.audio_weight` as `n / 100` | key omitted |
 | `--persona-id <id>` | Suno persona id string | top-level `persona_id` | `null` |
-| `--cover-clip-id <id>` | existing Suno clip id | top-level `cover_clip_id`, `metadata.create_mode="cover"` | `null`, `create_mode="custom"` |
+| `--cover-clip-id <id>` | existing Suno clip id | top-level `cover_clip_id` + top-level `task="cover"` + `metadata.is_remix=true` | `null`, no `task`, no `is_remix` |
 | `--cover-start-s <sec>` / `--cover-end-s <sec>` | non-negative seconds | top-level `cover_start_s` / `cover_end_s` | `null` |
 
-When neither flag is provided, `metadata.control_sliders` is omitted entirely. `override_fields` remains `[]`.
+When no slider flags are provided, `metadata.control_sliders` is omitted entirely. `override_fields` remains `[]`.
 
-Cover mode uses an existing Suno clip id that you already know. External audio upload is not implemented in this package. `--cover-start-s` and `--cover-end-s` require `--cover-clip-id`.
+Cover mode uses an existing Suno clip id that you already know. External audio upload is not implemented in this package. `--cover-start-s` and `--cover-end-s` require `--cover-clip-id`. Captured live requests keep `metadata.create_mode="custom"` and express cover via top-level `task="cover"` plus `metadata.is_remix=true`.
 
-`audio_weight` is marked [S] speculative: it follows the same `metadata.control_sliders` shape as captured sliders, but the field name still needs cover live observation before being treated as confirmed. Dry-run output is safe and does not spend credits.
+`audio_weight` is confirmed by live capture: UI 65 maps to `metadata.control_sliders.audio_weight: 0.65`. Dry-run output is safe and does not spend credits.
 
-Live create without `--dry-run` is intentionally blocked in this build.
+### create `--live`
+
+Live submit posts the generated body to:
+
+```text
+POST https://studio-api-prod.suno.com/api/generate/v2-web/
+```
+
+It requires:
+
+- a Clerk cookie via `SUNO_KIT_COOKIE`, `SUNO_KIT_COOKIE_FILE`, or `--cookie-file`
+- `--live`
+- `--captcha-token <token>`
+- explicit owner GO, because a successful request can spend Suno credits
+
+Example:
+
+```bash
+node dist/src/cli.js create --live \
+  --title "verify probe" \
+  --style "lo-fi piano, mellow, rain, tape hiss" \
+  --lyrics "rain on the window" \
+  --captcha-token "$SUNO_CAPTCHA_TOKEN" \
+  --run-id paid-probe-001
+```
+
+The CLI obtains the Clerk JWT from the cookie, then submits the body with `Content-Type: application/json`. On success it records the run in the ledger and returns extracted `clips[].id` values plus `https://suno.com/song/<clip_id>` URLs.
+
+To supply optional live-only metadata, use:
+
+```bash
+node dist/src/cli.js create --live \
+  --title "verify probe" \
+  --style "lo-fi piano" \
+  --captcha-token "$SUNO_CAPTCHA_TOKEN" \
+  --session-token "$SUNO_CREATE_SESSION_TOKEN" \
+  --user-tier "$SUNO_USER_TIER"
+```
+
+`SUNO_CREATE_SESSION_TOKEN` and `SUNO_USER_TIER` are also read from the environment. If they are not supplied, the corresponding metadata keys are omitted.
+
+#### Captcha Token
+
+The CLI does not solve or mint hCaptcha tokens. Get a fresh token immediately before live submit:
+
+1. Open `https://suno.com/create` while logged in.
+2. Open DevTools -> Network.
+3. During an owner-approved browser create attempt, trigger the request.
+4. Select the `/api/generate/v2-web/` request.
+5. Copy the request body field named `token`.
+6. Use it once with `--captcha-token`.
+
+The token has a short TTL. Do not log it, paste it into chat, or commit it.
 
 ## Exit Codes
 
@@ -176,9 +228,9 @@ Live create without `--dry-run` is intentionally blocked in this build.
 | 0 | `ok` | Success |
 | 2 | `usage` | Bad arguments, missing target, or unknown id |
 | 30 | `blockedLogin` | Missing or unusable Clerk cookie |
-| 32 | `blockedPaymentOrQuota` | Live-fire blocked, quota/payment/budget/manual gate |
-| 40 | `schemaDrift` | Corrupt ledger or incompatible local state |
-| 50 | `retryableUnknown` | Network failure or audio not ready |
+| 32 | `blockedPaymentOrQuota` | Quota/payment/budget/manual gate |
+| 40 | `schemaDrift` | Corrupt ledger, incompatible local state, or unexpected 4xx |
+| 50 | `retryableUnknown` | Network failure, 5xx, or audio not ready |
 | 70 | `internal` | Unexpected internal error |
 
 Errors are JSON and are redacted before output.
@@ -188,7 +240,7 @@ Errors are JSON and are redacted before output.
 - Cookies, JWTs, bearer tokens, Clerk tokens, and `create_session_token` are redacted from JSON output.
 - Runtime data is kept outside the repo by default.
 - `node_modules/` and `dist/` are ignored in this package.
-- Phase2 live create is not automated here because it can spend Suno credits.
+- Live create is behind `--live` and `--captcha-token` because it can spend Suno credits.
 
 ## Manual Live-Fire Checklist
 
@@ -198,8 +250,8 @@ Do not run this checklist without explicit owner GO.
 2. Confirm the current credit balance and expected credit cost.
 3. Confirm `npm test` is green.
 4. Confirm `create --dry-run` emits the expected body and reuses `transactionUuid` for retry.
-5. Use a dedicated browser profile for hCaptcha/passive token handling.
-6. Submit exactly one create request through the future stealth browser submit layer.
+5. Get a fresh `token` from the browser DevTools `/api/generate/v2-web/` request body.
+6. Submit exactly one request with `create --live --captcha-token <token>`.
 7. Record the returned `clips[].id` values only; do not log captcha token, Clerk JWT, cookie, or `create_session_token`.
 8. Use `status`, `urls`, and `download` to retrieve results.
 

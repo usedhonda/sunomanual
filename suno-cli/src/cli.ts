@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { pathToFileURL } from "node:url";
 import { createCommandContext } from "./commands/context.js";
-import { createCommand } from "./commands/create.js";
+import { createCommand, CreateCommandOptions } from "./commands/create.js";
 import { downloadCommand } from "./commands/download.js";
 import { commandError, ExitCode, classifyError, writeJson } from "./commands/output.js";
 import { resolveTarget } from "./commands/resolve-target.js";
@@ -21,6 +21,7 @@ interface ParsedArgs {
   pollMs?: number | undefined;
   timeoutMs?: number | undefined;
   dryRun?: boolean | undefined;
+  live?: boolean | undefined;
   title?: string | undefined;
   style?: string | undefined;
   exclude?: string | undefined;
@@ -37,6 +38,8 @@ interface ParsedArgs {
   coverStartS?: number | undefined;
   coverEndS?: number | undefined;
   audioInfluence?: number | undefined;
+  sessionToken?: string | undefined;
+  userTier?: string | undefined;
   runId?: string | undefined;
   maxGenerationsPerDay?: number | undefined;
   minMinutesBetweenCreates?: number | undefined;
@@ -96,15 +99,17 @@ async function runCli(argv: string[]): Promise<number> {
 async function runCreate(args: ParsedArgs): Promise<number> {
   const paths = resolvePathConfig(compactPathOptions(args));
   const ledger = new LedgerStore(paths.ledgerPath);
-  const createOptions = {
+  const createOptions: CreateCommandOptions = {
     dryRun: Boolean(args.dryRun),
+    live: Boolean(args.live),
     title: args.title ?? "",
     style: args.style ?? "",
     ledger,
     policy: {
       maxGenerationsPerDay: args.maxGenerationsPerDay ?? 4,
       minMinutesBetweenCreates: args.minMinutesBetweenCreates ?? 20
-    }
+    },
+    authOptions: compactPathOptions(args)
   };
   if (args.exclude) Object.assign(createOptions, { exclude: args.exclude });
   if (args.lyrics) Object.assign(createOptions, { lyrics: args.lyrics });
@@ -120,6 +125,10 @@ async function runCreate(args: ParsedArgs): Promise<number> {
   if (args.coverStartS !== undefined) Object.assign(createOptions, { coverStartS: args.coverStartS });
   if (args.coverEndS !== undefined) Object.assign(createOptions, { coverEndS: args.coverEndS });
   if (args.audioInfluence !== undefined) Object.assign(createOptions, { audioInfluence: args.audioInfluence });
+  const sessionToken = args.sessionToken ?? process.env.SUNO_CREATE_SESSION_TOKEN;
+  const userTier = args.userTier ?? process.env.SUNO_USER_TIER;
+  if (sessionToken) Object.assign(createOptions, { sessionToken });
+  if (userTier) Object.assign(createOptions, { userTier });
   if (args.runId) Object.assign(createOptions, { runId: args.runId });
   return createCommand(createOptions);
 }
@@ -146,6 +155,8 @@ function parseArgs(argv: string[]): ParsedArgs {
       index += 1;
     } else if (arg === "--dry-run") {
       result.dryRun = true;
+    } else if (arg === "--live") {
+      result.live = true;
     } else if (arg === "--title") {
       result.title = argv[index + 1];
       index += 1;
@@ -193,6 +204,12 @@ function parseArgs(argv: string[]): ParsedArgs {
     } else if (arg === "--audio-influence") {
       result.audioInfluence = parsePercentFlag("--audio-influence", argv[index + 1]);
       index += 1;
+    } else if (arg === "--session-token") {
+      result.sessionToken = parseNonEmptyStringFlag("--session-token", argv[index + 1]);
+      index += 1;
+    } else if (arg === "--user-tier") {
+      result.userTier = parseNonEmptyStringFlag("--user-tier", argv[index + 1]);
+      index += 1;
     } else if (arg === "--run-id") {
       result.runId = argv[index + 1];
       index += 1;
@@ -225,7 +242,7 @@ function usage(): void {
       "suno-cli status <run-id|clip-id|song-url> [--json] [--data-dir <dir>] [--cookie-file <file>]",
       "suno-cli urls <run-id|clip-id|song-url> [--json] [--data-dir <dir>] [--cookie-file <file>]",
       "suno-cli download <run-id|clip-id|song-url> --out <dir> [--timeout-ms <ms>] [--poll-ms <ms>]",
-      "suno-cli create --dry-run --title <title> --style <style> [--lyrics <text>|--instrumental] [--exclude <text>] [--weirdness 0-100] [--style-influence 0-100] [--audio-influence 0-100] [--persona-id <id>] [--cover-clip-id <id> --cover-start-s <sec> --cover-end-s <sec>]"
+      "suno-cli create (--dry-run|--live) --title <title> --style <style> [--lyrics <text>|--instrumental] [--exclude <text>] [--captcha-token <token>] [--session-token <token>] [--user-tier <uuid>] [--weirdness 0-100] [--style-influence 0-100] [--audio-influence 0-100] [--persona-id <id>] [--cover-clip-id <id> --cover-start-s <sec> --cover-end-s <sec>]"
     ]
   });
 }

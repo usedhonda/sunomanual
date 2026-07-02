@@ -18,6 +18,8 @@ export interface CreateInput {
   coverStartS?: number;
   coverEndS?: number;
   audioInfluence?: number;
+  sessionToken?: string;
+  userTier?: string;
 }
 
 export interface CreateBody {
@@ -31,7 +33,8 @@ export interface CreateBody {
   transaction_uuid: string;
   token: string;
   token_provider: string;
-  override_fields: string;
+  override_fields: unknown[];
+  task?: "cover";
   persona_id: string | null;
   cover_clip_id: string | null;
   cover_start_s: number | null;
@@ -57,17 +60,22 @@ export function buildCreateBody(input: CreateInput): CreateBody {
   const model = MODEL_ALIASES[input.model ?? "v5.5"] ?? input.model ?? "chirp-fenix";
   const transactionUuid = input.transactionUuid ?? randomUUID();
   const metadata: Record<string, unknown> = {
-    create_mode: input.coverClipId ? "cover" : "custom",
+    create_mode: "custom",
     is_max_mode: false,
-    is_mumble: false
+    is_mumble: false,
+    disable_volume_normalization: false,
+    web_client_pathname: "/create"
   };
   if (input.vocalGender) metadata.vocal_gender = input.vocalGender;
+  if (input.coverClipId) metadata.is_remix = true;
+  if (input.sessionToken) metadata.create_session_token = input.sessionToken;
+  if (input.userTier) metadata.user_tier = input.userTier;
   const controlSliders: Record<string, number> = {};
   if (input.weirdness !== undefined) controlSliders.weirdness_constraint = input.weirdness;
   if (input.styleInfluence !== undefined) controlSliders.style_weight = input.styleInfluence;
   if (input.audioInfluence !== undefined) controlSliders.audio_weight = input.audioInfluence;
   if (Object.keys(controlSliders).length > 0) metadata.control_sliders = controlSliders;
-  return {
+  const body: CreateBody = {
     tags: input.style,
     negative_tags: input.exclude ?? "",
     prompt: input.instrumental ? "" : input.lyrics ?? "",
@@ -78,7 +86,7 @@ export function buildCreateBody(input: CreateInput): CreateBody {
     transaction_uuid: transactionUuid,
     token: input.token ?? "__DRY_RUN_CAPTCHA_TOKEN__",
     token_provider: input.tokenProvider ?? "hcaptcha",
-    override_fields: "[]",
+    override_fields: [],
     persona_id: input.personaId ?? null,
     cover_clip_id: input.coverClipId ?? null,
     cover_start_s: input.coverStartS ?? null,
@@ -92,6 +100,8 @@ export function buildCreateBody(input: CreateInput): CreateBody {
     user_uploaded_images_b64: null,
     generation_type: "TEXT"
   };
+  if (input.coverClipId) body.task = "cover";
+  return body;
 }
 
 export function hashCreateBody(body: CreateBody): string {

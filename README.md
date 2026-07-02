@@ -2,7 +2,7 @@
 
 > **Language**: Japanese (日本語) — technical terms in English
 
-Suno V5/V5.5 で曲を作るための制作キットです。中心は Claude Code の **`/suno` スキル**。knowledge はその判断品質を支える知識エンジンで、`suno-cli` は生成投入・回収を担う実行バックエンドです（回収層は出荷済み、create submit は開発中）。
+Suno V5/V5.5 で曲を作るための制作キットです。中心は Claude Code の **`/suno` スキル**。knowledge はその判断品質を支える知識エンジンで、`suno-cli` は生成投入・回収を担う実行バックエンドです（回収層と `--live` gated create submit は出荷済み）。
 
 ```text
 knowledge: 何を作るかを決める
@@ -14,7 +14,7 @@ knowledge: 何を作るかを決める
 
 - **`/suno` スキルが顔** — アーティスト設定 → 歌詞 → Style → Suno自動入力 → マスタリング → X投稿用動画まで、対話で進めるメイン体験
 - **knowledge は知識エンジン** — V5.5 仕様、コミュニティ技法、歌詞設計、ジャンル語彙、YAML テンプレートをスキルが参照する正本
-- **`suno-cli` は実行層** — スキルが作った payload を Suno に投入し、2 take URL / audio を JSON で回収するバックエンド。回収コマンド（status / urls / download）は出荷済み、create submit は開発中
+- **`suno-cli` は実行層** — スキルが作った payload を Suno に投入し、2 take URL / audio を JSON で回収するバックエンド。回収コマンド（status / urls / download）と `--live` gated create submit は出荷済み
 - **プロンプト設計** — Style / Lyrics / Exclude の書き方、V5.5 音声条件付け、Duration Control、inline tags を統合
 - **SNS時代スタイル** — ドパガキ Recipe、Phonk / Amapiano / Jersey Club、Hyperpop / UK Garage / Drill、sped-up / Vocaloid を収録（community + Cdx review、未実証は A/B 推奨）
 - **Suno特化オートマスタリング** — Suno の音のクセ（シマー、泥、既圧縮、音量不足）を前提にスキャン → 判定 → 補正
@@ -66,7 +66,7 @@ knowledge: 何を作るかを決める
 
 現状:
 - **回収層（出荷済み・Phase1）** — `status` / `urls` / `download`。Clerk JWT HTTP で回収、JSON output + 安定 exit code の非対話 IF。詳細は [`suno-cli/README.md`](suno-cli/README.md)
-- **create（dry-run 実装済み / live-fire は manual gate・Phase2）** — `create --dry-run` で R6 body（Style / Lyrics / Exclude / model / vocal gender / **weirdness・style influence** slider 等）を構築・検証できる。実課金 live-fire は stealth browser 投入（warm session + invisible hCaptcha、paid solver なし）で、owner GO 必須の manual gate
+- **create（dry-run + `--live` gated submit）** — `create --dry-run` で R6 body（Style / Lyrics / Exclude / model / vocal gender / **weirdness・style influence・audio influence** slider、persona、cover 等）を構築・検証できる。実課金 submit は `create --live --captcha-token <token>` が必須で、owner GO のある検収時だけ実行する
 
 設計方針:
 - `transaction_uuid` で冪等 retry（課金保護）
