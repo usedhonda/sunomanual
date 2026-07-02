@@ -28,6 +28,70 @@ test("buildCreateBody maps R6 create fields", () => {
   assert.equal(body.token_provider, "hcaptcha");
   assert.equal(body.override_fields, "[]");
   assert.equal(JSON.parse(body.metadata).vocal_gender, "m");
+  assert(!("control_sliders" in JSON.parse(body.metadata)));
+});
+
+test("create dry-run maps weirdness and style influence to metadata control_sliders", async () => {
+  const tempDir = await fsTempDir();
+  const output = await captureStdout(() => cliMain([
+    ...baseCreateArgs(tempDir, "run_sliders"),
+    "--weirdness", "45",
+    "--style-influence", "70"
+  ]));
+  const metadata = JSON.parse(output.json.body.metadata);
+  assert.equal(output.code, 0);
+  assert.equal(metadata.control_sliders.weirdness_constraint, 0.45);
+  assert.equal(metadata.control_sliders.style_weight, 0.7);
+  assert.equal(output.json.body.override_fields, "[]");
+});
+
+test("create body omits control_sliders when sliders are unspecified", () => {
+  const body = buildCreateBody({
+    title: "verify probe",
+    style: "lo-fi piano",
+    lyrics: "rain",
+    transactionUuid: "tx-omit"
+  });
+  const metadata = JSON.parse(body.metadata);
+  assert(!("control_sliders" in metadata));
+  assert.equal(body.override_fields, "[]");
+});
+
+test("create body includes only specified slider key", () => {
+  const body = buildCreateBody({
+    title: "verify probe",
+    style: "lo-fi piano",
+    lyrics: "rain",
+    transactionUuid: "tx-one",
+    weirdness: 0.33
+  });
+  const sliders = JSON.parse(body.metadata).control_sliders;
+  assert.equal(sliders.weirdness_constraint, 0.33);
+  assert(!("style_weight" in sliders));
+  assert.equal(body.override_fields, "[]");
+});
+
+test("create dry-run rejects slider values outside 0-100", async () => {
+  const tempDir = await fsTempDir();
+  const low = await captureStdout(() => cliMain([
+    ...baseCreateArgs(tempDir, "run_low"),
+    "--weirdness", "-1"
+  ]));
+  const high = await captureStdout(() => cliMain([
+    ...baseCreateArgs(tempDir, "run_high"),
+    "--style-influence", "101"
+  ]));
+  const nonNumeric = await captureStdout(() => cliMain([
+    ...baseCreateArgs(tempDir, "run_nan"),
+    "--weirdness", "nope"
+  ]));
+  assert.equal(low.code, 2);
+  assert.equal(low.json.status, "error");
+  assert.match(low.json.error, /--weirdness/);
+  assert.equal(high.code, 2);
+  assert.match(high.json.error, /--style-influence/);
+  assert.equal(nonNumeric.code, 2);
+  assert.match(nonNumeric.json.error, /--weirdness/);
 });
 
 test("create --dry-run emits redacted body without live network", async () => {

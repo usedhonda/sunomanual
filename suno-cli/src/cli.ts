@@ -30,6 +30,8 @@ interface ParsedArgs {
   vocalGender?: string | undefined;
   captchaToken?: string | undefined;
   tokenProvider?: string | undefined;
+  weirdness?: number | undefined;
+  styleInfluence?: number | undefined;
   runId?: string | undefined;
   maxGenerationsPerDay?: number | undefined;
   minMinutesBetweenCreates?: number | undefined;
@@ -106,6 +108,8 @@ async function runCreate(args: ParsedArgs): Promise<number> {
   if (args.vocalGender) Object.assign(createOptions, { vocalGender: args.vocalGender });
   if (args.captchaToken) Object.assign(createOptions, { token: args.captchaToken });
   if (args.tokenProvider) Object.assign(createOptions, { tokenProvider: args.tokenProvider });
+  if (args.weirdness !== undefined) Object.assign(createOptions, { weirdness: args.weirdness });
+  if (args.styleInfluence !== undefined) Object.assign(createOptions, { styleInfluence: args.styleInfluence });
   if (args.runId) Object.assign(createOptions, { runId: args.runId });
   return createCommand(createOptions);
 }
@@ -158,6 +162,12 @@ function parseArgs(argv: string[]): ParsedArgs {
     } else if (arg === "--token-provider") {
       result.tokenProvider = argv[index + 1];
       index += 1;
+    } else if (arg === "--weirdness") {
+      result.weirdness = parsePercentFlag("--weirdness", argv[index + 1]);
+      index += 1;
+    } else if (arg === "--style-influence") {
+      result.styleInfluence = parsePercentFlag("--style-influence", argv[index + 1]);
+      index += 1;
     } else if (arg === "--run-id") {
       result.runId = argv[index + 1];
       index += 1;
@@ -189,9 +199,17 @@ function usage(): void {
       "suno-cli status <run-id|clip-id|song-url> [--json] [--data-dir <dir>] [--cookie-file <file>]",
       "suno-cli urls <run-id|clip-id|song-url> [--json] [--data-dir <dir>] [--cookie-file <file>]",
       "suno-cli download <run-id|clip-id|song-url> --out <dir> [--timeout-ms <ms>] [--poll-ms <ms>]",
-      "suno-cli create --dry-run --title <title> --style <style> [--lyrics <text>|--instrumental] [--exclude <text>]"
+      "suno-cli create --dry-run --title <title> --style <style> [--lyrics <text>|--instrumental] [--exclude <text>] [--weirdness 0-100] [--style-influence 0-100]"
     ]
   });
+}
+
+function parsePercentFlag(flag: string, value: string | undefined): number {
+  const parsed = Number(value);
+  if (value === undefined || !Number.isFinite(parsed) || parsed < 0 || parsed > 100) {
+    throw new Error(`Usage: ${flag} must be a number from 0 to 100.`);
+  }
+  return parsed / 100;
 }
 
 function compactPathOptions(args: ParsedArgs): { dataDir?: string; cookieFile?: string } {

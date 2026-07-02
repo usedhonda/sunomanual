@@ -45,6 +45,8 @@ export async function createCommand(options: CreateCommandOptions): Promise<numb
   if (options.vocalGender) bodyInput.vocalGender = options.vocalGender;
   if (options.token) bodyInput.token = options.token;
   if (options.tokenProvider) bodyInput.tokenProvider = options.tokenProvider;
+  if (options.weirdness !== undefined) bodyInput.weirdness = options.weirdness;
+  if (options.styleInfluence !== undefined) bodyInput.styleInfluence = options.styleInfluence;
   const body = buildCreateBody(bodyInput);
   const finalRequestHash = hashCreateBody(body);
   writeJson({

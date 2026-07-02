@@ -11,6 +11,8 @@ export interface CreateInput {
   transactionUuid?: string;
   token?: string;
   tokenProvider?: string;
+  weirdness?: number;
+  styleInfluence?: number;
 }
 
 export interface CreateBody {
@@ -55,6 +57,10 @@ export function buildCreateBody(input: CreateInput): CreateBody {
     is_mumble: false
   };
   if (input.vocalGender) metadata.vocal_gender = input.vocalGender;
+  const controlSliders: Record<string, number> = {};
+  if (input.weirdness !== undefined) controlSliders.weirdness_constraint = input.weirdness;
+  if (input.styleInfluence !== undefined) controlSliders.style_weight = input.styleInfluence;
+  if (Object.keys(controlSliders).length > 0) metadata.control_sliders = controlSliders;
   return {
     tags: input.style,
     negative_tags: input.exclude ?? "",

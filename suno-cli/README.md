@@ -123,7 +123,9 @@ node dist/src/cli.js create --dry-run \
   --style "lo-fi piano, mellow, rain, tape hiss" \
   --exclude "brass, aggressive" \
   --lyrics "rain on the window" \
-  --vocal-gender m
+  --vocal-gender m \
+  --weirdness 45 \
+  --style-influence 70
 ```
 
 Dry-run builds the verified request shape for:
@@ -142,6 +144,15 @@ node dist/src/cli.js create --dry-run --run-id test-run --title "probe" --style 
 ```
 
 Both outputs should use the same `transactionUuid`.
+
+Optional create controls:
+
+| Flag | Input | Request field | Omitted behavior |
+|---|---:|---|---|
+| `--weirdness <n>` | 0-100 | `metadata.control_sliders.weirdness_constraint` as `n / 100` | key omitted |
+| `--style-influence <n>` | 0-100 | `metadata.control_sliders.style_weight` as `n / 100` | key omitted |
+
+When neither flag is provided, `metadata.control_sliders` is omitted entirely. `override_fields` remains `[]`.
 
 Live create without `--dry-run` is intentionally blocked in this build.
 
