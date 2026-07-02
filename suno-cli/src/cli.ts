@@ -7,6 +7,7 @@ import { urlsCommand } from "./commands/urls.js";
 import { redactString } from "./safety/redact.js";
 
 interface ParsedArgs {
+  help?: boolean | undefined;
   command?: string | undefined;
   target?: string | undefined;
   dataDir?: string | undefined;
@@ -18,7 +19,7 @@ interface ParsedArgs {
 
 async function main(argv: string[]): Promise<number> {
   const args = parseArgs(argv);
-  if (!args.command || args.command === "--help" || args.command === "-h") {
+  if (args.help || !args.command) {
     usage();
     return ExitCode.ok;
   }
@@ -69,6 +70,8 @@ function parseArgs(argv: string[]): ParsedArgs {
       index += 1;
     } else if (arg === "--json") {
       continue;
+    } else if (arg === "--help" || arg === "-h") {
+      result.help = true;
     } else if (arg?.startsWith("--")) {
       throw new Error(`Unknown option: ${arg}`);
     } else if (arg) {
